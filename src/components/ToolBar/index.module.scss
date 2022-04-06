@@ -1,0 +1,28 @@
+.nav {
+    margin: 0px 20px;
+    height: 60px;
+
+
+    & section {
+        height: 100%;
+        float: left;
+    
+        text-align: center;
+        font-size: 15px;
+        font-family: monospace;
+    
+        /* 讓文字置中 */
+        display: flex;
+        align-items: center;
+    
+
+        &:hover {
+            background-color: #525252;
+            cursor: pointer;
+        }
+    }
+
+    & section span {
+        padding: 0 10px;
+    }
+}

@@ -1,0 +1,48 @@
+.aside {
+    top: 60px;
+    width: 60px;
+    height: calc(100% - 60px);
+    background-color: #424242;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    /* 使物件依序排列 (垂直排列) */
+    display: flex;
+    flex-direction: column;
+
+
+    & #topIcons {
+        /* 可佔滿垂直剩餘的空間 */
+        flex-grow: 1;
+    }
+    & #bottomIcons {
+        margin: 20px 0px;
+    }
+
+    
+    & .iconButton {
+        width: 100%;
+        height: 60px;
+        opacity: 60%;
+    
+        
+        &:hover {
+            opacity: 1;
+            cursor: pointer;
+        }
+    
+        & img {
+            margin: 0px auto;
+            padding: 17px 0px;
+            display: block;
+            width: 30px;
+            height: auto;
+        }
+    }
+
+    & .focusIcon {
+        opacity: 1;
+        border-left: solid 3px white;
+    }
+}
