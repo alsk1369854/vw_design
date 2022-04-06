@@ -70,11 +70,13 @@ export const ToolBar = memo((props: {arrToolBarButtons: Array<ToolBarButton>}) =
 
 
 export class Node extends abstractTestable {
+    private strName: string;
     private strHotKey: string;
     private funcClick: Function;
 
     constructor(strName: string, strHotKey: string | null, funcClick: Function){
-        super(strName, "ToolBarNode");
+        super();
+        this.strName = strName;
         this.strHotKey = strHotKey ?? "";
         this.funcClick = funcClick;
     }
@@ -83,6 +85,9 @@ export class Node extends abstractTestable {
         this.funcClick();
     }
 
+    getName(): string {
+        return this.strName;
+    }
     getHotKey(): string {
         return this.strHotKey;
     }
@@ -111,7 +116,7 @@ export class Menu extends abstractTestable {
     constructor(arrGroups: Array<Group>)
     constructor(arrGroups: Array<Group>, strName: string)
     constructor(arrGroups: Array<Group>, strName: string = ""){
-        super(strName, "ToolBarMenu");
+        super();
         this.arrGroups = arrGroups;
     }
 
@@ -137,14 +142,18 @@ export class Menu extends abstractTestable {
 }
 
 export class ToolBarButton extends abstractTestable {
+    private strName: string;
     private menu: Menu;
 
     constructor(strName: string, menu: Menu){
-        super(strName, "ToolBarButton");
+        super();
+        this.strName = strName;
         this.menu = menu;
-        this.menu.setName(this.strName);
     }
 
+    getName(): string {
+        return this.strName;
+    }
     getMenu(): Menu {
         return this.menu;
     }
