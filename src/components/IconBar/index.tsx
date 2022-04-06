@@ -36,7 +36,7 @@ export const IconBar = memo((props: {arrIconButtons: Array<IconButton>, arrIconB
                 data-testid={iconButton.setTestId()}
             >
                 <img
-                    src={require('../../assets/icon/' + iconButton.getNameFilterSpaces() + '.png')}
+                    src={require('../../assets/icon/' + iconButton.getName() + '.png')}
                 />
             </div>
         );
@@ -50,7 +50,7 @@ export const IconBar = memo((props: {arrIconButtons: Array<IconButton>, arrIconB
                 data-testid={iconButton.setTestId()}
             >
                 <img 
-                    src={require('../../assets/icon/' + iconButton.getNameFilterSpaces() + '.png')} 
+                    src={require('../../assets/icon/' + iconButton.getName() + '.png')} 
                 />
             </div>
         );
@@ -73,13 +73,15 @@ export const IconBar = memo((props: {arrIconButtons: Array<IconButton>, arrIconB
 
 
 export class IconButton extends abstractTestable {
+    private strName: string;
     private funcFocus: Function;
     private funcBlur: Function;
 
     constructor(strName: string, funcFocus: Function)
     constructor(strName: string, funcFocus: Function, funcBlur: Function)
     constructor(strName: string, funcFocus: Function, funcBlur: Function = (()=>{})){
-        super(strName, "IconButton");
+        super();
+        this.strName = strName;
         this.funcFocus = funcFocus;
         this.funcBlur = funcBlur;
     }
@@ -89,6 +91,10 @@ export class IconButton extends abstractTestable {
     }
     callBlurFunction(): void {
         this.funcBlur();
+    }
+
+    getName(): string {
+        return this.strName;
     }
 }
 
