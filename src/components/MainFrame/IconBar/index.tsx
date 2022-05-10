@@ -1,7 +1,7 @@
 import { memo, useState } from 'react';
 import style from './index.module.scss';
 
-import { abstractTestable } from '../../tools/Test';
+import { abstractTestable } from '../../../tools/Test';
 
 
 
@@ -36,7 +36,7 @@ export const IconBar = memo((props: {arrIconButtons: Array<IconButton>, arrIconB
                 data-testid={iconButton.setTestId()}
             >
                 <img
-                    src={require('../../assets/icon/' + iconButton.getName() + '.png')}
+                    src={require('../../../assets/icon/' + iconButton.getName() + '.png')}
                 />
             </div>
         );
@@ -50,7 +50,7 @@ export const IconBar = memo((props: {arrIconButtons: Array<IconButton>, arrIconB
                 data-testid={iconButton.setTestId()}
             >
                 <img 
-                    src={require('../../assets/icon/' + iconButton.getName() + '.png')} 
+                    src={require('../../../assets/icon/' + iconButton.getName() + '.png')} 
                 />
             </div>
         );
@@ -86,27 +86,71 @@ export class IconButton extends abstractTestable {
         this.funcBlur = funcBlur;
     }
 
-    callFocusFunction(): void {
+    public callFocusFunction(): void {
         this.funcFocus();
     }
-    callBlurFunction(): void {
+    public callBlurFunction(): void {
         this.funcBlur();
     }
 
-    getName(): string {
+    public getName(): string {
         return this.strName;
     }
 }
 
 
-const container = memo(() => {
+const getFullScreenWidth: Function = (): number => {return window.innerWidth - 60}
+
+const container = memo((props: {arrButtonNames: Array<string>, funcSetUseState: Function, funcSetSideWindowWidth: Function}) => {
     const arrIconButtons: Array<IconButton> = [
-        new IconButton("Edit",            () => {console.log(0, "Focus")}, () => {console.log(0, "Blur")}),
-        new IconButton("Folder",          () => {console.log(1, "Focus")}, () => {console.log(1, "Blur")}),
-        new IconButton("Magnifier",       () => {console.log(2, "Focus")}, () => {console.log(2, "Blur")}),
-        new IconButton("PaperAirplane",   () => {console.log(3, "Focus")}, () => {console.log(3, "Blur")}),
-        new IconButton("Bulb",            () => {console.log(4, "Focus")}, () => {console.log(4, "Blur")}),
-        new IconButton("Plug-in",         () => {console.log(5, "Focus")}, () => {console.log(5, "Blur")}),
+        new IconButton(props.arrButtonNames[0], () => {
+                props.funcSetUseState(0);
+                props.funcSetSideWindowWidth(0);
+            }, () => {
+                props.funcSetUseState(-1);
+                props.funcSetSideWindowWidth(0);
+            }
+        ),
+        new IconButton(props.arrButtonNames[1], () => {
+                props.funcSetUseState(1);
+                props.funcSetSideWindowWidth(200);
+            }, () => {
+                props.funcSetUseState(-1);
+                props.funcSetSideWindowWidth(0);
+            }
+        ),
+        new IconButton(props.arrButtonNames[2], () => {
+                props.funcSetUseState(2);
+                props.funcSetSideWindowWidth(getFullScreenWidth());
+            }, () => {
+                props.funcSetUseState(-1);
+                props.funcSetSideWindowWidth(0);
+            }
+        ),
+        new IconButton(props.arrButtonNames[3], () => {
+                props.funcSetUseState(3);
+                props.funcSetSideWindowWidth(getFullScreenWidth());
+            }, () => {
+                props.funcSetUseState(-1);
+                props.funcSetSideWindowWidth(0);
+            }
+        ),
+        new IconButton(props.arrButtonNames[4], () => {
+                props.funcSetUseState(4);
+                props.funcSetSideWindowWidth(getFullScreenWidth());
+            }, () => {
+                props.funcSetUseState(-1);
+                props.funcSetSideWindowWidth(0);
+            }
+        ),
+        new IconButton(props.arrButtonNames[5], () => {
+                props.funcSetUseState(5);
+                props.funcSetSideWindowWidth(getFullScreenWidth());
+            }, () => {
+                props.funcSetUseState(-1);
+                props.funcSetSideWindowWidth(0);
+            }
+        ),
     ]
     const arrIconButtonsBottom: Array<IconButton> = [
         new IconButton("User",            () => {console.log(0, "bottom")}),
