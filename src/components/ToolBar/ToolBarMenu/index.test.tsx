@@ -20,7 +20,7 @@ const toolBarMenu = (
             new Node("Save",                "HotKey03", arrFunctionClick[2]),
             new Node("Save As",             "HotKey03", arrFunctionClick[3]),
         ])
-    ], "File")
+    ])
 )
 const arrNodes = toolBarMenu.getNodes(false);
 

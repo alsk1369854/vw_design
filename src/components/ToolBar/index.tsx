@@ -68,7 +68,6 @@ export const ToolBar = memo((props: {arrToolBarButtons: Array<ToolBarButton>}) =
 
 
 
-
 export class Node extends abstractTestable {
     private strName: string;
     private strHotKey: string;
@@ -81,14 +80,14 @@ export class Node extends abstractTestable {
         this.funcClick = funcClick;
     }
 
-    callClickFunction(): void {
+    public callClickFunction(): void {
         this.funcClick();
     }
 
-    getName(): string {
+    public getName(): string {
         return this.strName;
     }
-    getHotKey(): string {
+    public getHotKey(): string {
         return this.strHotKey;
     }
 }
@@ -105,7 +104,7 @@ export class Group {
         this.arrNodes = arrNodes;
     }
 
-    getNodes(): Array<Node> {
+    public getNodes(): Array<Node> {
         return this.arrNodes;
     }
 }
@@ -113,17 +112,15 @@ export class Group {
 export class Menu extends abstractTestable {
     private arrGroups: Array<Group>;
 
-    constructor(arrGroups: Array<Group>)
-    constructor(arrGroups: Array<Group>, strName: string)
-    constructor(arrGroups: Array<Group>, strName: string = ""){
+    constructor(arrGroups: Array<Group>){
         super();
         this.arrGroups = arrGroups;
     }
 
     
-    getNodes(): Array<Node>
-    getNodes(isDivided: boolean): Array<Node>
-    getNodes(isDivided: boolean = true): Array<Node> {
+    public getNodes(): Array<Node>
+    public getNodes(isDivided: boolean): Array<Node>
+    public getNodes(isDivided: boolean = true): Array<Node> {
         let arrNodes: Array<Node> = [];
 
         this.arrGroups.forEach((group, index) => {
@@ -151,10 +148,10 @@ export class ToolBarButton extends abstractTestable {
         this.menu = menu;
     }
 
-    getName(): string {
+    public getName(): string {
         return this.strName;
     }
-    getMenu(): Menu {
+    public getMenu(): Menu {
         return this.menu;
     }
 }
