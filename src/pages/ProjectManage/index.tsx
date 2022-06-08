@@ -6,7 +6,7 @@ import { Test } from '../../tools/Test';
 import HeaderStyle from '../Edit/index.module.scss'
 import logo from '../../assets/logo.png';
 import ToolBar from '../../components/ToolBar';
-import ProjectListFrame from './ProjectListFrame'
+import ProjectListFrame from '../../components/ProjectListFrame'
 
 const cssHelmet = `
     html, body, #app {
@@ -63,12 +63,3 @@ export default class ProjectManagePage extends React.Component{
         )
     }
 }
-
-
-// const ProjectManagePage = memo(() => {
-//     return (
-        
-//     )
-// });
-
-// export default ProjectManagePage;

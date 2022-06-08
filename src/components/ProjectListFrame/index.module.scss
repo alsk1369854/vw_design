@@ -1,4 +1,8 @@
 .mainFrame {
+
+    font-size: 15px;
+    font-family: monospace;
+    
     color: black;
     display: flex;
     height: 100vh;
@@ -39,7 +43,7 @@
             & .headerLastTimeTitle {
                 width: 20%;
 
-                @media (max-width:1100px) {
+                @media (max-width:1170px) {
                     display: none;
                 }
             }
@@ -51,6 +55,7 @@
             height: auto;
 
             & .listItem {
+                cursor:pointer;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
@@ -59,10 +64,17 @@
                 list-style: none;
                 height: auto;
 
+                border-radius: 5px;
+
                 & .itemName {
                     width: 40%;
+                    display: flex;
+                    align-items: center;
 
                     & img {
+                        border-radius:10px;
+                        height: 50px;
+                        width: 50px;
                         margin: 0px 10px;
                     }
                 }
@@ -82,14 +94,13 @@
                 & .itemLastTime {
                     width: 20%;
 
-                    @media (max-width:1100px) {
+                    @media (max-width:1170px) {
                         display: none;
                     }
                 }
             }
 
             & .listItem:hover {
-                border-radius: 5px;
                 background-color: rgb(255, 255, 255);
             }
         }
@@ -101,15 +112,18 @@
         width: 350px;
         background-color: rgb(225, 226, 226);
         & .utilMenuBar {
-            & .utilItem {
+            & .utilItem, .selectedUtilItem {
+                cursor:pointer;
                 display: flex;
                 align-items: center;
                 list-style: none;
                 padding: 10px 0px;
-                height: 55px;
+                height: 30px;
                 & img{
                     // margin-left: 30px;
                     margin: 0px 20px;
+                    height: 35px;
+                    width: 35px;
                 }
                 & span{
 
@@ -118,6 +132,10 @@
             & .utilItem:hover {
                 background-color: rgb(255, 255, 255);
 
+            }
+            & .selectedUtilItem{
+                cursor:default;
+                background-color: rgb(255, 255, 255);
             }
         }
     }
