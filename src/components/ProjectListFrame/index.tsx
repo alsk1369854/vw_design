@@ -12,12 +12,16 @@ import ContextMenu from './ContextMenu'
 import style from './index.module.scss'
 
 
+interface IProps {
+    showContextMenu: boolean,
+    openProjectContextMenu: Function,
+}
 
+interface IState { }
 
-export default class ProjectListFrame extends Component {
+export default class ProjectListFrame extends Component<IProps, IState> {
     state = {
-        showContextProjectId: undefined,
-        showContextMenu: false,
+        showContextProjectId: "",
         mouseDownXY: { x: 0, y: 0 },
         utilMenuState: "MyProjects"
     }
@@ -31,16 +35,11 @@ export default class ProjectListFrame extends Component {
     openProjectContextMenu = (event: any, id: string) => {
         event.stopPropagation()
         this.setState({
-            showContextMenu: true,
             showContextProjectId: id,
             mouseDownXY: { x: event.pageX, y: event.pageY }
         })
-        // console.log(event);
+        this.props.openProjectContextMenu()
         console.log("click item: ", id);
-    }
-
-    closeProjectContextMenu = () => {
-        this.setState({ showContextMenu: false })
     }
 
     selectUtilMenuItem = (event: any, strItemName: string) => {
@@ -49,9 +48,10 @@ export default class ProjectListFrame extends Component {
     }
 
     render() {
+        // console.log(this.state)
         return (
-            <div className={style.mainFrame} onClick={this.closeProjectContextMenu}>
-                {this.state.showContextMenu ? <ContextMenu x={this.state.mouseDownXY.x} y={this.state.mouseDownXY.y} /> : <></>}
+            <div className={style.mainFrame}>
+                {this.props.showContextMenu ? <ContextMenu projectId={this.state.showContextProjectId} x={this.state.mouseDownXY.x} y={this.state.mouseDownXY.y} /> : <></>}
                 <div className={style.leftSideBar}>
                     <div className={style.listHeaderBar}>
                         <div className={style.headerNameTitle}>Name</div>
@@ -59,7 +59,7 @@ export default class ProjectListFrame extends Component {
                         <div className={style.headerLastTimeTitle}>Last Modified Time</div>
                     </div>
                     <div className={style.line}></div>
-                    <div className={style.listMenuBar}>
+                    <div className={style.listMenuBar} >
 
                         <li className={style.listItem} onClick={event => this.openProjectContextMenu(event, "1")}>
                             <span className={style.itemName}><img src="https://picsum.photos/100/100" alt="icon" />project01</span>

@@ -12,11 +12,16 @@ import AshcanIcon from '../../../assets/icon/Ashcan.png'
 interface IState { }
 
 interface IProps {
+  projectId: string,
   x: string | number,
   y: string | number,
 }
 
 export default class ContextMenu extends Component<IProps, IState> {
+  open = () => {
+    console.log(this.props.projectId, " => open")
+  }
+
   render() {
     // console.log(this.props)
     return (
@@ -26,7 +31,7 @@ export default class ContextMenu extends Component<IProps, IState> {
           left: this.props.x
         }}
       >
-        <li>
+        <li onClick={this.open} >
           <img src={OpenIcon} alt="Open icon" />
           <span>Open</span>
         </li>
@@ -39,7 +44,7 @@ export default class ContextMenu extends Component<IProps, IState> {
           <span>Copy</span>
         </li>
         <li>
-          <img src={MarkIcon} alt=" Mark icon" /> 
+          <img src={MarkIcon} alt=" Mark icon" />
           <span>Mark</span>
         </li>
         <li>
