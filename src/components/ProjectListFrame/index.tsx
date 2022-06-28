@@ -34,6 +34,7 @@ export default class ProjectListFrame extends Component<IProps, IState> {
 
     openProjectContextMenu = (event: any, id: string) => {
         event.stopPropagation()
+        event.preventDefault();
         this.setState({
             showContextProjectId: id,
             mouseDownXY: { x: event.pageX, y: event.pageY }
@@ -61,14 +62,14 @@ export default class ProjectListFrame extends Component<IProps, IState> {
                     <div className={style.line}></div>
                     <div className={style.listMenuBar} >
 
-                        <li className={style.listItem} onClick={event => this.openProjectContextMenu(event, "1")}>
+                        <li className={style.listItem} onContextMenu={event => this.openProjectContextMenu(event, "1")} onClick={()=> console.log("open 1")}>
                             <span className={style.itemName}><img src="https://picsum.photos/100/100" alt="icon" />project01</span>
                             <span className={style.itemOwner}>Ming</span>
                             <span className={style.itemLastTime}>2020/06/03 01:05:30</span>
                         </li>
                         <div className={style.line}></div>
 
-                        <li className={style.listItem} onClick={event => this.openProjectContextMenu(event, "2")}>
+                        <li className={style.listItem} onContextMenu={event => this.openProjectContextMenu(event, "2")} onClick={()=> console.log("open 2")}>
                             <span className={style.itemName}><img src="https://picsum.photos/50/50" alt="icon" />project02</span>
                             <span className={style.itemOwner}>Ming</span>
                             <span className={style.itemLastTime}>2020/06/03 01:05:30</span>
