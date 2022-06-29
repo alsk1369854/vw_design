@@ -62,4 +62,8 @@ export default class File implements FileConstructor {
 
     getIsExpand = () => this.boolIsExpand
 
+    getData = () => this.strData
+
+    setDate = (strNewData: string) => this.strData = strNewData
+
 }

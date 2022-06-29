@@ -11,3 +11,10 @@ export class UsageError extends Error {
         this.name = "UsageError";
     }
 }
+
+export class FunctionCallerError extends Error{
+    constructor(message: string){
+        super(message);
+        this.name = "FunctionCallerError";
+    }
+}

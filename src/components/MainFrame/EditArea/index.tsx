@@ -10,8 +10,6 @@ const EditArea = memo((props: {intWidth: number}) => {
     const [strUseState, setUseState] = useState("VisualEditor");
     const [objFileEditFile, setEditFile] = useState();
 
-    console.log('editArea', objFileEditFile)
-    
     const cssClickedButton: CSSProperties = {
         backgroundColor: "#585858",
     }

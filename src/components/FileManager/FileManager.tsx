@@ -16,6 +16,8 @@ import {
 } from '@fortawesome/free-regular-svg-icons'
 
 
+import FunctionCaller from '../../tools/FunctionCaller'
+import { FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_BAR } from '../MainFrame/EditArea/OpenedFileBar'
 import File, { FileConstructor } from './File'
 import style from './index.module.scss'
 
@@ -44,16 +46,25 @@ class FileManager {
   addOpenFile = (objFile: FileConstructor) => {
     const fileId = objFile.strId
     const file = this.objMapFileMap.get(fileId)
-    if (file) this.arrFileOpenFiles.set(fileId, file)
+    if (file) {
+      this.arrFileOpenFiles.set(fileId, file)
+      FunctionCaller.call(FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_BAR)
+    }
   }
 
   deleteOpenFile = (objFile: FileConstructor) => {
     const fileId = objFile.strId
     const file = this.objMapFileMap.get(fileId)
-    if (file) this.arrFileOpenFiles.delete(fileId)
+    if (file) {
+      this.arrFileOpenFiles.delete(fileId)
+      FunctionCaller.call(FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_BAR)
+    }
   }
 
-  cleanOpenFiles = () => this.arrFileOpenFiles.clear()
+  cleanOpenFiles = () => {
+    this.arrFileOpenFiles.clear()
+    FunctionCaller.call(FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_BAR)
+  }
 
   openFileIsExists = (objFile: FileConstructor): boolean => 
     (this.arrFileOpenFiles.get(objFile.strId)) ? true : false

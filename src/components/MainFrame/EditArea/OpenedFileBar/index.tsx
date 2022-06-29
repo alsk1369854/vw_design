@@ -6,32 +6,49 @@ import React from 'react'
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import arrayMove, { arrayMoveImmutable } from 'array-move';
 
+import FunctionCaller from '../../../../tools/FunctionCaller';
 import FileManager from '../../../FileManager/FileManager';
 
-const SortableItem = SortableElement(({ file, _this }: any) => <div onClick={() => _this.poprs.setEditFile(FileManager.getFileById(file.strFileId))}>{file.strFileName}</div>);
+const SortableItem = SortableElement(({ file, _this }: any) => {
+    return <div style={{marginRight:'10px'}} onClick={() => {
+        // console.log(_this)
+        _this.props.setEditFile(FileManager.getFileById(file.getId()))
+    }}>
+    {file.strFileName}</div>
+});
 
 const SortableList = SortableContainer(({ items, _this }: any) => {
     return (
         <div style={{ display: 'flex' }}>
             {items.map((file: any, index: number) => (
-                // <div onClick={() => console.log(value)} style={{ display: 'flex', padding: '0px', margin: '0px' }}>
-                    <SortableItem key={`item-${file.strFileId}`} _this={_this} index={index} file={file} />
-                // </div>
+                <SortableItem key={`item-${file.getId()}`} _this={_this} index={index} file={file} />
             ))}
         </div>
     );
 });
 
-interface IState{}
+interface IState { }
 
-interface IPoprs{
-    setEditFile:Function
+interface IProps {
+    setEditFile: Function
 }
 
-export default class OpenedFileBar extends React.Component<IPoprs,IState> {
+export const FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_BAR = 'open file bar, update'
+
+export default class OpenedFileBar extends React.Component<IProps, IState> {
     state = {
         items: ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5', 'Item 6'],
     };
+
+    componentDidMount() {
+        FunctionCaller.set(FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_BAR, this.update)
+    }
+    componentWillUnmount() {
+        FunctionCaller.remove(FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_BAR)
+    }
+
+    update = () => this.setState({})
+
 
     onSortEnd = ({ oldIndex, newIndex }: any) => {
         this.setState(({ items }: any) => ({
@@ -44,7 +61,7 @@ export default class OpenedFileBar extends React.Component<IPoprs,IState> {
             <div className={style.div}>
                 {/* <SortableList _this={this} distance={1} lockAxis="x" axis='x' items={this.state.items} onSortEnd={this.onSortEnd} /> */}
                 <SortableList _this={this} distance={1} lockAxis="x" axis='x' items={FileManager.getOpenFiles()} onSortEnd={this.onSortEnd} />
-                
+
                 OF
             </div>
         )
