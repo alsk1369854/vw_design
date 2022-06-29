@@ -129,10 +129,18 @@ export default class FileManagerView extends Component {
     showContextMenu: false,
     mouseDownXY: { x: 0, y: 0 },
     showContextMenuItem: FileManager.getRootFile(),
+    renameItem: FileManager.getRootFile()
     // onClickItem: FileManager.getRootFile(),
   }
-  componentDidMount(){
-    document.addEventListener('click', () => this.setState({showContextMenu:false}));
+  componentDidMount() {
+    document.addEventListener('click', () => {
+      FileManager.cleanSelectedFiles()
+      this.setState({
+        showContextMenu: false,
+        showContextMenuItem: FileManager.getRootFile(),
+        renameItem: FileManager.getRootFile(),
+      })
+    });
     // this.setState({showContextMenuItem: FileManager.getRootFile()})
   }
 
@@ -150,15 +158,18 @@ export default class FileManagerView extends Component {
   }
 
   clickItem = (event: any, objFile: FileConstructor) => {
-    // event.stopPropagation()
+    event.stopPropagation()
     // event.preventDefault()
     // console.log(event)
     this.addToSelectedFiles(event, objFile)
 
-    this.setState({showContextMenuItem: objFile})
+    this.setState({ 
+      showContextMenuItem: objFile,
+      renameItem: FileManager.getRootFile(),
+    })
   }
   doubleClickItem = (event: any, objFile: FileConstructor) => {
-    if(objFile.numFileType != 1){
+    if (objFile.numFileType != 1) {
       FileManager.addOpenFile(objFile)
     }
     console.log(FileManager.getOpenFiles())
@@ -171,7 +182,7 @@ export default class FileManagerView extends Component {
     this.setState({
       showContextMenu: true,
       mouseDownXY: { x: event.pageX, y: event.pageY },
-      showContextMenuItem: objFile
+      showContextMenuItem: objFile,
     })
   }
 
@@ -181,32 +192,40 @@ export default class FileManagerView extends Component {
     return expandLine
   }
 
-  addToSelectedFiles = (event:any, objFile: FileConstructor) => {
-    if(event.ctrlKey || event.metaKey){
-      if(FileManager.selectedFileIsExists(objFile)){
+  addToSelectedFiles = (event: any, objFile: FileConstructor) => {
+    if (event.ctrlKey || event.metaKey) {
+      if (FileManager.selectedFileIsExists(objFile)) {
         FileManager.deleteSelectedFile(objFile)
-      }else{
+      } else {
         FileManager.addSelectedFile(objFile)
       }
-    }else{
+    } else {
       FileManager.cleanSelectedFiles()
       FileManager.addSelectedFile(objFile)
       this.setFileIsExpand(event, objFile)
     }
   }
 
-  setFileIsExpand = (event:any, objFile: FileConstructor) => {
+  setFileIsExpand = (event: any, objFile: FileConstructor) => {
     const file = FileManager.getFileById(objFile.strId)
     if (file && file.numFileType == 1) {
       file.boolIsExpand = !file.boolIsExpand
     }
   }
 
+  renameCommit = (event:any, objFile: FileConstructor) => {
+    if(event.key === "Enter"){
+      const file = FileManager.getFileById(objFile.strId)
+      if(file) file.setFileName(event.target.value)
+    }
+    //
+  }
+
   render() {
     // console.log(objMapFileIconMap.get("1"))
     return (
       <div className={style.body} onClick={() => this.setState({ showContextMenu: false })}>
-        {this.state.showContextMenu ? <ContextMenu projectId={"0"} x={this.state.mouseDownXY.x} y={this.state.mouseDownXY.y} /> : <></>}
+        {this.state.showContextMenu ? <ContextMenu parentThis={this} file={this.state.showContextMenuItem} x={this.state.mouseDownXY.x} y={this.state.mouseDownXY.y} /> : <></>}
         {this.getFileList().map(item => {
           return <div
             key={item.strId}
@@ -221,7 +240,7 @@ export default class FileManagerView extends Component {
                   { borderStyle: 'solid', borderColor: 'rgb(0,127,212)', marginLeft: '-1.5px', backgroundColor: 'rgb(9,71,113)' } :
                   { backgroundColor: 'rgb(9,71,113)' } :
                 (this.state.showContextMenuItem.strId === item.strId) ?
-                  { borderStyle: 'solid', borderColor: 'rgb(0,127,212)', marginLeft: '-1.5px'} :
+                  { borderStyle: 'solid', borderColor: 'rgb(0,127,212)', marginLeft: '-1.5px' } :
                   {}
             }
           >
@@ -234,7 +253,11 @@ export default class FileManagerView extends Component {
 
             {FileManager.getFileIcon(item)}
 
-            <span>{item.strFileName}</span>
+            {(this.state.renameItem.strId === item.strId) ?
+              <input autoFocus defaultValue={item.strFileName} onClick={(event)=> event.stopPropagation()} onKeyDown={(event => this.renameCommit(event, item))}/> :
+              <span>{item.strFileName}</span>
+            }
+
           </div>
         })}
       </div>

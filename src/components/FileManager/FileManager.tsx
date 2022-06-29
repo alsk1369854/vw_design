@@ -17,7 +17,11 @@ import {
 
 
 import FunctionCaller from '../../tools/FunctionCaller'
-import { FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_BAR } from '../MainFrame/EditArea/OpenedFileBar'
+import {
+  FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_BAR,
+  FUNCTION_CALLER_KEY_GET_OPEN_FILE_ITEMS,
+  FUNCTION_CALLER_KEY_SET_OPEN_FILE_ITEMS,
+} from '../MainFrame/EditArea/OpenedFileBar'
 import File, { FileConstructor } from './File'
 import style from './index.module.scss'
 
@@ -27,51 +31,49 @@ class FileManager {
   objFileRootFile!: File;
   objMapFileMap: Map<string, File> = new Map()
   static objMapFileIconMap: Map<number, JSX.Element> = new Map();
-  arrFileSelectedFiles: Map<string, File> = new Map();
-  arrFileOpenFiles: Map<string, File> = new Map();
+  objMapSelectedFiles: Map<string, File> = new Map();
+  arrFileOpenFiles: Array<File> = [];
 
   constructor() { }
 
-  getOpenFiles = () => {
-    let openFiles = []
-    let iterator = this.arrFileOpenFiles.values()
-    let result = iterator.next()
-    while(!result.done){
-      openFiles.push(result.value)
-      result = iterator.next()
-    }
-    return openFiles
+  getOpenFiles = () => this.arrFileOpenFiles
+
+  setOpenFiles = (arrFileOpenFiles: Array<File>) => {
+    this.arrFileOpenFiles = arrFileOpenFiles
   }
 
   addOpenFile = (objFile: FileConstructor) => {
-    const fileId = objFile.strId
-    const file = this.objMapFileMap.get(fileId)
-    if (file) {
-      this.arrFileOpenFiles.set(fileId, file)
-      FunctionCaller.call(FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_BAR)
+    if (objFile.numFileType == 1) return
+    const file = this.objMapFileMap.get(objFile.strId)
+    if (file && !this.openFileIsExists(file)) {
+      this.arrFileOpenFiles.push(file)
+      FunctionCaller.call(FUNCTION_CALLER_KEY_SET_OPEN_FILE_ITEMS, [this.arrFileOpenFiles])
     }
   }
 
   deleteOpenFile = (objFile: FileConstructor) => {
     const fileId = objFile.strId
-    const file = this.objMapFileMap.get(fileId)
-    if (file) {
-      this.arrFileOpenFiles.delete(fileId)
-      FunctionCaller.call(FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_BAR)
-    }
+    this.arrFileOpenFiles = this.arrFileOpenFiles.filter( (file:File) => file.getId() !== fileId)
+    FunctionCaller.call(FUNCTION_CALLER_KEY_SET_OPEN_FILE_ITEMS, [this.arrFileOpenFiles])
   }
 
   cleanOpenFiles = () => {
-    this.arrFileOpenFiles.clear()
-    FunctionCaller.call(FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_BAR)
+    this.arrFileOpenFiles = []
+    FunctionCaller.call(FUNCTION_CALLER_KEY_SET_OPEN_FILE_ITEMS, [this.arrFileOpenFiles])
   }
 
-  openFileIsExists = (objFile: FileConstructor): boolean => 
-    (this.arrFileOpenFiles.get(objFile.strId)) ? true : false
+  openFileIsExists = (objFile: FileConstructor): boolean => {
+    const file = this.objMapFileMap.get(objFile.strId)
+    if (file) {
+      const fileIndex = this.arrFileOpenFiles.indexOf(file)
+      return (fileIndex === -1) ? false : true
+    }
+    return false
+  }
 
   getSelectedFiles = () => {
     let selectedFiles = []
-    let iterator = this.arrFileSelectedFiles.values()
+    let iterator = this.objMapSelectedFiles.values()
     let result = iterator.next()
     while (!result.done) {
       selectedFiles.push(result.value)
@@ -83,19 +85,18 @@ class FileManager {
   addSelectedFile = (objFile: FileConstructor) => {
     const fileId = objFile.strId
     const file = this.objMapFileMap.get(fileId)
-    if (file) this.arrFileSelectedFiles.set(fileId, file)
+    if (file) this.objMapSelectedFiles.set(fileId, file)
   }
 
   deleteSelectedFile = (objFile: FileConstructor) => {
     const fileId = objFile.strId
     const file = this.objMapFileMap.get(fileId)
-    if (file) this.arrFileSelectedFiles.delete(fileId)
+    if (file) this.objMapSelectedFiles.delete(fileId)
   }
 
-  cleanSelectedFiles = () => this.arrFileSelectedFiles.clear()
+  cleanSelectedFiles = () => this.objMapSelectedFiles.clear()
 
-  selectedFileIsExists = (objFile: FileConstructor): boolean => 
-    (this.arrFileSelectedFiles.get(objFile.strId)) ? true : false
+  selectedFileIsExists = (objFile: FileConstructor): boolean => this.objMapSelectedFiles.has(objFile.strId)
 
   getFileMap = () => this.objMapFileMap
 
@@ -126,7 +127,7 @@ FileManager.objMapFileIconMap.set(-1, // unset
 FileManager.objMapFileIconMap.set(1.1, // directory close
   <FontAwesomeIcon icon={faFolder} className={style.fileIcon} style={{ color: "rgb(192,149,83)", width: '13px', height: '13px', marginTop: '1px', marginBottom: '1px' }} />)
 FileManager.objMapFileIconMap.set(1.2, // directory open
-  <FontAwesomeIcon icon={faFolderOpen} className={style.fileIcon} style={{ color: "rgb(192,149,83)" }} />)
+  <FontAwesomeIcon icon={faFolderOpen} className={style.fileIcon} style={{ color: "rgb(220,182,122)" }} />)
 FileManager.objMapFileIconMap.set(2, // .txt
   <FontAwesomeIcon icon={faFileLines} className={style.fileIcon} style={{ color: "rgb(118,140,172)" }} />)
 FileManager.objMapFileIconMap.set(3, // .html

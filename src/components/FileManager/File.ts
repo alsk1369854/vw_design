@@ -68,4 +68,8 @@ export default class File implements FileConstructor {
         this.strData = strNewData
     }
 
+    setFileName = (strNewFileName: string) => {
+        this.strFileName = strNewFileName
+    }
+
 }

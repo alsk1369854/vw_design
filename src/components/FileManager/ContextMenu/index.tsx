@@ -6,30 +6,42 @@ import {
   faFileArrowDown, // download
   faCopy, // copy
   faSignature, // rename
-  faTrashCan, // delete
+  faTrashCan,
+  faArrowRightToFile, // delete
 } from '@fortawesome/free-solid-svg-icons'
 
 import style from './index.module.scss'
-import OpenIcon from '../../../assets/icon/Open.png'
-import DownloadIcon from '../../../assets/icon/Download.png'
-import CopyIcon from '../../../assets/icon/Copy.png'
-import RenameIcon from '../../../assets/icon/Rename.png'
-import MarkIcon from '../../../assets/icon/Star.png'
-import DetailIcon from '../../../assets/icon/Detail.png'
-import AshcanIcon from '../../../assets/icon/Ashcan.png'
-import { faStaylinked } from '@fortawesome/free-brands-svg-icons'
+import { FileConstructor } from '../File'
+import FileManager from '../FileManager'
 
 interface IState { }
 
 interface IProps {
-  projectId: string,
+  parentThis: any,
+  file: FileConstructor,
   x: string | number,
   y: string | number,
 }
 
 export default class ContextMenu extends Component<IProps, IState> {
   open = () => {
-    console.log(this.props.projectId, " => open")
+    // console.log(this.props.file, " => open")
+    const objFileConstructor = this.props.file
+    if(FileManager.selectedFileIsExists(objFileConstructor)){
+      const arrFile = FileManager.getSelectedFiles()
+      arrFile.forEach( file => FileManager.addOpenFile(file))
+    }else{
+      FileManager.addOpenFile(objFileConstructor)
+    }
+  }
+
+  rename = (event:any, objFile:FileConstructor) => {
+    event.stopPropagation()
+    // this.props.setRenameItem(objFile)
+    this.props.parentThis.setState({
+      renameItem: objFile,
+      showContextMenu: false,
+    })
   }
 
   render() {
@@ -45,7 +57,7 @@ export default class ContextMenu extends Component<IProps, IState> {
           <FontAwesomeIcon className={style.icon} icon={faArrowUpRightFromSquare} />
           <span>Open</span>
         </li>
-        <li>
+        <li onClick={event =>this.rename(event, this.props.file)}>
           <FontAwesomeIcon className={style.icon} icon={faSignature} />
           <span>Rename</span>
         </li>

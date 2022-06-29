@@ -10,11 +10,14 @@ import FunctionCaller from '../../../../tools/FunctionCaller';
 import FileManager from '../../../FileManager/FileManager';
 
 const SortableItem = SortableElement(({ file, _this }: any) => {
-    return <div style={{marginRight:'10px'}} onClick={() => {
-        // console.log(_this)
-        _this.props.setEditFile(FileManager.getFileById(file.getId()))
-    }}>
-    {file.strFileName}</div>
+    return (
+        <div style={{ marginRight: '10px' }}
+            onClick={() => _this.props.setEditFile(FileManager.getFileById(file.getId()))}
+        >
+            {file.strFileName}
+            <button onClick={() => FileManager.deleteOpenFile(file)}>delete</button>
+        </div>
+    )
 });
 
 const SortableList = SortableContainer(({ items, _this }: any) => {
@@ -34,35 +37,43 @@ interface IProps {
 }
 
 export const FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_BAR = 'open file bar, update'
+export const FUNCTION_CALLER_KEY_GET_OPEN_FILE_ITEMS = 'open file bar, getOpenFileItems'
+export const FUNCTION_CALLER_KEY_SET_OPEN_FILE_ITEMS = 'open file bar, setOpenFileItems'
 
 export default class OpenedFileBar extends React.Component<IProps, IState> {
     state = {
-        items: ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5', 'Item 6'],
+        openFileItems: [],
     };
 
     componentDidMount() {
-        FunctionCaller.set(FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_BAR, this.update)
+        // FunctionCaller.set(FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_BAR, this.update)
+        // FunctionCaller.set(FUNCTION_CALLER_KEY_GET_OPEN_FILE_ITEMS, this.getOpenFileItems)
+        FunctionCaller.set(FUNCTION_CALLER_KEY_SET_OPEN_FILE_ITEMS, this.setOpenFileItems)
+        this.setState({ openFileItems: FileManager.getOpenFiles() })
     }
     componentWillUnmount() {
-        FunctionCaller.remove(FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_BAR)
+        // FunctionCaller.remove(FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_BAR)
+        // FunctionCaller.remove(FUNCTION_CALLER_KEY_GET_OPEN_FILE_ITEMS)
+        FunctionCaller.remove(FUNCTION_CALLER_KEY_SET_OPEN_FILE_ITEMS)
+        FileManager.setOpenFiles(this.state.openFileItems)
     }
 
     update = () => this.setState({})
 
+    getOpenFileItems = () => this.state.openFileItems
+    setOpenFileItems = (arrFile: Array<File>) => this.setState({ openFileItems: arrFile })
 
     onSortEnd = ({ oldIndex, newIndex }: any) => {
-        this.setState(({ items }: any) => ({
-            items: arrayMoveImmutable(items, oldIndex, newIndex),
-        }));
+        const newOpenFileItems = arrayMoveImmutable(this.state.openFileItems, oldIndex, newIndex)
+        FileManager.setOpenFiles(newOpenFileItems)
+        this.setState({ openFileItems: newOpenFileItems })
     };
 
     render() {
         return (
             <div className={style.div}>
                 {/* <SortableList _this={this} distance={1} lockAxis="x" axis='x' items={this.state.items} onSortEnd={this.onSortEnd} /> */}
-                <SortableList _this={this} distance={1} lockAxis="x" axis='x' items={FileManager.getOpenFiles()} onSortEnd={this.onSortEnd} />
-
-                OF
+                <SortableList _this={this} distance={1} lockAxis="x" axis='x' items={this.state.openFileItems} onSortEnd={this.onSortEnd} />
             </div>
         )
     }
