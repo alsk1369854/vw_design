@@ -8,8 +8,10 @@ import CodeEditor from './CodeEditor';
 
 const EditArea = memo((props: {intWidth: number}) => {
     const [strUseState, setUseState] = useState("VisualEditor");
+    const [objFileEditFile, setEditFile] = useState();
 
-
+    console.log('editArea', objFileEditFile)
+    
     const cssClickedButton: CSSProperties = {
         backgroundColor: "#585858",
     }
@@ -22,7 +24,7 @@ const EditArea = memo((props: {intWidth: number}) => {
             className={style.div}
         >
             <nav>
-                <OpenedFileBar />
+                <OpenedFileBar setEditFile={setEditFile}/>
                 <button
                 >
                     <img src={require("../../../assets/icon/Preview.png")} />

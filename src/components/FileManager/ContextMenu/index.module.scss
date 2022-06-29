@@ -1,15 +1,15 @@
 .projectContextMenu{
     font-size: 14px;
-    background-color: rgb(48,48,49);
+    background-color: rgb(110,110,110);
     border-radius: 2px;
     padding: 10px 0px;
-    width: 200px;
+    width: 130px;
     height: auto;
     margin: 0;
   /* use absolute positioning  */
     position: absolute;
     list-style: none;
-    box-shadow: 0 0 5px 0 rgb(48,48,49);
+    box-shadow: 0 0 5px 0 rgb(110,110,110);
     opacity: 1;
     transition: opacity 0.5s linear;
     & li{
@@ -17,12 +17,12 @@
       display: flex;
       align-items: center;
       // margin: 10px 20px;
-      padding: 7px 20px;
+      padding: 3px 20px;
       // height: 30px;
 
       & .icon{
-        height: 20px;
-        width: 20px;
+        height: 14px;
+        width: 14px;
         margin-right: 10px;
       }
 
@@ -36,14 +36,14 @@
       }
     }
     & li:hover{
-      background-color: rgb(225, 226, 226);
+      background-color: rgb(9,71,113);
     }
 }
 
 .line {
   width: auto;
   height: 2px;
-  margin: 0px 10px;
+  margin: 2px 10px;
   background-color: rgb(210, 210, 211);
   border-radius: 10px
 }

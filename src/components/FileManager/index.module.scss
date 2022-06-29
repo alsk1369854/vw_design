@@ -16,6 +16,7 @@
     -webkit-user-select: none; // 谷歌
     -ms-user-sele:none; // IE
     user-select: none;
+    box-sizing: border-box;
 
     cursor:pointer;
     padding: 0px 0px;
@@ -53,4 +54,5 @@
 
 .fileItem:hover{
     background-color: rgb(55,55,61);
+    // background-color: rgb(9,71,113);
 }

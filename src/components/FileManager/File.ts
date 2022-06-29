@@ -9,7 +9,7 @@ export interface FileConstructor {
     boolIsExpand: boolean,
     arrFileSubFiles: Array<FileConstructor>,
     objFileParent?: FileConstructor,
-
+    deep?: number
 }
 
 
@@ -19,7 +19,7 @@ export default class File implements FileConstructor {
     numFileType: number = 0;
     strData: string = "";
     boolIsExpand: boolean = false;
-    arrFileSubFiles: Array<FileConstructor> = [];
+    arrFileSubFiles: Array<File> = [];
     objFileParent!: FileConstructor;
 
     constructor(fileData?: FileConstructor) {
@@ -55,5 +55,11 @@ export default class File implements FileConstructor {
             console.log("fileData is undefined")
         }
     }
+
+    getId = () => this.strId
+
+    getFileType = () => this.numFileType
+
+    getIsExpand = () => this.boolIsExpand
 
 }
