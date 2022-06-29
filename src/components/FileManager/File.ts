@@ -64,6 +64,8 @@ export default class File implements FileConstructor {
 
     getData = () => this.strData
 
-    setDate = (strNewData: string) => this.strData = strNewData
+    setData = (strNewData: string) => {
+        this.strData = strNewData
+    }
 
 }
