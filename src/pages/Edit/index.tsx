@@ -5,8 +5,8 @@ import style from './index.module.scss';
 import logo from '../../assets/logo.png';
 
 import { Test } from '../../tools/Test';
-import IconBar from '../../components/IconBar';
 import ToolBar from '../../components/ToolBar';
+import MainFrame from '../../components/MainFrame';
 
 
 
@@ -47,9 +47,7 @@ const EditPage = memo(() => {
         >
             <Helmet>
                 <style>
-                    {
-                        cssHelmet
-                    }
+                    {cssHelmet}
                 </style>
             </Helmet>
 
@@ -63,7 +61,7 @@ const EditPage = memo(() => {
                 </Link>
                 <ToolBar />
             </header>
-            <IconBar />
+            <MainFrame />
         </div>
     )
 });

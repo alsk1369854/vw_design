@@ -68,22 +68,26 @@ export const ToolBar = memo((props: {arrToolBarButtons: Array<ToolBarButton>}) =
 
 
 
-
 export class Node extends abstractTestable {
+    private strName: string;
     private strHotKey: string;
     private funcClick: Function;
 
     constructor(strName: string, strHotKey: string | null, funcClick: Function){
-        super(strName, "ToolBarNode");
+        super();
+        this.strName = strName;
         this.strHotKey = strHotKey ?? "";
         this.funcClick = funcClick;
     }
 
-    callClickFunction(): void {
+    public callClickFunction(): void {
         this.funcClick();
     }
 
-    getHotKey(): string {
+    public getName(): string {
+        return this.strName;
+    }
+    public getHotKey(): string {
         return this.strHotKey;
     }
 }
@@ -100,7 +104,7 @@ export class Group {
         this.arrNodes = arrNodes;
     }
 
-    getNodes(): Array<Node> {
+    public getNodes(): Array<Node> {
         return this.arrNodes;
     }
 }
@@ -108,17 +112,15 @@ export class Group {
 export class Menu extends abstractTestable {
     private arrGroups: Array<Group>;
 
-    constructor(arrGroups: Array<Group>)
-    constructor(arrGroups: Array<Group>, strName: string)
-    constructor(arrGroups: Array<Group>, strName: string = ""){
-        super(strName, "ToolBarMenu");
+    constructor(arrGroups: Array<Group>){
+        super();
         this.arrGroups = arrGroups;
     }
 
     
-    getNodes(): Array<Node>
-    getNodes(isDivided: boolean): Array<Node>
-    getNodes(isDivided: boolean = true): Array<Node> {
+    public getNodes(): Array<Node>
+    public getNodes(isDivided: boolean): Array<Node>
+    public getNodes(isDivided: boolean = true): Array<Node> {
         let arrNodes: Array<Node> = [];
 
         this.arrGroups.forEach((group, index) => {
@@ -137,15 +139,19 @@ export class Menu extends abstractTestable {
 }
 
 export class ToolBarButton extends abstractTestable {
+    private strName: string;
     private menu: Menu;
 
     constructor(strName: string, menu: Menu){
-        super(strName, "ToolBarButton");
+        super();
+        this.strName = strName;
         this.menu = menu;
-        this.menu.setName(this.strName);
     }
 
-    getMenu(): Menu {
+    public getName(): string {
+        return this.strName;
+    }
+    public getMenu(): Menu {
         return this.menu;
     }
 }

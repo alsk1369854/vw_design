@@ -1,3 +1,7 @@
+import { nanoid } from 'nanoid';
+import { UsageError } from '../Error';
+
+
 export class Test {
     public static getMockFunctions(intLength: number): Array<Function> {
         let arrFunction = [];
@@ -8,44 +12,26 @@ export class Test {
     }
 
     public static setTestId(strTestId: string): string | undefined {
-        return Test.isTestState() ? Test.clearSpace(strTestId) : undefined;
+        return Test.isTestState() ? strTestId : undefined;
     }
 
-    static isTestState(): boolean {
+    public static isTestState(): boolean {
         return process.env.NODE_ENV === "test";
-    }
-
-    static clearSpace(string: string): string {
-        return string.replace(/\s+/g, "")
     }
 }
 
 
 export abstract class abstractTestable {
-    protected strName: string;
-    protected strType: string;
+    private strUniqueTestId = nanoid();
 
 
-    constructor(strName: string, strType: string){
-        this.strName = strName;
-        this.strType = strType;
-    }
-
-    getName(): string {
-        return this.strName;
-    }
-    setName(strNewName: string): void {
-        this.strName = strNewName;
-    }
-
-    getNameFilterSpaces(): string {
-        return Test.clearSpace(this.strName);
-    }
+    constructor(){}
 
     getTestId(): string {
-        return Test.clearSpace(this.strType + "_" + this.strName);
+        if (!Test.isTestState()) throw new UsageError("abstractTestable- can't get testId if state isn't test")
+        return this.strUniqueTestId;
     }
     setTestId(): string | undefined {
-        return Test.setTestId(this.strType + "_" + this.strName);
+        return Test.setTestId(this.strUniqueTestId);
     }
 }
