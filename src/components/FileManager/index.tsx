@@ -247,14 +247,14 @@ export default class FileManagerView extends Component {
             {this.getExpandLine(item.strId, item.deep!)}
 
             <span className={style.angleIcon}>
-              {(item.numFileType == 1) ? (item.boolIsExpand) ? <FontAwesomeIcon icon={faAngleDown} /> : <FontAwesomeIcon icon={faAngleRight} /> :
+              {(item.numFileType === 1) ? (item.boolIsExpand) ? <FontAwesomeIcon icon={faAngleDown} /> : <FontAwesomeIcon icon={faAngleRight} /> :
                 <FontAwesomeIcon icon={faSquareFull} className={style.isFileAngleIconBackground} />}
             </span>
 
             {FileManager.getFileIcon(item)}
 
             {(this.state.renameItem.strId === item.strId) ?
-              <input autoFocus defaultValue={item.strFileName} onClick={(event)=> event.stopPropagation()} onKeyDown={(event => this.renameCommit(event, item))}/> :
+              <input style={{width:`calc(100% - ${item.deep!*10+40+5}px)`}} className={style.renameInput} autoFocus defaultValue={item.strFileName} onClick={(event)=> event.stopPropagation()} onKeyDown={(event => this.renameCommit(event, item))}/> :
               <span>{item.strFileName}</span>
             }
 

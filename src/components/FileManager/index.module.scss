@@ -49,6 +49,15 @@
         width: 15px;
         height: 15px;
     }
+
+    & .renameInput {
+        height: "pixels";
+        color: rgb(255,255,255);
+        height: 100%;
+        background-color:transparent;
+        outline: 0 none;
+        border:none
+    }
 }
 
 
