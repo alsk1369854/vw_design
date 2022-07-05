@@ -158,6 +158,9 @@ export default class FileManagerView extends Component {
   }
 
   clickItem = (event: any, objFile: FileConstructor) => {
+    const file = FileManager.getFileById(objFile.strId)
+    console.log(file)
+    console.log(file?.getPath())
     event.stopPropagation()
     // event.preventDefault()
     // console.log(event)
@@ -169,10 +172,10 @@ export default class FileManagerView extends Component {
     })
   }
   doubleClickItem = (event: any, objFile: FileConstructor) => {
-    if (objFile.numFileType != 1) {
+    if (objFile.numFileType !== 1) {
       FileManager.addOpenFile(objFile)
     }
-    console.log(FileManager.getOpenFiles())
+    // console.log(FileManager.getOpenFiles())
   }
 
   showItemContextMenu = (event: any, objFile: FileConstructor) => {
@@ -208,7 +211,7 @@ export default class FileManagerView extends Component {
 
   setFileIsExpand = (event: any, objFile: FileConstructor) => {
     const file = FileManager.getFileById(objFile.strId)
-    if (file && file.numFileType == 1) {
+    if (file && file.numFileType === 1) {
       file.boolIsExpand = !file.boolIsExpand
     }
   }
@@ -247,7 +250,7 @@ export default class FileManagerView extends Component {
             {this.getExpandLine(item.strId, item.deep!)}
 
             <span className={style.angleIcon}>
-              {(item.numFileType == 1) ? (item.boolIsExpand) ? <FontAwesomeIcon icon={faAngleDown} /> : <FontAwesomeIcon icon={faAngleRight} /> :
+              {(item.numFileType === 1) ? (item.boolIsExpand) ? <FontAwesomeIcon icon={faAngleDown} /> : <FontAwesomeIcon icon={faAngleRight} /> :
                 <FontAwesomeIcon icon={faSquareFull} className={style.isFileAngleIconBackground} />}
             </span>
 
