@@ -257,7 +257,7 @@ export default class FileManagerView extends Component {
             {FileManager.getFileIcon(item)}
 
             {(this.state.renameItem.strId === item.strId) ?
-              <input autoFocus defaultValue={item.strFileName} onClick={(event)=> event.stopPropagation()} onKeyDown={(event => this.renameCommit(event, item))}/> :
+              <input style={{width:`calc(100% - ${item.deep!*10+40+5}px)`}} className={style.renameInput} autoFocus defaultValue={item.strFileName} onClick={(event)=> event.stopPropagation()} onKeyDown={(event => this.renameCommit(event, item))}/> :
               <span>{item.strFileName}</span>
             }
 
