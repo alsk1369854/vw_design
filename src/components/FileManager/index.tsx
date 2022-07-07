@@ -116,29 +116,26 @@ const fileListRoot = {
 
 FileManager.setRootFile(fileListRoot)
 
-const test = [
-  <span className={style.expandLine}>&nbsp;</span>,
-  <span className={style.expandLine}>&nbsp;</span>
-]
-let test2: JSX.Element[] = []
-for (let i = 0; i < 2; i++) {
-  test2.push(<span className={style.expandLine}>&nbsp;</span>)
-}
+// FileManager.download('test.txt', 'test')
 export default class FileManagerView extends Component {
   state = {
     showContextMenu: false,
     mouseDownXY: { x: 0, y: 0 },
     showContextMenuItem: FileManager.getRootFile(),
-    renameItem: FileManager.getRootFile()
+    renameState: {
+      item: FileManager.getRootFile(),
+      oldName: '',
+    }
     // onClickItem: FileManager.getRootFile(),
   }
+
   componentDidMount() {
     document.addEventListener('click', () => {
       FileManager.cleanSelectedFiles()
+      this.renameRollBack()
       this.setState({
         showContextMenu: false,
         showContextMenuItem: FileManager.getRootFile(),
-        renameItem: FileManager.getRootFile(),
       })
     });
     // this.setState({showContextMenuItem: FileManager.getRootFile()})
@@ -158,17 +155,17 @@ export default class FileManagerView extends Component {
   }
 
   clickItem = (event: any, objFile: FileConstructor) => {
-    const file = FileManager.getFileById(objFile.strId)
-    console.log(file)
-    console.log(file?.getPath())
+    // const file = FileManager.getFileById(objFile.strId)
     event.stopPropagation()
     // event.preventDefault()
-    // console.log(event)
     this.addToSelectedFiles(event, objFile)
-
-    this.setState({ 
+    // this.renameRollBack()
+    this.setState({
       showContextMenuItem: objFile,
-      renameItem: FileManager.getRootFile(),
+      renameState: {
+        item: FileManager.getRootFile(),
+        oldName: '',
+      },
     })
   }
   doubleClickItem = (event: any, objFile: FileConstructor) => {
@@ -181,7 +178,6 @@ export default class FileManagerView extends Component {
   showItemContextMenu = (event: any, objFile: FileConstructor) => {
     event.stopPropagation()
     event.preventDefault()
-    console.log(event)
     this.setState({
       showContextMenu: true,
       mouseDownXY: { x: event.pageX, y: event.pageY },
@@ -216,18 +212,53 @@ export default class FileManagerView extends Component {
     }
   }
 
-  renameCommit = (event:any, objFile: FileConstructor) => {
-    if(event.key === "Enter"){
-      const file = FileManager.getFileById(objFile.strId)
-      if(file) file.setFileName(event.target.value)
+  renameEvent = (event: any, objFile: FileConstructor) => {
+    const file = FileManager.getFileById(objFile.strId)
+    if (file) file.setFileName(event.target.value)
+    if (event.key === "Enter") {
+      console.log('enter')
+      this.setState({
+        renameState: {
+          item: FileManager.getRootFile(),
+          oldName: '',
+        }
+      })
+    } else {
+      this.setState({})
     }
-    //
   }
+
+  renameRollBack = () => {
+    const file = FileManager.getFileById(this.state.renameState.item.strId)
+    if (file) file.setFileName(this.state.renameState.oldName)
+    this.setState({
+      renameState: {
+        item: FileManager.getRootFile(),
+        oldName: '',
+      }
+    })
+  }
+
+  renameOnFocus = (event: any) => {
+    event.target.setSelectionRange(0, this.state.renameState.oldName.indexOf('.'))
+  }
+
+
+
+
 
   render() {
     // console.log(objMapFileIconMap.get("1"))
     return (
-      <div className={style.body} onClick={() => this.setState({ showContextMenu: false })}>
+      <div 
+        className={style.body} 
+        style={
+          // 是否為 rename 狀態
+          (this.state.renameState.item.strId.toLocaleUpperCase() !== 'ROOT') ?
+            {backgroundColor: 'rgb(55, 55, 55)'}:{}
+        }
+        onClick={() => this.setState({ showContextMenu: false })}
+      >
         {this.state.showContextMenu ? <ContextMenu parentThis={this} file={this.state.showContextMenuItem} x={this.state.mouseDownXY.x} y={this.state.mouseDownXY.y} /> : <></>}
         {this.getFileList().map(item => {
           return <div
@@ -237,14 +268,20 @@ export default class FileManagerView extends Component {
             onDoubleClick={(event) => this.doubleClickItem(event, item)}
             onContextMenu={(event) => this.showItemContextMenu(event, item)}
             style={
-              // (this.state.onClickItem.strId === item.strId) ?
-              (FileManager.selectedFileIsExists(item)) ?
-                (this.state.showContextMenuItem.strId === item.strId) ?
-                  { borderStyle: 'solid', borderColor: 'rgb(0,127,212)', marginLeft: '-1.5px', backgroundColor: 'rgb(9,71,113)' } :
-                  { backgroundColor: 'rgb(9,71,113)' } :
-                (this.state.showContextMenuItem.strId === item.strId) ?
-                  { borderStyle: 'solid', borderColor: 'rgb(0,127,212)', marginLeft: '-1.5px' } :
-                  {}
+              // 是否為 rename 狀態
+              (this.state.renameState.item.strId.toLocaleUpperCase() !== 'ROOT' && item.strId !== this.state.renameState.item.getId()) ?
+                // 為 rename 狀態
+                { backgroundColor: 'rgb(55, 55, 55)', color:'rgb(128, 128, 128)' } :
+                // 不為 rename 狀態，檢查是否被選中
+                (FileManager.selectedFileIsExists(item)) ?
+                  // 在已選清單中
+                  (this.state.showContextMenuItem.strId === item.strId) ?
+                    { borderStyle: 'solid', borderColor: 'rgb(0,127,212)', marginLeft: '-1.5px', backgroundColor: 'rgb(9,71,113)' } :
+                    { backgroundColor: 'rgb(9,71,113)' } :
+                  // 未在已選清單中
+                  (this.state.showContextMenuItem.strId === item.strId) ?
+                    { borderStyle: 'solid', borderColor: 'rgb(0,127,212)', marginLeft: '-1.5px' } :
+                    {}
             }
           >
             {this.getExpandLine(item.strId, item.deep!)}
@@ -256,8 +293,17 @@ export default class FileManagerView extends Component {
 
             {FileManager.getFileIcon(item)}
 
-            {(this.state.renameItem.strId === item.strId) ?
-              <input style={{width:`calc(100% - ${item.deep!*10+40+5}px)`}} className={style.renameInput} autoFocus defaultValue={item.strFileName} onClick={(event)=> event.stopPropagation()} onKeyDown={(event => this.renameCommit(event, item))}/> :
+            {(this.state.renameState.item.strId === item.strId) ?
+              <input
+              className={style.renameInput}
+              autoFocus
+              style={{ width: `calc(100% - ${item.deep! * 10 + 40 + 5}px)` }}
+              defaultValue={item.strFileName}
+              onFocus={this.renameOnFocus}
+              onChange={(event => this.renameEvent(event, item))} 
+              onClick={(event) => event.stopPropagation()}
+              onKeyDown={(event => this.renameEvent(event, item))}
+              /> :
               <span>{item.strFileName}</span>
             }
 

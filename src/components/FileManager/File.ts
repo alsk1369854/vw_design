@@ -21,7 +21,7 @@ export default class File implements FileConstructor {
     boolIsExpand: boolean = false;
     arrFileSubFiles: Array<File> = [];
     objFileParent!: File|undefined;
-    arrStrFileExtension: Array<String> = [];
+    arrStrFileExtension: Array<string> = [];
 
     constructor(fileData?: FileConstructor) {
         if (fileData != undefined) {
@@ -49,6 +49,8 @@ export default class File implements FileConstructor {
         let arrStrFileExtensionData = this.strFileName.split('.')
         if (arrStrFileExtensionData.length > 1) {
             this.arrStrFileExtension = arrStrFileExtensionData.slice(1)
+        }else{
+            this.arrStrFileExtension = []
         }
     }
 
@@ -72,6 +74,7 @@ export default class File implements FileConstructor {
     getId = () => this.strId
 
     getFileType = () => this.numFileType
+    setFileType = (numNewFileType: number) => this.numFileType = numNewFileType
 
     getIsExpand = () => this.boolIsExpand
 
@@ -85,9 +88,20 @@ export default class File implements FileConstructor {
 
     setFileName = (strNewFileName: string) => {
         this.strFileName = strNewFileName
+        if(this.getFileType() !== 1){
+            this.buildFileExtension()
+            const arrStrFileExtensionData =  this.getFileExtension()
+            if(arrStrFileExtensionData.length === 0){
+                this.setFileType(FileManager.getFileType('unknown'))
+            }else{
+                this.setFileType(FileManager.getFileType(arrStrFileExtensionData[0]))
+            }
+        }
     }
 
-    listFiles = () => this.arrFileSubFiles
+    // listFiles = () => this.arrFileSubFiles
+    getSubFiles = () => this.arrFileSubFiles
+    setSubFiles = (arrFileNewSubFiles:Array<File>) => this.arrFileSubFiles = arrFileNewSubFiles
 
     getParent = () => this.objFileParent
     setParent = (objFileNewParent: File) => {
@@ -104,6 +118,18 @@ export default class File implements FileConstructor {
             fileParent = fileParent?.objFileParent!
         }
         return filePath
+    }
+
+    delete = () => {
+        const fileParent = this.getParent()
+        if(fileParent){
+            const fileParentSubFiles = fileParent.getSubFiles()
+            const newSubFiles = fileParentSubFiles.filter(file => file.getId() !== this.getId())
+            fileParent.setSubFiles(newSubFiles)
+        }
+        FileManager.deleteSelectedFile(this)
+        FileManager.deleteOpenFile(this)
+        FileManager.getFileMap().delete(this.getId())
     }
 
 }

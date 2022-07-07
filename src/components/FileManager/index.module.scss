@@ -2,7 +2,7 @@
     // padding-left: 20px;
     height: 100vh;
     width: 100%;
-    // background-color:aquamarine;
+    background-color:rgb(80, 80, 80);
 }
 
 // .isFileAngleIconBackground{
@@ -11,6 +11,11 @@
 
 
 .fileItem {
+    // 名稱過長顯示省略符
+    overflow: hidden; // 超出文本隱藏
+    text-overflow: ellipsis; // 溢出用省略符顯示
+    white-space: nowrap; // 溢出不換行
+
     // 防止文字被選中
     -moz-user-select: none; // 火狐
     -webkit-user-select: none; // 谷歌
@@ -20,6 +25,7 @@
 
     cursor: pointer;
     padding: 0px 0px;
+    background-color: rgb(80, 80, 80);
 
     & .angleIcon {
         // margin-right: 3px;
@@ -50,18 +56,28 @@
         height: 15px;
     }
 
+    // & .fileName {}
+
     & .renameInput {
-        height: "pixels";
-        color: rgb(255,255,255);
+        margin: 0;
+        padding: 0;
+        font-size:16.5px;
+        // height: "pixels";
+        color: rgb(255, 255, 255);
         height: 100%;
-        background-color:transparent;
+        background-color: transparent;
+        // background-color: rgb(55, 55, 61);
         outline: 0 none;
-        border:none
+        border: none
+    }
+
+    & .renameInput:focus {
+        // color: rgb(80, 80, 80);
     }
 }
 
 
 .fileItem:hover {
-    background-color: rgb(55, 55, 61);
+    background-color: rgb(55, 55, 55);
     // background-color: rgb(9,71,113);
 }

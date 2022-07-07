@@ -39,9 +39,19 @@ export default class ContextMenu extends Component<IProps, IState> {
     event.stopPropagation()
     // this.props.setRenameItem(objFile)
     this.props.parentThis.setState({
-      renameItem: objFile,
+      renameState: {
+        item: objFile,
+        oldName: objFile.strFileName,
+      },
       showContextMenu: false,
     })
+  }
+
+  download = () => FileManager.downloadSeletedFiles()
+
+  delete = () => {
+    const file = FileManager.getFileById(this.props.file.strId)
+    if(file) file.delete()
   }
 
   render() {
@@ -65,13 +75,13 @@ export default class ContextMenu extends Component<IProps, IState> {
           <FontAwesomeIcon className={style.icon} icon={faCopy} />
           <span>Copy</span>
         </li>
-        <li>
+        <li onClick={this.download}>
           <FontAwesomeIcon className={style.icon} icon={faFileArrowDown} />
           <span>Download</span>
         </li>
         <div className={style.line}></div>
         {/* <hr className="divider" /> */}
-        <li>
+        <li onClick={this.delete}>
           <FontAwesomeIcon className={style.icon} icon={faTrashCan} />
           <span>Delete</span>
         </li>

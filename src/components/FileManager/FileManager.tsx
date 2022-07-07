@@ -31,6 +31,7 @@ class FileManager {
   objFileRootFile!: File;
   objMapFileMap: Map<string, File> = new Map()
   static objMapFileIconMap: Map<number, JSX.Element> = new Map();
+  static objMapFileTypeMap: Map<string, number> = new Map();
   objMapSelectedFiles: Map<string, File> = new Map();
   arrFileOpenFiles: Array<File> = [];
 
@@ -109,6 +110,11 @@ class FileManager {
     return FileManager.objMapFileIconMap.get(objFileFile.numFileType)
   }
 
+  getFileType = (strFileExtension: string) => {
+    const numFileType = FileManager.objMapFileTypeMap.get(strFileExtension)
+    return (numFileType)? numFileType : -1
+  }
+
   getFileById = (strId: string) => this.objMapFileMap.get(strId)
 
   getRootFile = () => this.objFileRootFile
@@ -119,10 +125,49 @@ class FileManager {
     // console.log(this.objMapFileMap)
   }
 
+  downloadSeletedFiles = () => {
+    this.getSelectedFiles().forEach(file => this.downloadFile(file))
+  }
+
+  downloadFile = (objFile: File) => {
+    switch(objFile.getFileType()){
+      case 0: // vs_project
+         break
+      case 1: // directory
+        break
+      case 6: // image
+        FileManager.downloadImageFile(objFile.getFileName(), objFile.getData())
+        break
+      default: // txt
+        FileManager.downloadTextFile(objFile.getFileName(), objFile.getData())
+        break
+    }
+  }
+  
+
+  static downloadTextFile = (strFilename:any, strText:any) => {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(strText));
+    element.setAttribute('download', strFilename);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  }
+  static downloadImageFile = (strFilename:any, strBas64:any) => {
+    var element = document.createElement('a');
+    // element.setAttribute('href', 'data:image/png;base64,' + strBas64);
+    element.setAttribute('href', strBas64);
+    element.setAttribute('download', strFilename);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  }
 
 }
-// export const objMapFileIconMap: Map<number, JSX.Element> = new Map();
-FileManager.objMapFileIconMap.set(-1, // unset
+// START setting FileIconMap ============================================
+FileManager.objMapFileIconMap.set(-1, // unknown
   <FontAwesomeIcon icon={faFile} className={style.fileIcon} />)
 FileManager.objMapFileIconMap.set(1.1, // directory close
   <FontAwesomeIcon icon={faFolder} className={style.fileIcon} style={{ color: "rgb(192,149,83)", width: '13px', height: '13px', marginTop: '1px', marginBottom: '1px' }} />)
@@ -138,6 +183,22 @@ FileManager.objMapFileIconMap.set(5, // .js
   <FontAwesomeIcon icon={faJsSquare} className={style.fileIcon} style={{ color: "rgb(245,222,25)" }} />)
 FileManager.objMapFileIconMap.set(6, // .jpg/.jpeg/.png
   <FontAwesomeIcon icon={faImage} className={style.fileIcon} style={{ color: "rgb(45,204,159)" }} />)
+// END setting FileIconMap ============================================
+
+
+// START setting FileTypeMap ============================================
+FileManager.objMapFileTypeMap.set('unknown', -1)    // unknown
+FileManager.objMapFileTypeMap.set('vs_project', 0)  // vs_project
+FileManager.objMapFileTypeMap.set('directory', 1)   // directory
+FileManager.objMapFileTypeMap.set('txt', 2)         // txt
+FileManager.objMapFileTypeMap.set('html', 3)        // html
+FileManager.objMapFileTypeMap.set('htm', 3) 
+FileManager.objMapFileTypeMap.set('css', 4)         // css
+FileManager.objMapFileTypeMap.set('js', 5)          // js
+FileManager.objMapFileTypeMap.set('jpg', 6)         // image
+FileManager.objMapFileTypeMap.set('jpeg', 6) 
+FileManager.objMapFileTypeMap.set('png', 6) 
+// END setting FileTypeMap ============================================
 
 export default new FileManager();
 
