@@ -57,23 +57,35 @@
     }
 
     // & .fileName {}
+    & .renameBar{
+        float: right;
 
-    & .renameInput {
-        margin: 0;
-        padding: 0;
-        font-size:16.5px;
-        // height: "pixels";
-        color: rgb(255, 255, 255);
-        height: 100%;
-        background-color: transparent;
-        // background-color: rgb(55, 55, 61);
-        outline: 0 none;
-        border: none
+        & .renameInput {
+            border: solid;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-size:16.5px;
+            // height: "pixels";
+            color: rgb(255, 255, 255);
+            height: 100%;
+            width: 100%;
+            background-color: transparent;
+            // background-color: rgb(1, 1, 175);
+            outline: 0 none;
+            // border: none
+        }
+    
+        & .renameInput:focus {
+            // color: rgb(80, 80, 80);
+        }
+
+        & .renameMessage{
+            display: none;
+            position: absolute
+        }
     }
 
-    & .renameInput:focus {
-        // color: rgb(80, 80, 80);
-    }
 }
 
 

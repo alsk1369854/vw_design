@@ -7,7 +7,7 @@ import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import arrayMove, { arrayMoveImmutable } from 'array-move';
 
 import FunctionCaller from '../../../../tools/FunctionCaller';
-import FileManager from '../../../FileManager/FileManager';
+import FileManager from '../../../FileManager/lib/FileManager';
 
 const SortableItem = SortableElement(({ file, _this }: any) => {
     return (
