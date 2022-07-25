@@ -51,6 +51,7 @@ export default class FileManagerView extends Component {
     renameState: {
       item: FileManager.getRootFile(),
       oldName: FileManager.getRootFile().getFileName(),
+      message: '',
     }
     // onClickItem: FileManager.getRootFile(),
   }
@@ -62,8 +63,10 @@ export default class FileManagerView extends Component {
       showContextMenu: false,
       currentlySelectedItem: FileManager.getRootFile(),
       renameState: {
+        ...this.state.renameState,
         item: FileManager.getRootFile(),
         oldName: FileManager.getRootFile().getFileName(),
+        message: '',
       }
     })
   }
@@ -101,8 +104,10 @@ export default class FileManagerView extends Component {
     this.setState({
       currentlySelectedItem: objFile,
       renameState: {
+        ...this.state.renameState,
         item: FileManager.getRootFile(),
         oldName: FileManager.getRootFile().getFileName(),
+        message: '',
       },
     })
   }
@@ -160,8 +165,10 @@ export default class FileManagerView extends Component {
       } else {
         this.setState({
           renameState: {
+            ...this.state.renameState,
             item: FileManager.getRootFile(),
             oldName: FileManager.getRootFile().getFileName(),
+            message: '',
           }
         })
       }
@@ -248,13 +255,14 @@ export default class FileManagerView extends Component {
                     onKeyDown={(event => this.renameEvent(event, item))}
                   />
                   <div
-                    className={style.renameMessage}
-                  >
-                    tst
-                  </div>
+                  className={style.renameMessage}
+                >
+                  {this.state.renameState.message}
+                </div>
                 </span> :
                 <span>{item.strFileName}</span>
               }
+              
 
             </div>
           })}

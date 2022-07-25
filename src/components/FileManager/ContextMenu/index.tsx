@@ -40,8 +40,10 @@ export default class ContextMenu extends Component<IProps, IState> {
     // this.props.setRenameItem(objFile)
     this.props.parentThis.setState({
       renameState: {
+        ...this.props.parentThis.renameState,
         item: objFile,
         oldName: objFile.strFileName,
+        message: 'tt',
       },
       showContextMenu: false,
     })

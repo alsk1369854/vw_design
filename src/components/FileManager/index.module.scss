@@ -1,4 +1,5 @@
 .body {
+    position: relative;
     // padding-left: 20px;
     height: 100vh;
     width: 100%;
@@ -11,6 +12,8 @@
 
 
 .fileItem {
+    // position: relative;
+
     // 名稱過長顯示省略符
     overflow: hidden; // 超出文本隱藏
     text-overflow: ellipsis; // 溢出用省略符顯示
@@ -58,14 +61,16 @@
 
     // & .fileName {}
     & .renameBar{
+        position:absolute;
+        z-index: 1;
         float: right;
 
         & .renameInput {
-            border: solid;
+            border: solid 1px;
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-size:16.5px;
+            font-size:16px;
             // height: "pixels";
             color: rgb(255, 255, 255);
             height: 100%;
@@ -80,10 +85,20 @@
             // color: rgb(80, 80, 80);
         }
 
-        & .renameMessage{
-            display: none;
-            position: absolute
-        }
+    }
+    & .renameMessage{
+        border:solid 2px rgb(190,17,0) ;
+        color: rgb(204,204,204);
+
+        box-sizing: border-box;
+        // display: none;
+        // display: block;
+        color: white;
+        z-index: 2;
+        width: 100%;
+
+        background-color: rgb(90, 29, 29);
+        position:absolute
     }
 
 }

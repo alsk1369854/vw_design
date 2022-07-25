@@ -1,43 +1,45 @@
-.projectContextMenu{
-    font-size: 14px;
-    background-color: rgb(110,110,110);
-    border-radius: 2px;
-    padding: 10px 0px;
-    width: 130px;
-    height: auto;
-    margin: 0;
+.projectContextMenu {
+  z-index: 2;
+  font-size: 14px;
+  background-color: rgb(110, 110, 110);
+  border-radius: 2px;
+  padding: 10px 0px;
+  width: 130px;
+  height: auto;
+  margin: 0;
   /* use absolute positioning  */
-    position: absolute;
-    list-style: none;
-    box-shadow: 0 0 10px 0 rgb(73, 73, 73);
-    opacity: 1;
-    transition: opacity 0.5s linear;
-    & li{
-      cursor:pointer;
-      display: flex;
-      align-items: center;
-      // margin: 10px 20px;
-      padding: 3px 20px;
-      // height: 30px;
+  position: absolute;
+  list-style: none;
+  box-shadow: 0 0 10px 0 rgb(73, 73, 73);
+  opacity: 1;
+  transition: opacity 0.5s linear;
 
-      & .icon{
-        height: 14px;
-        width: 14px;
-        margin-right: 10px;
-      }
+  & li {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    // margin: 10px 20px;
+    padding: 3px 20px;
+    // height: 30px;
 
-      & img{
-        height: 20px;
-        width: 20px;
-        margin-right: 10px;
-      }
-      & span{
-
-      }
+    & .icon {
+      height: 14px;
+      width: 14px;
+      margin-right: 10px;
     }
-    & li:hover{
-      background-color: rgb(9,71,113);
+
+    & img {
+      height: 20px;
+      width: 20px;
+      margin-right: 10px;
     }
+
+    & span {}
+  }
+
+  & li:hover {
+    background-color: rgb(9, 71, 113);
+  }
 }
 
 .line {
