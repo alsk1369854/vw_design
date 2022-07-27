@@ -26,7 +26,7 @@ interface IProps {
 export default class ContextMenu extends Component<IProps, IState> {
   open = () => {
     // console.log(this.props.file, " => open")
-    const objFileConstructor = this.props.file
+    const { file: objFileConstructor } = this.props
     if (FileManager.selectedFileIsExists(objFileConstructor)) {
       const arrFile = FileManager.getSelectedFiles()
       arrFile.forEach(file => FileManager.addOpenFile(file))
@@ -37,20 +37,23 @@ export default class ContextMenu extends Component<IProps, IState> {
 
   rename = (event: any, objFile: FileConstructor) => {
     event.stopPropagation()
+    const { parentThis } = this.props
+    const { renameState } = parentThis.state
     // this.props.setRenameItem(objFile)
-    this.props.parentThis.setState({
+    parentThis.setState({
       renameState: {
-        ...this.props.parentThis.renameState,
+        ...renameState,
         item: objFile,
         oldName: objFile.strFileName,
-        message: 'tt',
+        temporaryFileName: objFile.strFileName,
+        message: '',
       },
       showContextMenu: false,
     })
   }
 
   download = () => {
-    const objFileConstructor = this.props.file
+    const { file: objFileConstructor } = this.props
     if (FileManager.selectedFileIsExists(objFileConstructor)) {
       FileManager.downloadSeletedFiles()
     } else {
@@ -60,7 +63,7 @@ export default class ContextMenu extends Component<IProps, IState> {
   }
 
   delete = () => {
-    const objFileConstructor = this.props.file
+    const { file: objFileConstructor } = this.props
     if (FileManager.selectedFileIsExists(objFileConstructor)) {
       FileManager.getSelectedFiles().forEach(file => file.delete())
     } else {
@@ -70,6 +73,9 @@ export default class ContextMenu extends Component<IProps, IState> {
   }
 
   render() {
+
+    const { file: objFileConstructor } = this.props
+    const file = FileManager.getFileById(objFileConstructor.strId)
     // console.log(this.props)
     return (
       <ul className={style.projectContextMenu}
@@ -98,12 +104,17 @@ export default class ContextMenu extends Component<IProps, IState> {
           <FontAwesomeIcon className={style.icon} icon={faFileArrowDown} />
           <span>Download</span>
         </li>
-        <div className={style.line}></div>
-        {/* <hr className="divider" /> */}
-        <li onClick={this.delete}>
-          <FontAwesomeIcon className={style.icon} icon={faTrashCan} />
-          <span>Delete</span>
-        </li>
+        {(file === FileManager.getRootFile()) ?
+          <></> :
+          <>
+            <div className={style.line}></div>
+            {/* <hr className="divider" /> */}
+            <li onClick={this.delete}>
+              <FontAwesomeIcon className={style.icon} icon={faTrashCan} />
+              <span>Delete</span>
+            </li>
+          </>
+        }
       </ul>
 
     )

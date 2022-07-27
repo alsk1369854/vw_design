@@ -14,7 +14,7 @@ class Window {
 const SideWindow = memo((props: {intWidth: number, arrNames: Array<string>, intState: number}) => {
     const arrSideWindow: Array<Window> = [
         new Window(<></>),
-        new Window(<div><FileManager/></div>), // Folder
+        new Window(<div style={{position: 'relative', height: '100%'}}><FileManager/></div>), // Folder
         new Window(<div>{props.arrNames[2]}</div>), 
         new Window(<div>{props.arrNames[3]}</div>),
         new Window(<div>{props.arrNames[4]}</div>),

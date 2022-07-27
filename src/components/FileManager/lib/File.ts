@@ -82,7 +82,7 @@ export default class File implements FileConstructor {
                 if (file.getFileName() === objFile.getFileName()) {
                     const flag = window.confirm(`目的地資料夾中已經存在名稱 '${file.getFileName()}' 的檔案或資料夾。要加以取代嗎?`)
                     return (flag) ? objFile : file
-                }else{
+                } else {
                     return file
                 }
             })
@@ -156,5 +156,35 @@ export default class File implements FileConstructor {
         }
     }
 
+    static checkFileName = (newFileName: string) => {
+        const regExp = /^\s|\s$/g
+
+        if (newFileName.replaceAll(/\s/g, '').length === 0) {
+            return [false, '必須提供檔案或資料夾名稱']
+        } else if (regExp.test(newFileName)) {
+            return [false, `名稱 ${newFileName} 不能作為檔案或資料夾名稱。請選擇不同的名稱。`]
+        }
+        return [true, '']
+    }
+    checkFileNewName = (newFileName: string) => {
+        // console.log(newFileName)
+        const [fileNameState, message] = File.checkFileName(newFileName)
+        const parentFile = this.getParent()
+
+        if (fileNameState && parentFile) {
+            let checkNameExistedFlag = false
+            for (let file of parentFile.getSubFiles()!) {
+                if (file.getId() !== this.getId()
+                    && file.getFileName().toLocaleLowerCase() === newFileName.toLocaleLowerCase()) {
+                    checkNameExistedFlag = true
+                    break
+                }
+            }
+            if (checkNameExistedFlag) {
+                return [false, `這個位置已經存在檔案或資料夾 ${newFileName} 。請選擇不同名稱。`]
+            }
+        }
+        return [fileNameState, message]
+    }
 
 }

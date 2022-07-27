@@ -1,18 +1,26 @@
-.body {
-    position: relative;
-    // padding-left: 20px;
-    height: 100vh;
+.fileManagerBody {
+    margin: 0px;
+    padding: 0px;
+    justify-content: flex-end;
+    position: absolute;
+    height: 100%;
     width: 100%;
-    background-color:rgb(80, 80, 80);
+
+    color: rgb(204, 204, 204);
+    // background-color: rgb(80, 80, 80);
+    background-color: rgb(37, 37, 38);
 }
 
-// .isFileAngleIconBackground{
-//     color: rgb(0,0,0,0);
-// }
 
-
-.fileItem {
-    // position: relative;
+.fileItem,
+.fileItemRenameState,
+.fileItemOnSelected,
+.fileItemOnSelectedRenameState,
+.fileItemCurrentlySelected,
+.fileItemCurrentlyContextMenu,
+.fileItemRenameItem,
+.fileItemRenameItemOnSelected {
+    height: 20px;
 
     // 名稱過長顯示省略符
     overflow: hidden; // 超出文本隱藏
@@ -27,11 +35,11 @@
     box-sizing: border-box;
 
     cursor: pointer;
-    padding: 0px 0px;
-    background-color: rgb(80, 80, 80);
+    background-color: transparent;
 
     & .angleIcon {
         // margin-right: 3px;
+        // padding: 0px 3px;
         margin: 0px 3px;
 
         & svg {
@@ -41,11 +49,13 @@
     }
 
     & .expandLine {
+        // opacity: 0.5;
+        // padding-left: 9px;
         margin-left: 9px;
         display: inline-block;
         width: 1px;
         height: 100%;
-        background-color: rgb(150, 150, 150);
+        background-color: rgb(150, 150, 150, 0.5);
     }
 
     & .isFileAngleIconBackground {
@@ -60,51 +70,86 @@
     }
 
     // & .fileName {}
-    & .renameBar{
-        position:absolute;
+    & .renameBar {
+        position: absolute;
         z-index: 1;
         float: right;
 
-        & .renameInput {
-            border: solid 1px;
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-size:16px;
-            // height: "pixels";
-            color: rgb(255, 255, 255);
-            height: 100%;
+        & .renameInput,
+        .renameInputWarning {
+            margin: -2px 0px;
             width: 100%;
+
             background-color: transparent;
-            // background-color: rgb(1, 1, 175);
+
+            border: solid 1px rgb(0, 127, 212);
+            box-sizing: border-box;
+
+            font-size: 16px;
+            color: rgb(240, 240, 240);
+
             outline: 0 none;
-            // border: none
-        }
-    
-        & .renameInput:focus {
-            // color: rgb(80, 80, 80);
         }
 
+        & .renameInputWarning {
+            border: solid 1px rgb(190, 17, 0);
+            border-bottom: 0px;
+        }
+
+        & .fileName {}
     }
-    & .renameMessage{
-        border:solid 2px rgb(190,17,0) ;
-        color: rgb(204,204,204);
 
-        box-sizing: border-box;
-        // display: none;
-        // display: block;
-        color: white;
+    & .renameMessage {
+        position: absolute;
         z-index: 2;
         width: 100%;
-
+        color: white;
         background-color: rgb(90, 29, 29);
-        position:absolute
-    }
 
+        border: solid 1px rgb(190, 17, 0);
+        // color: rgb(204, 204, 204);
+        box-sizing: border-box;
+        // 文字超出自動換行
+        word-wrap: break-word;
+        white-space: pre-wrap;
+    }
 }
 
-
 .fileItem:hover {
-    background-color: rgb(55, 55, 55);
-    // background-color: rgb(9,71,113);
+    background-color: rgb(42, 45, 46);
+}
+
+.fileItemRenameState,
+.fileItemOnSelectedRenameState {
+    & .angleIcon {
+        opacity: 0.5;
+    }
+
+    & .fileIcon {
+        opacity: 0.5;
+    }
+
+    & .fileName {
+        opacity: 0.5;
+    }
+}
+
+.fileItemRenameItemOnSelected,
+.fileItemOnSelectedRenameState {
+    background-color: rgb(55, 55, 61);
+}
+
+.fileItemOnSelected,
+.fileItemCurrentlySelected {
+    background-color: rgb(9, 71, 113);
+}
+
+.fileItemCurrentlySelected,
+.fileItemCurrentlyContextMenu {
+    height: auto;
+    transform: rotate(0deg);
+    border: solid 1px rgb(0, 127, 212);
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: -1px 0px -0.5px -1px;
 }

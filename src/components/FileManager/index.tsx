@@ -44,30 +44,27 @@ import ContextMenu from './ContextMenu'
 
 // FileManager.download('test.txt', 'test')
 export default class FileManagerView extends Component {
+  initializationRenameState = {
+    item: FileManager.getRootFile(),
+    oldName: FileManager.getRootFile().getFileName(),
+    temporaryFileName: FileManager.getRootFile().getFileName(),
+    message: '',
+  }
   state = {
     showContextMenu: false,
     mouseDownXY: { x: 0, y: 0 },
     currentlySelectedItem: FileManager.getRootFile(),
-    renameState: {
-      item: FileManager.getRootFile(),
-      oldName: FileManager.getRootFile().getFileName(),
-      message: '',
-    }
+    renameState: this.initializationRenameState,
     // onClickItem: FileManager.getRootFile(),
   }
 
   documentOnClick = () => {
     FileManager.cleanSelectedFiles()
-    this.renameRollBack()
+    this.renameCheckAndSetFileName()
     this.setState({
       showContextMenu: false,
       currentlySelectedItem: FileManager.getRootFile(),
-      renameState: {
-        ...this.state.renameState,
-        item: FileManager.getRootFile(),
-        oldName: FileManager.getRootFile().getFileName(),
-        message: '',
-      }
+      renameState: this.initializationRenameState,
     })
   }
   componentDidMount() {
@@ -92,23 +89,13 @@ export default class FileManagerView extends Component {
   }
 
   clickItem = (event: any, objFile: FileConstructor) => {
-    // const file = FileManager.getFileById(objFile.strId)
-    // const isSubFile = file?.isSubFileOf(FileManager.getRootFile().getSubFiles()[0])
-    // const isSubFile = file?.isSubFileOf(FileManager.getRootFile())
-    // console.log(isSubFile)
-
     event.stopPropagation()
     // event.preventDefault()
     this.addToSelectedFiles(event, objFile)
-    // this.renameRollBack()
+
     this.setState({
       currentlySelectedItem: objFile,
-      renameState: {
-        ...this.state.renameState,
-        item: FileManager.getRootFile(),
-        oldName: FileManager.getRootFile().getFileName(),
-        message: '',
-      },
+      renameState: this.initializationRenameState,
     })
   }
 
@@ -122,16 +109,35 @@ export default class FileManagerView extends Component {
   showItemContextMenu = (event: any, objFile: FileConstructor) => {
     event.stopPropagation()
     event.preventDefault()
-    this.setState({
-      showContextMenu: true,
-      mouseDownXY: { x: event.pageX, y: event.pageY },
-      currentlySelectedItem: objFile,
-    })
+    console.log(event)
+    if (this.state.renameState.item.getId() !== FileManager.getRootFile().getId()) {
+      this.renameRollBack()
+      this.setState({
+        showContextMenu: true,
+        mouseDownXY: { x: event.pageX, y: event.pageY },
+        // mouseDownXY: { x: event.screenX, y: event.screenY },
+        currentlySelectedItem: objFile,
+        renameState: this.initializationRenameState,
+      })
+    } else {
+      this.setState({
+        showContextMenu: true,
+        mouseDownXY: { x: event.pageX, y: event.pageY },
+        currentlySelectedItem: objFile,
+      })
+    }
   }
 
   getExpandLine = (strFileId: string, numFileDeep: number) => {
     let expandLine: JSX.Element[] = []
-    for (let i = 0; i < numFileDeep; i++) expandLine.push(<span key={strFileId + "_ExpandLine_" + i} className={style.expandLine}>&nbsp;</span>)
+    for (let i = 0; i < numFileDeep; i++) {
+      expandLine.push(
+        <span
+          key={strFileId + "_ExpandLine_" + i}
+          className={style.expandLine}>&nbsp;
+        </span>
+      )
+    }
     return expandLine
   }
 
@@ -157,33 +163,42 @@ export default class FileManagerView extends Component {
   }
 
   renameEvent = (event: any, objFile: FileConstructor) => {
+    const { target: element, key } = event
     const file = FileManager.getFileById(objFile.strId)
-    if (file) file.setFileName(event.target.value)
-    if (event.key === "Enter") {
-      if (event.target.value === '') {
-        alert('必須提供資料或資料夾名稱')
-      } else {
-        this.setState({
-          renameState: {
-            ...this.state.renameState,
-            item: FileManager.getRootFile(),
-            oldName: FileManager.getRootFile().getFileName(),
-            message: '',
-          }
-        })
-      }
+    const [fileNameState, message] = file?.checkFileNewName(element.value)!
+
+    if (key === "Enter" && fileNameState) {
+      file?.setFileName(element.value)
+      this.setState({
+        renameState: this.initializationRenameState
+      })
     } else {
-      this.setState({})
+      if (fileNameState) file?.setFileName(element.value)
+      this.setState({
+        renameState: {
+          ...this.state.renameState,
+          temporaryFileName: element.value,
+          message,
+        }
+      })
     }
   }
+  renameCheckAndSetFileName = () => {
+    const { renameState } = this.state!
+    const file = FileManager.getFileById(renameState.item.strId)
+    const [fileNameState] = file?.checkFileNewName(renameState.temporaryFileName)!
 
+    return (fileNameState) ?
+      file?.setFileName(renameState.temporaryFileName) :
+      this.renameRollBack()
+  }
   renameRollBack = () => {
     const { renameState } = this.state
     const file = FileManager.getFileById(renameState.item.strId)
     if (renameState.oldName === '') {
       file?.delete()
     } else {
-      file?.setFileName(this.state.renameState.oldName)
+      file?.setFileName(renameState.oldName)
     }
   }
 
@@ -191,79 +206,165 @@ export default class FileManagerView extends Component {
     event.target.setSelectionRange(0, this.state.renameState.oldName.indexOf('.'))
   }
 
+  getFileClassName = (objFile: FileConstructor) => {
+    const { renameState, currentlySelectedItem } = this.state
+    // 是否在 rename 狀態
+    if (renameState.item !== FileManager.getRootFile()) { // 是 rename 狀態
+      // 是否為 rename 項目
+      if (renameState.item.getId() === objFile.strId) { // 是 rename 項目
+        // 是否在選中清單
+        if (FileManager.selectedFileIsExists(objFile)) { // 在選中清單
+          return style.fileItemRenameItemOnSelected
+        } else { // 不在選中清單
+          return style.fileItemRenameItem
+        }
+      } else { // 不是 rename 項目
+        // 是否在選中清單
+        if (FileManager.selectedFileIsExists(objFile)) { // 在選中清單
+          return style.fileItemOnSelectedRenameState
+        } else { // 不在選中清單
+          return style.fileItemRenameState
+        }
+      }
+    } else { // 不是 rename 狀態
+      // 是否在選中清單
+      if (FileManager.selectedFileIsExists(objFile)) { // 在選中清單
+        // 是否為當前選取項
+        if(currentlySelectedItem.strId === objFile.strId){ // 是當前選取項
+          return style.fileItemCurrentlySelected
+        }else{ // 不是當前選取項
+          return style.fileItemOnSelected
+        }
+      } else { // 不在選中清單
+        // 是否為當前選取項
+        if(currentlySelectedItem.strId === objFile.strId){ // 是當前選取項
+          return style.fileItemCurrentlyContextMenu
+        }else{ // 不是當前選取項
+          return style.fileItem
+        }
+      }
+    }
+  }
+
   render() {
+    const {
+      showContextMenu,
+      mouseDownXY,
+      currentlySelectedItem,
+      renameState
+    } = this.state
+
     console.log(this.state)
     // console.log(objMapFileIconMap.get("1"))
     return (
-      <div onClick={() => this.setState({ showContextMenu: false })}>
+      <div
+        onClick={() => this.setState({ showContextMenu: false })}
+        onContextMenu={event => this.showItemContextMenu(event, FileManager.getRootFile())}
+      >
         <FileManagerTitle parentThis={this} />
         <div
-          className={style.body}
-          style={
-            // 是否為 rename 狀態
-            (this.state.renameState.item.strId.toLocaleUpperCase() !== 'ROOT') ?
-              { backgroundColor: 'rgb(55, 55, 55)' } : {}
-          }
+        className = {style.fileManagerBody}
+          // className={
+          //   // 使否有 rename 項目
+          //   (renameState.item === FileManager.getRootFile()) ?
+          //     // 沒有 rename 項目
+          //     style.body :
+          //     // 有 rename 項目
+          //     style.bodyRenameState
+          // }
         >
-          {this.state.showContextMenu ? <ContextMenu parentThis={this} file={this.state.currentlySelectedItem} x={this.state.mouseDownXY.x} y={this.state.mouseDownXY.y} /> : <></>}
+          {showContextMenu ?
+            <ContextMenu
+              parentThis={this}
+              file={currentlySelectedItem}
+              x={mouseDownXY.x}
+              y={mouseDownXY.y}
+            /> :
+            <></>
+          }
           {this.getFileList().map(item => {
             return <div
               key={item.strId}
-              className={style.fileItem}
               onClick={(event) => this.clickItem(event, item)}
               onDoubleClick={(event) => this.doubleClickItem(event, item)}
               onContextMenu={(event) => this.showItemContextMenu(event, item)}
-              style={
-                // 是否為 rename 狀態
-                (this.state.renameState.item.strId.toLocaleUpperCase() !== 'ROOT' && item.strId !== this.state.renameState.item.getId()) ?
-                  // 為 rename 狀態
-                  { backgroundColor: 'rgb(55, 55, 55)', color: 'rgb(128, 128, 128)' } :
-                  // 不為 rename 狀態，檢查是否被選中
-                  (FileManager.selectedFileIsExists(item)) ?
-                    // 在已選清單中
-                    (this.state.currentlySelectedItem.strId === item.strId) ?
-                      { borderStyle: 'solid', borderColor: 'rgb(0,127,212)', marginLeft: '-1.5px', backgroundColor: 'rgb(9,71,113)' } :
-                      { backgroundColor: 'rgb(9,71,113)' } :
-                    // 未在已選清單中
-                    (this.state.currentlySelectedItem.strId === item.strId) ?
-                      { borderStyle: 'solid', borderColor: 'rgb(0,127,212)', marginLeft: '-1.5px' } :
-                      {}
-              }
+              className={this.getFileClassName(item)}
+            // className={
+            //   // 是否為 rename 狀態與 rename 項目
+            //   (renameState.item !== FileManager.getRootFile()
+            //     && item.strId === renameState.item.getId()) ?
+            //     // 是 rename 狀態與 rename 項目，檢查是在選取列表
+            //     (FileManager.selectedFileIsExists(item)) ?
+            //       // 在選取列表中
+            //       style.fileItemRenameItemOnSelected :
+            //       // 不在選取列表中
+            //       style.fileItemRenameItem :
+            //     // 不是 rename 狀態與 rename 項目，檢查是否在選取列表
+            //     (FileManager.selectedFileIsExists(item)) ?
+            //       // 在選取列表中，檢查是否為當前選取項
+            //       (item.strId === currentlySelectedItem.strId) ?
+            //         // 被選中且是當前選取項
+            //         style.fileItemCurrentlySelected :
+            //         // style.fileItemOnSelected :
+            //       // 被選中但不是當前選取項，檢查是否為 rename 狀態
+            //       (renameState.item !== FileManager.getRootFile()) ?
+            //         // 是 呈現 rename 狀態下被選中
+            //         style.fileItemOnSelectedRenameState :
+            //         // 不是 呈現 一般 狀態下被選中
+            //         style.fileItemOnSelected :
+            //       // 未在選取列表中，檢查是否為當前ContextMenu項
+            //       (item.strId === currentlySelectedItem.strId) ?
+            //         // 未被選中且是當前Contextmenu項
+            //         style.fileItemCurrentlyContextMenu :
+            //         // 未被選中但不是當前Contextmenu項
+            //         style.fileItem
+            // }
             >
               {this.getExpandLine(item.strId, item.deep!)}
 
               <span className={style.angleIcon}>
-                {(item.numFileType === 1) ? (item.boolIsExpand) ? <FontAwesomeIcon icon={faAngleDown} /> : <FontAwesomeIcon icon={faAngleRight} /> :
-                  <FontAwesomeIcon icon={faSquareFull} className={style.isFileAngleIconBackground} />}
+                {(item.numFileType === 1) ?
+                  (item.boolIsExpand) ?
+                    <FontAwesomeIcon icon={faAngleDown} /> :
+                    <FontAwesomeIcon icon={faAngleRight} /> :
+                  <FontAwesomeIcon
+                    icon={faSquareFull}
+                    className={style.isFileAngleIconBackground}
+                  />
+                }
               </span>
 
               {FileManager.getFileIcon(item)}
 
-              {(this.state.renameState.item.strId === item.strId) ?
+              {/* 是否為 rename 狀態 */}
+              {(renameState.item.strId === item.strId) ?
                 <span
                   className={style.renameBar}
-                  style={{ width: `calc(100% - ${item.deep! * 10 + 40 + 5}px)` }}
+                  // style={{ width: `calc(100px - ${item.deep! * 10 + 40 + 5}px)` }}
+                  style={{ width: `calc(100% - ${item.deep! * 10 + 41}px)` }}
                 >
                   <input
-                    className={style.renameInput}
+                    className={
+                      (renameState.message !== '') ?
+                        style.renameInputWarning :
+                        style.renameInput
+                    }
                     autoFocus
-                    // style={{ width: `calc(100px - ${item.deep! * 10 + 40 + 5}px)` }}
-                    defaultValue={item.strFileName}
+                    defaultValue={renameState.temporaryFileName}
                     onFocus={this.renameOnFocus}
                     onChange={(event => this.renameEvent(event, item))}
                     onClick={(event) => event.stopPropagation()}
                     onKeyDown={(event => this.renameEvent(event, item))}
                   />
-                  <div
-                  className={style.renameMessage}
-                >
-                  {this.state.renameState.message}
-                </div>
+                  {(renameState.message !== '') ?
+                    <div className={style.renameMessage}>
+                      {renameState.message}
+                    </div> :
+                    <></>
+                  }
                 </span> :
-                <span>{item.strFileName}</span>
+                <span className={style.fileName}>{item.strFileName}</span>
               }
-              
-
             </div>
           })}
         </div>

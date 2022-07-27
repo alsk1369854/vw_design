@@ -15,8 +15,10 @@ interface IProps {
 export default class FileManagerTitle extends Component<IProps, IState> {
   addFile = (event: any, numFileType: number) => {
     event.stopPropagation()
-    let { currentlySelectedItem, renameState } = this.props.parentThis.state
-    if(renameState.item !== FileManager.getRootFile()) return 
+    const { parentThis } = this.props
+    let { currentlySelectedItem, renameState } = parentThis.state
+
+    if (renameState.item !== FileManager.getRootFile()) return
     currentlySelectedItem = (currentlySelectedItem.getFileType() === 1) ?
       currentlySelectedItem : FileManager.getRootFile()
 
@@ -25,10 +27,14 @@ export default class FileManagerTitle extends Component<IProps, IState> {
     currentlySelectedItem.setIsExpand(true)
     FileManager.cleanSelectedFiles()
     FileManager.addSelectedFile(newFile)
-    this.props.parentThis.setState({
+
+    parentThis.setState({
       renameState: {
+        ...renameState,
         item: newFile,
         oldName: newFile.strFileName,
+        temporaryFileName: newFile.strFileName,
+        message: '',
       },
       showContextMenu: false,
     })
@@ -36,7 +42,7 @@ export default class FileManagerTitle extends Component<IProps, IState> {
 
   render() {
     return (
-      <div>
+      <div className={style.titleBody}>
         {(FileManager.getRootFile()) ?
           <div className={style.titleBar}>
             <div className={style.projectName}>
