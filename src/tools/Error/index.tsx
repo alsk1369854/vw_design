@@ -18,3 +18,10 @@ export class FunctionCallerError extends Error{
         this.name = "FunctionCallerError";
     }
 }
+
+export class FileManagerDownloadDataTypeMismatchError extends Error{
+    constructor(message: string){
+        super(message);
+        this.name = "FileManagerDownloadDataTypeMismatchError";
+    }
+}

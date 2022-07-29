@@ -2,12 +2,13 @@ import { nanoid } from "nanoid"
 import File, { FileConstructor } from './File'
 
 export default class FileFactory {
-    static getNewFile = (numFileType: number) => {
+    static getNewFile = (boolIsDirectory: boolean) => {
         const FileConstructor: FileConstructor = {
             strId: nanoid(),
+            boolIsDirectory: boolIsDirectory,
             strFileName: '',
-            numFileType: numFileType,
             strData: '',
+            strDataType: 'text',
             boolIsExpand: false,
         }
         return new File(FileConstructor)

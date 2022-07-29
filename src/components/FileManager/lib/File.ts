@@ -3,9 +3,10 @@ import FileManager from "./FileManager";
 
 export interface FileConstructor {
     strId: string,
+    boolIsDirectory: boolean,
     strFileName: string,
-    numFileType: number,
     strData: string,
+    strDataType: string,
     boolIsExpand: boolean,
     arrFileSubFiles?: Array<FileConstructor>,
     objFileParent?: File | undefined,
@@ -15,18 +16,22 @@ export interface FileConstructor {
 
 export default class File implements FileConstructor {
     strId: string = "";
+    boolIsDirectory: boolean = false;
     strFileName: string = "";
     arrStrFileExtension: Array<string> = [];
-    numFileType: number = 0;
+    // numFileType: number = 0;
     strData: string = "";
+    strDataType: string = "";
     boolIsExpand: boolean = false;
     arrFileSubFiles: Array<File> = [];
     objFileParent!: File | undefined;
 
     constructor(fileData: FileConstructor) {
         this.strId = fileData.strId;
+        this.boolIsDirectory = fileData.boolIsDirectory;
         this.strFileName = fileData.strFileName;
-        this.numFileType = fileData.numFileType;
+        // this.numFileType = fileData.numFileType;
+        this.strDataType = fileData.strDataType;
         this.buildFileExtension()
         this.strData = fileData.strData;
         this.boolIsExpand = fileData.boolIsExpand;
@@ -66,9 +71,9 @@ export default class File implements FileConstructor {
     }
 
     isSubFileOf = (objFileSuperFile: File): boolean => {
-        const numFileType = objFileSuperFile.getFileType();
+        // const numFileType = objFileSuperFile.getFileType();
         let parentFile: File = this.getParent()!;
-        if (parentFile && (numFileType === 1 || numFileType === 0)) {
+        if (parentFile && objFileSuperFile.isDirectory()) {
             return (parentFile.getId() === objFileSuperFile.getId()) ?
                 true : parentFile.isSubFileOf(objFileSuperFile)
         }
@@ -76,7 +81,7 @@ export default class File implements FileConstructor {
     }
 
     addSubFile = (objFile: File) => {
-        if (this.numFileType === 0 || this.numFileType === 1) {
+        if (this.isDirectory()) {
             console.log('addSubFile')
             const arrFileNewSubFIles = this.arrFileSubFiles.map(file => {
                 if (file.getFileName() === objFile.getFileName()) {
@@ -93,53 +98,80 @@ export default class File implements FileConstructor {
     }
 
     private sortSubFiles = () => {
-        // sort subfiles with filenames by ASC(遞增)
-        this.arrFileSubFiles.sort((f1, f2) => f1.strFileName.localeCompare(f2.strFileName))
-        // 相同字符，按長度排序
+        // Folder 在前 File 在後，按首字母遞增排序，相同首字符，按長度排序
         this.arrFileSubFiles.sort((f1, f2) => {
-            const s1 = f1.strFileName.charAt(0)
-            const s2 = f2.strFileName.charAt(0)
-            if (s1.toLocaleUpperCase() === s2.toLocaleUpperCase()) {
-                const temp = f1.strFileName.length - f2.strFileName.length
-                return (temp != 0) ? temp : f1.strFileName.localeCompare(f2.strFileName)
+            if (f1.isDirectory() === f2.isDirectory()) {
+                const s1 = f1.strFileName.charAt(0)
+                const s2 = f2.strFileName.charAt(0)
+                return (s1.toLocaleUpperCase() === s2.toLocaleUpperCase()) ?
+                    f1.strFileName.length - f2.strFileName.length : // 相同首字符，按長度排序
+                    f1.strFileName.localeCompare(f2.strFileName) // 按首字母遞增排序
+            } else { // Folder 在前 File 在後
+                return (f2.isDirectory()) ? 1 : -1
             }
-            return 0;
         })
+
+        // sort subfiles with filenames by ASC(遞增)
+        // this.arrFileSubFiles.sort((f1, f2) => {
+        //     if(f1.getIsDirectory() === f2.getIsDirectory()){
+
+        //         return f1.strFileName.localeCompare(f2.strFileName)
+        //     }
+        //     return 0;
+        // })
+        // // 相同字符，按長度排序
+        // this.arrFileSubFiles.sort((f1, f2) => {
+        //     const s1 = f1.strFileName.charAt(0)
+        //     const s2 = f2.strFileName.charAt(0)
+        //     if (s1.toLocaleUpperCase() === s2.toLocaleUpperCase()) {
+        //         const temp = f1.strFileName.length - f2.strFileName.length
+        //         return (temp != 0) ? temp : f1.strFileName.localeCompare(f2.strFileName)
+        //     }
+        //     return 0;
+        // })
     }
 
+    static getFileNameExtensionStrArray = (strFileName: string) => {
+        const arrString = strFileName.split('.')
+        return (arrString.length > 1) ?
+            arrString.slice(1) :
+            []
+    }
     private buildFileExtension = () => {
-        let arrStrFileExtensionData = this.strFileName.split('.')
-        if (arrStrFileExtensionData.length > 1) {
-            this.arrStrFileExtension = arrStrFileExtensionData.slice(1)
-        } else {
-            this.arrStrFileExtension = []
-        }
+        this.arrStrFileExtension = File.getFileNameExtensionStrArray(this.getFileName())
     }
     getFileExtension = () => this.arrStrFileExtension
 
     getId = () => this.strId
     setId = (strNewId: string) => this.strId = strNewId
 
-    getFileType = () => this.numFileType
-    setFileType = (numNewFileType: number) => this.numFileType = numNewFileType
+    isDirectory = () => this.boolIsDirectory
+    setIsDirectory = (boolIsDirectoryState: boolean) => this.boolIsDirectory = boolIsDirectoryState
 
-    getIsExpand = () => this.boolIsExpand
-    setIsExpand = (boolIsExpandState: boolean) => this.boolIsExpand = boolIsExpandState
+    // getFileType = () => this.numFileType
+    // setFileType = (numNewFileType: number) => this.numFileType = numNewFileType
+
+    isExpand = () => this.boolIsExpand
+    setIsExpand = (boolIsExpandState: boolean) => {
+        if (this.isDirectory()) this.boolIsExpand = boolIsExpandState
+    }
 
     getData = () => this.strData
     setData = (strNewData: string) => this.strData = strNewData
 
+    getDataType = () => this.strDataType
+
     getFileName = () => this.strFileName
     setFileName = (strNewFileName: string) => {
         this.strFileName = strNewFileName
-        if (!(this.getFileType() === 1 || this.getFileType() === 0)) {
+        if (!(this.isDirectory())) {
             this.buildFileExtension()
             const arrStrFileExtensionData = this.getFileExtension()
-            if (arrStrFileExtensionData.length === 0) {
-                this.setFileType(FileManager.getFileType('unknown'))
-            } else {
-                this.setFileType(FileManager.getFileType(arrStrFileExtensionData[0]))
-            }
+            // if (arrStrFileExtensionData.length === 0) {
+            //     this.setFileType(FileManager.getFileType('unknown'))
+            // } else {
+            //     this.setFileType(FileManager.getFileType(arrStrFileExtensionData[0]))
+            // }
         }
         this.getParent()?.sortSubFiles()
     }
@@ -149,7 +181,7 @@ export default class File implements FileConstructor {
 
     getParent = () => this.objFileParent
     setParent = (objFileNewParent: File) => {
-        if (objFileNewParent.numFileType === 1 || objFileNewParent.numFileType === 0) {
+        if (objFileNewParent.isDirectory()) {
             this.objFileParent = objFileNewParent
         } else {
             this.objFileParent = undefined
@@ -187,4 +219,5 @@ export default class File implements FileConstructor {
         return [fileNameState, message]
     }
 
+    isRootFile = () => this === FileManager.getRootFile()
 }

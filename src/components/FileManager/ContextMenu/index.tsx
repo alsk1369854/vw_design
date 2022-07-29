@@ -11,14 +11,14 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 import style from './index.module.scss'
-import { FileConstructor } from '../lib/File'
+import File from '../lib/File'
 import FileManager from '../lib/FileManager'
 
 interface IState { }
 
 interface IProps {
   parentThis: any,
-  file: FileConstructor,
+  file: File,
   x: string | number,
   y: string | number,
 }
@@ -26,16 +26,15 @@ interface IProps {
 export default class ContextMenu extends Component<IProps, IState> {
   open = () => {
     // console.log(this.props.file, " => open")
-    const { file: objFileConstructor } = this.props
-    if (FileManager.selectedFileIsExists(objFileConstructor)) {
-      const arrFile = FileManager.getSelectedFiles()
-      arrFile.forEach(file => FileManager.addOpenFile(file))
+    const { file } = this.props
+    if (FileManager.selectedFileIsExists(file)) {
+      FileManager.addOpenFileSeletedFiles()
     } else {
-      FileManager.addOpenFile(objFileConstructor)
+      FileManager.addOpenFile(file)
     }
   }
 
-  rename = (event: any, objFile: FileConstructor) => {
+  rename = (event: any, objFile: File) => {
     event.stopPropagation()
     const { parentThis } = this.props
     const { renameState } = parentThis.state
@@ -43,9 +42,9 @@ export default class ContextMenu extends Component<IProps, IState> {
     parentThis.setState({
       renameState: {
         ...renameState,
-        item: objFile,
-        oldName: objFile.strFileName,
-        temporaryFileName: objFile.strFileName,
+        file: objFile,
+        oldName: objFile.getFileName(),
+        temporaryFileName: objFile.getFileName(),
         message: '',
       },
       showContextMenu: false,
@@ -53,42 +52,38 @@ export default class ContextMenu extends Component<IProps, IState> {
   }
 
   download = () => {
-    const { file: objFileConstructor } = this.props
-    if (FileManager.selectedFileIsExists(objFileConstructor)) {
+    const { file } = this.props
+    if (FileManager.selectedFileIsExists(file)) {
       FileManager.downloadSeletedFiles()
     } else {
-      const file = FileManager.getFileById(objFileConstructor.strId)
-      if (file) FileManager.downloadFile(file)
+      FileManager.downloadFile(file)
     }
   }
 
   delete = () => {
-    const { file: objFileConstructor } = this.props
-    if (FileManager.selectedFileIsExists(objFileConstructor)) {
+    const { file } = this.props
+    if (FileManager.selectedFileIsExists(file)) {
       FileManager.getSelectedFiles().forEach(file => file.delete())
     } else {
-      const file = FileManager.getFileById(objFileConstructor.strId)
-      if (file) file.delete()
+      file.delete()
     }
   }
 
   render() {
-
-    const { file: objFileConstructor } = this.props
-    const file = FileManager.getFileById(objFileConstructor.strId)
+    const { file, y:pageY, x:pageX } = this.props
     // console.log(this.props)
     return (
       <ul className={style.projectContextMenu}
         style={{
-          top: this.props.y,
-          left: this.props.x
+          top: pageY,
+          left: pageX,
         }}
       >
         <li onClick={this.open} >
           <FontAwesomeIcon className={style.icon} icon={faArrowUpRightFromSquare} />
           <span>Open</span>
         </li>
-        <li onClick={event => this.rename(event, this.props.file)}>
+        <li onClick={event => this.rename(event, file)}>
           <FontAwesomeIcon className={style.icon} icon={faSignature} />
           <span>Rename</span>
         </li>

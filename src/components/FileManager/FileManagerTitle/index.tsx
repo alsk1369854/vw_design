@@ -13,25 +13,29 @@ interface IProps {
 }
 
 export default class FileManagerTitle extends Component<IProps, IState> {
-  addFile = (event: any, numFileType: number) => {
+  state = {
+    newFile: false,
+  }
+  addFile = (event: any, boolIsDirectory: boolean) => {
     event.stopPropagation()
     const { parentThis } = this.props
-    let { currentlySelectedItem, renameState } = parentThis.state
+    const { currentlySelectedItem, renameState } = parentThis.state
 
-    if (renameState.item !== FileManager.getRootFile()) return
-    currentlySelectedItem = (currentlySelectedItem.getFileType() === 1) ?
-      currentlySelectedItem : FileManager.getRootFile()
+    if (!renameState.file.isRootFile()) return
+    const targetDirectory = (currentlySelectedItem.isDirectory()) ?
+      currentlySelectedItem :
+      FileManager.getRootFile()
 
-    const newFile = FileFactory.getNewFile(numFileType)
-    currentlySelectedItem.addSubFile(newFile)
-    currentlySelectedItem.setIsExpand(true)
+    const newFile = FileFactory.getNewFile(boolIsDirectory)
+    targetDirectory.addSubFile(newFile)
+    targetDirectory.setIsExpand(true)
     FileManager.cleanSelectedFiles()
     FileManager.addSelectedFile(newFile)
 
     parentThis.setState({
       renameState: {
         ...renameState,
-        item: newFile,
+        file: newFile,
         oldName: newFile.strFileName,
         temporaryFileName: newFile.strFileName,
         message: '',
@@ -49,10 +53,16 @@ export default class FileManagerTitle extends Component<IProps, IState> {
               {FileManager.getRootFile().getFileName()}
             </div>
             <span className={style.iconBar}>
-              <div onClick={(event) => this.addFile(event, -1)} className={style.iconItem}>
+              <div // add File
+                onClick={(event) => this.addFile(event, false)}
+                className={style.iconItem}
+              >
                 <FontAwesomeIcon icon={faFileCirclePlus} className={style.icon} />
               </div>
-              <div onClick={(event) => this.addFile(event, 1)} className={style.iconItem}>
+              <div // add Directory
+                onClick={(event) => this.addFile(event, true)}
+                className={style.iconItem}
+              >
                 <FontAwesomeIcon icon={faFolderPlus} className={style.icon} />
               </div>
             </span>
