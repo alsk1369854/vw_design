@@ -69,7 +69,8 @@
         height: 15px;
     }
 
-    // & .fileName {}
+    & .fileName {}
+
     & .renameBar {
         position: absolute;
         z-index: 1;
@@ -95,8 +96,6 @@
             border: solid 1px rgb(190, 17, 0);
             border-bottom: 0px;
         }
-
-        & .fileName {}
     }
 
     & .renameMessage {
