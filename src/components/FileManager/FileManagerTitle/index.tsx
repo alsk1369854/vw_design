@@ -33,6 +33,7 @@ export default class FileManagerTitle extends Component<IProps, IState> {
     FileManager.addSelectedFile(newFile)
 
     parentThis.setState({
+      currentlySelectedItem: newFile,
       renameState: {
         ...renameState,
         file: newFile,

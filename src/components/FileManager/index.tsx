@@ -140,8 +140,10 @@ export default class FileManagerView extends Component {
 
     if (key === "Enter" && boolNameCanUsed) {
       objFile.setFileName(element.value)
+      FileManager.cleanSelectedFiles()
+      FileManager.addSelectedFile(objFile)
       this.setState({
-        currentlySelectedItem: FileManager.getRootFile(),
+        currentlySelectedItem: objFile,
         renameState: this.initializationRenameState
       })
     } else {
