@@ -97,9 +97,10 @@ export default class File implements FileConstructor {
         }
     }
 
-    private sortSubFiles = () => {
+    private sortSubFiles = (arrFile?: Array<File>) => {
+        if (!arrFile) arrFile = this.arrFileSubFiles
         // Folder 在前 File 在後，按首字母遞增排序，相同首字符，按長度排序
-        this.arrFileSubFiles.sort((f1, f2) => {
+        arrFile.sort((f1, f2) => {
             if (f1.isDirectory() === f2.isDirectory()) {
                 const s1 = f1.strFileName.charAt(0)
                 const s2 = f2.strFileName.charAt(0)
@@ -110,25 +111,7 @@ export default class File implements FileConstructor {
                 return (f2.isDirectory()) ? 1 : -1
             }
         })
-
-        // sort subfiles with filenames by ASC(遞增)
-        // this.arrFileSubFiles.sort((f1, f2) => {
-        //     if(f1.getIsDirectory() === f2.getIsDirectory()){
-
-        //         return f1.strFileName.localeCompare(f2.strFileName)
-        //     }
-        //     return 0;
-        // })
-        // // 相同字符，按長度排序
-        // this.arrFileSubFiles.sort((f1, f2) => {
-        //     const s1 = f1.strFileName.charAt(0)
-        //     const s2 = f2.strFileName.charAt(0)
-        //     if (s1.toLocaleUpperCase() === s2.toLocaleUpperCase()) {
-        //         const temp = f1.strFileName.length - f2.strFileName.length
-        //         return (temp != 0) ? temp : f1.strFileName.localeCompare(f2.strFileName)
-        //     }
-        //     return 0;
-        // })
+        return arrFile
     }
 
     static getFileNameExtensionStrArray = (strFileName: string) => {
@@ -223,8 +206,8 @@ export default class File implements FileConstructor {
     isRootFile = () => this === FileManager.getRootFile()
 
     getSubFileByFileName = (strFileName: string) => {
-        for(const objFile of this.getSubFiles()){
-            if(objFile.getFileName() === strFileName) return objFile
+        for (const objFile of this.getSubFiles()) {
+            if (objFile.getFileName() === strFileName) return objFile
         }
         return undefined
     }
@@ -250,5 +233,19 @@ export default class File implements FileConstructor {
             }
         }
         return currentFile
+    }
+
+    isAbove = (objFile: File) => {
+        const objFileRootFile = FileManager.getRootFile()
+        let srcRootSubFile: File = this
+        let destRootSubFile: File = objFile
+        while (srcRootSubFile.getParent() !== objFileRootFile) {
+            srcRootSubFile = srcRootSubFile.getParent()!
+        }
+        while (destRootSubFile.getParent() !== objFileRootFile){
+            destRootSubFile = destRootSubFile.getParent()!
+        }
+        const sortedFiles = this.sortSubFiles([srcRootSubFile, destRootSubFile])
+        return (sortedFiles[0] === srcRootSubFile)
     }
 }

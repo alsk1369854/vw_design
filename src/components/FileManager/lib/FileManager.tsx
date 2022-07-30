@@ -28,7 +28,7 @@ import {
   FUNCTION_CALLER_KEY_SET_OPEN_FILE_ITEMS,
 } from '../../MainFrame/EditArea/OpenedFileBar'
 import File, { FileConstructor } from './File'
-import style from '../index.module.scss'
+import style from '../FileItem/index.module.scss'
 
 const fileIconElement = {
   directoryIsExpand: <FontAwesomeIcon icon={faFolderOpen} className={style.fileIcon} style={{ color: "rgb(220,182,122)" }} />,

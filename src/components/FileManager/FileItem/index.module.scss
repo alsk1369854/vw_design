@@ -1,17 +1,3 @@
-.fileManagerBody {
-    margin: 0px;
-    padding: 0px;
-    justify-content: flex-end;
-    position: absolute;
-    height: 100%;
-    width: 100%;
-
-    color: rgb(204, 204, 204);
-    // background-color: rgb(80, 80, 80);
-    background-color: rgb(37, 37, 38);
-}
-
-
 .fileItem,
 .fileItemRenameState,
 .fileItemOnSelected,
@@ -113,6 +99,7 @@
         white-space: pre-wrap;
     }
 }
+
 
 .fileItem:hover {
     background-color: rgb(42, 45, 46);

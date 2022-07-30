@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faAngleRight,
@@ -12,25 +11,30 @@ import {
 import style from './index.module.scss'
 import File, { FileConstructor } from './lib/File'
 import FileManager from './lib/FileManager'
-import { Divider } from '../ToolBar'
 import FileManagerTitle from './FileManagerTitle'
 import ContextMenu from './ContextMenu'
+import FileItem from './FileItem'
 
 
 export default class FileManagerView extends Component {
+  objElementFileManagerBody: React.RefObject<HTMLInputElement> = React.createRef()
+
   initializationRenameState = {
     file: FileManager.getRootFile(),
     oldName: FileManager.getRootFile().getFileName(),
     temporaryFileName: FileManager.getRootFile().getFileName(),
     message: '',
   }
+
   state = {
     showContextMenu: false,
     mouseDownXY: { x: 0, y: 0 },
     currentlySelectedItem: FileManager.getRootFile(),
+    previouslySelectedItem: FileManager.getRootFile(),
     renameState: this.initializationRenameState,
     // onClickItem: FileManager.getRootFile(),
   }
+
 
   documentOnClick = () => {
     FileManager.cleanSelectedFiles()
@@ -38,6 +42,7 @@ export default class FileManagerView extends Component {
     this.setState({
       showContextMenu: false,
       currentlySelectedItem: FileManager.getRootFile(),
+      previouslySelectedItem: FileManager.getRootFile(),
       renameState: this.initializationRenameState,
     })
   }
@@ -65,6 +70,8 @@ export default class FileManagerView extends Component {
   clickItem = (event: any, objFile: File) => {
     event.stopPropagation()
     // event.preventDefault()
+    const { currentlySelectedItem, previouslySelectedItem } = this.state
+    const objFileRootFile = FileManager.getRootFile()
 
     this.renameCheckAndSetFileName()
     this.addToSelectedFiles(event, objFile)
@@ -72,6 +79,11 @@ export default class FileManagerView extends Component {
     this.setState({
       showContextMenu: false,
       currentlySelectedItem: objFile,
+      previouslySelectedItem: (event.shiftKey) ?
+        (previouslySelectedItem !== objFileRootFile) ?
+          previouslySelectedItem :
+          currentlySelectedItem :
+        FileManager.getRootFile(),
       renameState: this.initializationRenameState,
     })
   }
@@ -117,12 +129,33 @@ export default class FileManagerView extends Component {
   }
 
   addToSelectedFiles = (event: any, objFile: File) => {
-    if (event.ctrlKey || event.metaKey) {
+    const { currentlySelectedItem, previouslySelectedItem } = this.state
+    const objFileRootFile = FileManager.getRootFile()
+
+    const prevFile = (previouslySelectedItem === objFileRootFile) ?
+      currentlySelectedItem :
+      previouslySelectedItem
+
+    if (event.ctrlKey || event.metaKey) { // control down
       if (FileManager.selectedFileIsExists(objFile)) {
         FileManager.deleteSelectedFile(objFile)
       } else {
         FileManager.addSelectedFile(objFile)
       }
+    } else if (event.shiftKey
+      && currentlySelectedItem !== objFileRootFile
+      && prevFile !== objFile) { // shift down
+
+      let boolStartAddSeletedFileFlag = false
+      FileManager.cleanSelectedFiles()
+
+      this.getFileList().forEach(item => {
+        const { objFile: file } = item
+        const boolIsTargetFile = (file === objFile || file === prevFile)
+
+        if (boolIsTargetFile) boolStartAddSeletedFileFlag = !boolStartAddSeletedFileFlag
+        if (boolStartAddSeletedFileFlag || boolIsTargetFile) FileManager.addSelectedFile(file)
+      })
     } else {
       FileManager.cleanSelectedFiles()
       FileManager.addSelectedFile(objFile)
@@ -236,7 +269,10 @@ export default class FileManagerView extends Component {
         onContextMenu={event => this.showItemContextMenu(event, FileManager.getRootFile())}
       >
         <FileManagerTitle parentThis={this} />
-        <div className={style.fileManagerBody}>
+        <div
+          ref={this.objElementFileManagerBody}
+          className={style.fileManagerBody}
+        >
           {showContextMenu ?
             <ContextMenu
               parentThis={this}
@@ -246,7 +282,17 @@ export default class FileManagerView extends Component {
             /> :
             <></>
           }
-          {this.getFileList().map(item => {
+
+          {this.getFileList().map(item =>
+            <FileItem
+              key={`FileItem_${item.objFile.getId()}`}
+              parentThis={this}
+              renameState={this.state.renameState}
+              {...item}
+            />
+          )}
+
+          {/* {this.getFileList().map(item => {
             const { objFile: file, deep } = item
             return <div
               key={file.getId()}
@@ -269,7 +315,6 @@ export default class FileManagerView extends Component {
                 }
               </span>
 
-              {/* 是否為 rename 狀態 */}
               {(renameState.file === file) ?
                 <>
                   {FileManager.getFileIcon(file, renameState.temporaryFileName)}
@@ -305,7 +350,7 @@ export default class FileManagerView extends Component {
                 </>
               }
             </div>
-          })}
+          })} */}
         </div>
       </div>
     )
