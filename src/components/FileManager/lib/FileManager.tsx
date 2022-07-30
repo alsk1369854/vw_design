@@ -134,6 +134,7 @@ export class FileManager {
   // }
 
   getFileById = (strId: string) => this.objMapFileMap.get(strId)
+  getFileByPath = (strFilePath:string) => this.getRootFile().getFileByPath(strFilePath)
 
   getRootFile = () => this.objFileRootFile
   setRootFile = (objFileRootFile: FileConstructor) => {
@@ -288,7 +289,7 @@ const fileListRoot = {
           boolIsDirectory: false,
           strFileName: "html.html",
           // numFileType: 3,
-          strData: '<!DOCTYPE html><html lang="en"><body><h1>Hello World!</h1></body></html>',
+          strData: '<!DOCTYPE html><html lang="en"><head><link rel="stylesheet" href="./style.css"></head><body><h1>Hello World!</h1><img src="../img.png" alt=""></body><script src="./javascript.js"></script></html>',
           strDataType: "text",
           boolIsExpand: false,
           arrFileSubFiles: []
@@ -353,4 +354,11 @@ const fileListRoot = {
 }
 objFileManager.setRootFile(fileListRoot)
 
+// let destFile = objFileManager.getRootFile().getFileByPath('dir2/html.html')
+// console.log('@1',destFile)
 
+// destFile = objFileManager.getFileById('1-2-1')?.getFileByPath('./..//')!
+// console.log('@2',destFile)
+
+// destFile = objFileManager.getFileById('1-2-1')?.getFileByPath('./tt.tt')!
+// console.log('@3',destFile)

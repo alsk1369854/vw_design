@@ -1,5 +1,5 @@
 import FileManager from "./FileManager";
-
+import { FileGetFileByPathError } from "../../../tools/Error";
 
 export interface FileConstructor {
     strId: string,
@@ -177,7 +177,8 @@ export default class File implements FileConstructor {
     }
 
     getSubFiles = () => this.arrFileSubFiles
-    setSubFiles = (arrFileNewSubFiles: Array<File>) => this.arrFileSubFiles = arrFileNewSubFiles
+    setSubFiles = (arrFileNewSubFiles: Array<File>) =>
+        this.arrFileSubFiles = arrFileNewSubFiles
 
     getParent = () => this.objFileParent
     setParent = (objFileNewParent: File) => {
@@ -220,4 +221,34 @@ export default class File implements FileConstructor {
     }
 
     isRootFile = () => this === FileManager.getRootFile()
+
+    getSubFileByFileName = (strFileName: string) => {
+        for(const objFile of this.getSubFiles()){
+            if(objFile.getFileName() === strFileName) return objFile
+        }
+        return undefined
+    }
+    getFileByPath = (strFilePath: string) => {
+        if (strFilePath.length === 0) return FileManager.getRootFile()
+        let currentFile: File | undefined = (strFilePath.charAt(0) === '/') ?
+            FileManager.getRootFile() :
+            this
+        const arrStrPath = strFilePath.split('/')
+        for (const fileName of arrStrPath) {
+            switch (fileName) {
+                case '':
+                case '.':
+                    continue;
+                case '..':
+                    currentFile = currentFile.getParent()!
+                    break
+                default:
+                    currentFile = currentFile.getSubFileByFileName(fileName)
+            }
+            if (!currentFile) {
+                throw new FileGetFileByPathError(`Pathname '${fileName}' does not exist`)
+            }
+        }
+        return currentFile
+    }
 }

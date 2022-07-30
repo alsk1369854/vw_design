@@ -25,3 +25,10 @@ export class FileManagerDownloadDataTypeMismatchError extends Error{
         this.name = "FileManagerDownloadDataTypeMismatchError";
     }
 }
+
+export class FileGetFileByPathError extends Error{
+    constructor(message: string){
+        super(message);
+        this.name = "FileGetFileByPathError";
+    }
+}
