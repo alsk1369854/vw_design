@@ -209,10 +209,6 @@ export const FileItem: FC<IProps> = function FileItem(props) {
             />
             <div
                 ref={drag}
-                // style = {{
-                //     border:
-                // }}
-                // style={{ opacity }}
                 data-testid={`fileItem`}
                 onClick={(event) => clickItem(event, objFile)}
                 onDoubleClick={(event) => doubleClickItem(event, objFile)}

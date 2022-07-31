@@ -1,15 +1,24 @@
 .fileManagerBody {
-    margin: 0px;
-    padding: 0px;
-    justify-content: flex-end;
-    position: absolute;
+    position: relative;
     height: 100%;
     width: 100%;
 
-    color: rgb(204, 204, 204);
-    // background-color: rgb(80, 80, 80);
-    background-color: rgb(37, 37, 38);
+    & .fileManagerContent{
+        margin: 0px;
+        padding: 0px;
+        position: relative;
+    
+        top: 35px;
+        height: calc(100% - 35px);
+        width: 100%;
+    
+        color: rgb(204, 204, 204);
+        background-color: rgb(37, 37, 38);
+    
+        overflow:auto;
+    }
 }
+
 
 .icon {
     width: 15px;

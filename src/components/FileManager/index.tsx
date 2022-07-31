@@ -9,7 +9,7 @@ import { faFileCirclePlus, faFolderPlus } from '@fortawesome/free-solid-svg-icon
 import style from './index.module.scss'
 import File from './lib/File'
 import FileManager from './lib/FileManager'
-import FileManagerTitle from './FileManagerTitle'
+import Title from './Title'
 import ContextMenu from './ContextMenu'
 import { FileItem } from './FileItem'
 import FileFactory from './lib/FileFactory'
@@ -133,6 +133,7 @@ export default class FileManagerView extends Component {
         renameState: this.initializationRenameState
       })
     } else {
+      // objFile.setFileName(element.value)
       this.setState({
         renameState: {
           ...this.state.renameState,
@@ -173,12 +174,13 @@ export default class FileManagerView extends Component {
     console.log(this.state)
     return (
       <div
+        className={style.fileManagerBody}
         onClick={() => this.setState({ showContextMenu: false })}
         onContextMenu={event => this.showItemContextMenu(event, FileManager.getRootFile())}
       >
-        <FileManagerTitle parentThis={this} />
+        <Title parentThis={this} />
         <div
-          className={style.fileManagerBody}
+          className={style.fileManagerContent}
         >
           {showContextMenu ?
             <ContextMenu
@@ -189,7 +191,6 @@ export default class FileManagerView extends Component {
             /> :
             <></>
           }
-
           <DndProvider backend={HTML5Backend}>
             <div style={{ overflow: 'hidden', clear: 'both' }}>
               {this.getFileList().map(item =>
@@ -203,6 +204,8 @@ export default class FileManagerView extends Component {
             </div>
           </DndProvider>
         </div>
+        <div style={{height:'100px'}}></div>
+        <div style={{height:'20px'}}></div>
       </div>
     )
   }
