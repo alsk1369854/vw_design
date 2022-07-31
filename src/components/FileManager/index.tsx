@@ -213,46 +213,6 @@ export default class FileManagerView extends Component {
     event.target.setSelectionRange(0, this.state.renameState.oldName.indexOf('.'))
   }
 
-  getFileClassName = (objFile: File) => {
-    const { renameState, currentlySelectedItem } = this.state
-    // 是否在 rename 狀態
-    if (renameState.file !== FileManager.getRootFile()) { // 是 rename 狀態
-      // 是否為 rename 項目
-      if (renameState.file === objFile) { // 是 rename 項目
-        // 是否在選中清單
-        if (FileManager.selectedFileIsExists(objFile)) { // 在選中清單
-          return style.fileItemRenameItemOnSelected
-        } else { // 不在選中清單
-          return style.fileItemRenameItem
-        }
-      } else { // 不是 rename 項目
-        // 是否在選中清單
-        if (FileManager.selectedFileIsExists(objFile)) { // 在選中清單
-          return style.fileItemOnSelectedRenameState
-        } else { // 不在選中清單
-          return style.fileItemRenameState
-        }
-      }
-    } else { // 不是 rename 狀態
-      // 是否在選中清單
-      if (FileManager.selectedFileIsExists(objFile)) { // 在選中清單
-        // 是否為當前選取項
-        if (currentlySelectedItem === objFile) { // 是當前選取項
-          return style.fileItemCurrentlySelected
-        } else { // 不是當前選取項
-          return style.fileItemOnSelected
-        }
-      } else { // 不在選中清單
-        // 是否為當前選取項
-        if (currentlySelectedItem === objFile) { // 是當前選取項
-          return style.fileItemCurrentlyContextMenu
-        } else { // 不是當前選取項
-          return style.fileItem
-        }
-      }
-    }
-  }
-
   render() {
     const {
       showContextMenu,
@@ -287,7 +247,7 @@ export default class FileManagerView extends Component {
             <FileItem
               key={`FileItem_${item.objFile.getId()}`}
               parentThis={this}
-              renameState={this.state.renameState}
+              renameState={renameState}
               {...item}
             />
           )}
