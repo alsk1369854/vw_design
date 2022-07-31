@@ -8,7 +8,7 @@ export default class FileFactory {
             boolIsDirectory: boolIsDirectory,
             strFileName: '',
             strData: '',
-            strDataType: 'text',
+            strDataType: (boolIsDirectory) ? 'directory' : 'text',
             boolIsExpand: false,
         }
         return new File(FileConstructor)

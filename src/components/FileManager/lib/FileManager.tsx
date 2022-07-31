@@ -1,5 +1,3 @@
-import React, { Component } from 'react'
-
 import { nanoid } from 'nanoid';
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver';
@@ -20,15 +18,15 @@ import {
 } from '@fortawesome/free-regular-svg-icons'
 
 
+import style from '../FileItem/index.module.scss'
 import { FileManagerDownloadDataTypeMismatchError } from '../../../tools/Error';
 import FunctionCaller from '../../../tools/FunctionCaller'
 import {
-  FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_BAR,
-  FUNCTION_CALLER_KEY_GET_OPEN_FILE_ITEMS,
+  // FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_BAR,
+  // FUNCTION_CALLER_KEY_GET_OPEN_FILE_ITEMS,
   FUNCTION_CALLER_KEY_SET_OPEN_FILE_ITEMS,
 } from '../../MainFrame/EditArea/OpenedFileBar'
 import File, { FileConstructor } from './File'
-import style from '../FileItem/index.module.scss'
 
 const fileIconElement = {
   directoryIsExpand: <FontAwesomeIcon icon={faFolderOpen} className={style.fileIcon} style={{ color: "rgb(220,182,122)" }} />,
@@ -51,7 +49,7 @@ export class FileManager {
   objMapSelectedFiles: Map<string, File> = new Map();
   arrFileOpenFiles: Array<File> = [];
 
-  constructor() { }
+  // constructor() { }
 
   getNextId = () => nanoid();
 

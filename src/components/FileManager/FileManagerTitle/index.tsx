@@ -1,10 +1,8 @@
 import React, { Component } from 'react'
 import style from './index.module.scss'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFileCirclePlus, faFolderPlus } from '@fortawesome/free-solid-svg-icons'
 
 import FileManager from '../lib/FileManager'
-import FileFactory from '../lib/FileFactory'
+import {icon} from '../index'
 
 interface IState { }
 
@@ -13,39 +11,11 @@ interface IProps {
 }
 
 export default class FileManagerTitle extends Component<IProps, IState> {
-  state = {
-    newFile: false,
-  }
-  addFile = (event: any, boolIsDirectory: boolean) => {
-    event.stopPropagation()
-    const { parentThis } = this.props
-    const { currentlySelectedItem, renameState } = parentThis.state
 
-    if (!renameState.file.isRootFile()) return
-    const targetDirectory = (currentlySelectedItem.isDirectory()) ?
-      currentlySelectedItem :
-      FileManager.getRootFile()
-
-    const newFile = FileFactory.getNewFile(boolIsDirectory)
-    targetDirectory.addSubFile(newFile)
-    targetDirectory.setIsExpand(true)
-    FileManager.cleanSelectedFiles()
-    FileManager.addSelectedFile(newFile)
-
-    parentThis.setState({
-      currentlySelectedItem: newFile,
-      renameState: {
-        ...renameState,
-        file: newFile,
-        oldName: newFile.strFileName,
-        temporaryFileName: newFile.strFileName,
-        message: '',
-      },
-      showContextMenu: false,
-    })
-  }
 
   render() {
+    const { parentThis } = this.props
+
     return (
       <div className={style.titleBody}>
         {(FileManager.getRootFile()) ?
@@ -55,16 +25,16 @@ export default class FileManagerTitle extends Component<IProps, IState> {
             </div>
             <span className={style.iconBar}>
               <div // add File
-                onClick={(event) => this.addFile(event, false)}
+                onClick={(event) => parentThis.addFile(event, false)}
                 className={style.iconItem}
               >
-                <FontAwesomeIcon icon={faFileCirclePlus} className={style.icon} />
+                {icon.addFile}
               </div>
               <div // add Directory
-                onClick={(event) => this.addFile(event, true)}
+                onClick={(event) => parentThis.addFile(event, true)}
                 className={style.iconItem}
               >
-                <FontAwesomeIcon icon={faFolderPlus} className={style.icon} />
+                {icon.addDirectory}
               </div>
             </span>
           </div> :

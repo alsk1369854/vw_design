@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faArrowUpRightFromSquare, // open
   faFileArrowDown, // download
+  faScissors, // cut
   faCopy, // copy
   faPaste, // paste
   faSignature, // rename
@@ -13,6 +14,8 @@ import {
 import style from './index.module.scss'
 import File from '../lib/File'
 import FileManager from '../lib/FileManager'
+import { icon } from '../index'
+
 
 interface IState { }
 
@@ -70,7 +73,12 @@ export default class ContextMenu extends Component<IProps, IState> {
   }
 
   render() {
-    const { file, y: pageY, x: pageX } = this.props
+    const {
+      parentThis,
+      file,
+      y: pageY,
+      x: pageX
+    } = this.props
     // console.log(this.props)
     return (
       <ul className={style.projectContextMenu}
@@ -80,49 +88,79 @@ export default class ContextMenu extends Component<IProps, IState> {
         }}
       >
         {(file.isDirectory()) ?
-          <></> :
+          <>
+            <li onClick={event => parentThis.addFile(event, false)}>
+              <span className={style.iconBar}>
+                {icon.addFile}
+              </span>
+              <span className={style.itemName}> Add File</span>
+            </li>
+            <li onClick={event => parentThis.addFile(event, true)}>
+              <span className={style.iconBar}>
+                {icon.addDirectory}
+              </span>
+              <span className={style.itemName}> Add Directory</span>
+            </li>
+          </> :
           <>
             <li onClick={this.open} >
-              <FontAwesomeIcon className={style.icon} icon={faArrowUpRightFromSquare} />
-              <span>Open</span>
+              <span className={style.iconBar}>
+                <FontAwesomeIcon className={style.icon} icon={faArrowUpRightFromSquare} />
+              </span>
+              <span className={style.itemName}>Open</span>
             </li>
           </>
         }
 
-        {/* <div className={style.line}></div> */}
-        <li onClick={this.download}>
-          <FontAwesomeIcon className={style.icon} icon={faFileArrowDown} />
-          <span>Download</span>
-        </li>
-
         <div className={style.line}></div>
         <li>
-          <FontAwesomeIcon className={style.icon} icon={faCopy} />
-          <span>Copy</span>
+          <span className={style.iconBar}>
+            <FontAwesomeIcon className={style.icon} icon={faScissors} />
+          </span>
+          <span className={style.itemName}>Cut</span>
         </li>
-        
+        <li>
+          <span className={style.iconBar}>
+            <FontAwesomeIcon className={style.icon} icon={faCopy} />
+          </span>
+          <span className={style.itemName}>Copy</span>
+        </li>
+
         {(file.isDirectory()) ?
           <>
             <li>
-              <FontAwesomeIcon className={style.icon} icon={faPaste} />
-              <span>Paste</span>
+              <span className={style.iconBar}>
+                <FontAwesomeIcon className={style.icon} icon={faPaste} />
+              </span>
+              <span className={style.itemName}>Paste</span>
             </li>
           </> :
           <></>
         }
 
+        <div className={style.line}></div>
+        <li onClick={this.download}>
+          <span className={style.iconBar}>
+            <FontAwesomeIcon className={style.icon} icon={faFileArrowDown} />
+          </span>
+          <span className={style.itemName}>Download</span>
+        </li>
+
         {(file === FileManager.getRootFile()) ?
           <></> :
           <>
             <div className={style.line}></div>
-            {/* <hr className="divider" /> */}
             <li onClick={event => this.rename(event, file)}>
-              <FontAwesomeIcon className={style.icon} icon={faSignature} />
-              <span>Rename</span>
+              <span className={style.iconBar}>
+                <FontAwesomeIcon className={style.icon} icon={faSignature} />
+              </span>
+              <span className={style.itemName}>Rename</span>
             </li>
             <li onClick={this.delete}>
-              <FontAwesomeIcon className={style.icon} icon={faTrashCan} />
-              <span>Delete</span>
+              <span className={style.iconBar}>
+                <FontAwesomeIcon className={style.icon} icon={faTrashCan} />
+              </span>
+              <span className={style.itemName}>Delete</span>
             </li>
           </>
         }
