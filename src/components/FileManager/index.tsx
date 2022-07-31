@@ -19,13 +19,20 @@ export const icon = {
   addDirectory: <FontAwesomeIcon icon={faFolderPlus} className={style.icon} />,
 }
 
+const RenameTemporaryStorage = {
+  temporaryFileName: ''
+}
+
+export const setTemporaryFileName = (strFileNmae: string) => RenameTemporaryStorage.temporaryFileName = strFileNmae
+export const getTemporaryFileName = () => RenameTemporaryStorage.temporaryFileName
+
 
 export default class FileManagerView extends Component {
 
   initializationRenameState = {
     file: FileManager.getRootFile(),
     oldName: FileManager.getRootFile().getFileName(),
-    temporaryFileName: FileManager.getRootFile().getFileName(),
+    // temporaryFileName: FileManager.getRootFile().getFileName(),
     message: '',
   }
 
@@ -41,6 +48,7 @@ export default class FileManagerView extends Component {
   documentOnClick = () => {
     FileManager.cleanSelectedFiles()
     this.renameCheckAndSetFileName()
+
     this.setState({
       showContextMenu: false,
       currentlySelectedItem: FileManager.getRootFile(),
@@ -106,6 +114,7 @@ export default class FileManagerView extends Component {
     targetDirectory!.setIsExpand(true)
     FileManager.cleanSelectedFiles()
     FileManager.addSelectedFile(newFile)
+    setTemporaryFileName(newFile.getFileName())
 
     this.setState({
       currentlySelectedItem: newFile,
@@ -113,7 +122,7 @@ export default class FileManagerView extends Component {
         ...renameState,
         file: newFile,
         oldName: newFile.strFileName,
-        temporaryFileName: newFile.strFileName,
+        // temporaryFileName: newFile.strFileName,
         message: '',
       },
       showContextMenu: false,
@@ -126,6 +135,7 @@ export default class FileManagerView extends Component {
 
     if (key === "Enter" && boolNameCanUsed) {
       objFile.setFileName(element.value)
+      setTemporaryFileName('')
       FileManager.cleanSelectedFiles()
       FileManager.addSelectedFile(objFile)
       this.setState({
@@ -134,18 +144,23 @@ export default class FileManagerView extends Component {
       })
     } else {
       // objFile.setFileName(element.value)
+      setTemporaryFileName(element.value)
+      // if(!boolNameCanUsed){
       this.setState({
         renameState: {
           ...this.state.renameState,
-          temporaryFileName: element.value,
+          // temporaryFileName: element.value,
           message: strMessage,
         }
       })
+      // }
     }
   }
   renameCheckAndSetFileName = () => {
     const { renameState } = this.state
-    const { file, temporaryFileName } = renameState
+    const { file } = renameState
+    if(file.isRootFile()) return 
+    const temporaryFileName = getTemporaryFileName()
     const [fileNameState] = file.checkFileNewName(temporaryFileName)
 
     return (fileNameState) ?
@@ -175,7 +190,7 @@ export default class FileManagerView extends Component {
     return (
       <div
         className={style.fileManagerBody}
-        onClick={() => this.setState({ showContextMenu: false })}
+        // onClick={() => this.setState({ showContextMenu: false })}
         onContextMenu={event => this.showItemContextMenu(event, FileManager.getRootFile())}
       >
         <Title parentThis={this} />
@@ -204,8 +219,8 @@ export default class FileManagerView extends Component {
             </div>
           </DndProvider>
         </div>
-        <div style={{height:'100px'}}></div>
-        <div style={{height:'20px'}}></div>
+        <div style={{ height: '100px' }}></div>
+        <div style={{ height: '20px' }}></div>
       </div>
     )
   }

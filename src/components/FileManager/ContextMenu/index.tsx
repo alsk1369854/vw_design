@@ -14,7 +14,7 @@ import {
 import style from './index.module.scss'
 import File from '../lib/File'
 import FileManager from '../lib/FileManager'
-import { icon } from '../index'
+import { icon, setTemporaryFileName } from '../index'
 
 
 interface IState { }
@@ -42,12 +42,13 @@ export default class ContextMenu extends Component<IProps, IState> {
     const { parentThis } = this.props
     const { renameState } = parentThis.state
     // this.props.setRenameItem(objFile)
+    setTemporaryFileName(objFile.getFileName())
     parentThis.setState({
       renameState: {
         ...renameState,
         file: objFile,
         oldName: objFile.getFileName(),
-        temporaryFileName: objFile.getFileName(),
+        // temporaryFileName: objFile.getFileName(),
         message: '',
       },
       showContextMenu: false,

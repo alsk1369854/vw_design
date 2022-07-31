@@ -1,4 +1,4 @@
-import React, { Component, FC, CSSProperties } from 'react'
+import React, { Component, FC, CSSProperties, useState } from 'react'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -13,6 +13,7 @@ import style from './index.module.scss'
 import File from '../lib/File'
 import FileManager from '../lib/FileManager'
 import { getDragPreview } from '../lib/PreviewTestFactory'
+import { setTemporaryFileName, getTemporaryFileName } from '../index'
 
 interface IState { }
 
@@ -31,15 +32,6 @@ interface DropResult {
     name: string
 }
 
-const styleP: CSSProperties = {
-    border: '1px dashed gray',
-    backgroundColor: 'white',
-    padding: '0.5rem 1rem',
-    marginRight: '1.5rem',
-    marginBottom: '1.5rem',
-    cursor: 'move',
-    float: 'left',
-}
 
 export const FileItem: FC<IProps> = function FileItem(props) {
 
@@ -49,6 +41,7 @@ export const FileItem: FC<IProps> = function FileItem(props) {
         objFile,
         deep,
     } = props
+    const temporaryFileName = getTemporaryFileName()
 
     const [{ isDragging }, drag, preview] = useDrag(() => ({
         type: 'fileItem',
@@ -198,11 +191,16 @@ export const FileItem: FC<IProps> = function FileItem(props) {
         }
     }
 
+    // const [state, setState] = useState(0)
+    // const renameEvent = () => {
+    //     setState(state+1)
+    // }
+
     const opacity = isDragging ? 0.4 : 1
     const dragPreview = getDragPreview(objFile.getId())
 
     return (
-        <>  
+        <>
             <DragPreviewImage
                 connect={preview}
                 src={dragPreview && dragPreview.src}
@@ -231,7 +229,7 @@ export const FileItem: FC<IProps> = function FileItem(props) {
 
                 {((renameState.file === objFile)) ?
                     <>
-                        {FileManager.getFileIcon(objFile, renameState.temporaryFileName)}
+                        {FileManager.getFileIcon(objFile, temporaryFileName)}
                         <span
                             className={style.renameBar}
                             // style={{ width: `calc(100px - ${item.deep! * 10 + 40 + 5}px)` }}
@@ -244,7 +242,7 @@ export const FileItem: FC<IProps> = function FileItem(props) {
                                         style.renameInput
                                 }
                                 autoFocus
-                                defaultValue={renameState.temporaryFileName}
+                                defaultValue={objFile.getFileName()}
                                 onFocus={renameOnFocus}
                                 onChange={(event => parentThis.renameEvent(event, objFile))}
                                 onClick={(event) => event.stopPropagation()}
