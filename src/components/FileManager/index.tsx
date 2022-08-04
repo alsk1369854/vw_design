@@ -20,12 +20,17 @@ export const icon = {
 }
 
 const RenameTemporaryStorage = {
-  temporaryFileName: ''
+  temporaryFileName: '',
+  renameMessage: ''
 }
-
-export const setTemporaryFileName = (strFileNmae: string) => RenameTemporaryStorage.temporaryFileName = strFileNmae
-export const getTemporaryFileName = () => RenameTemporaryStorage.temporaryFileName
-
+export const setTemporaryFileName = (strFileNmae: string) =>
+  RenameTemporaryStorage.temporaryFileName = strFileNmae
+export const getTemporaryFileName = () =>
+  RenameTemporaryStorage.temporaryFileName
+export const setTemporaryMessage = (strRenameMessage: string) =>
+  RenameTemporaryStorage.renameMessage = strRenameMessage
+export const getTemporaryMessage = () =>
+  RenameTemporaryStorage.renameMessage
 
 export default class FileManagerView extends Component {
 
@@ -33,7 +38,7 @@ export default class FileManagerView extends Component {
     file: FileManager.getRootFile(),
     oldName: FileManager.getRootFile().getFileName(),
     // temporaryFileName: FileManager.getRootFile().getFileName(),
-    message: '',
+    // message: '',
   }
 
   state = {
@@ -115,6 +120,7 @@ export default class FileManagerView extends Component {
     FileManager.cleanSelectedFiles()
     FileManager.addSelectedFile(newFile)
     setTemporaryFileName(newFile.getFileName())
+    setTemporaryMessage('')
 
     this.setState({
       currentlySelectedItem: newFile,
@@ -129,43 +135,47 @@ export default class FileManagerView extends Component {
     })
   }
 
-  renameEvent = (event: any, objFile: File) => {
-    const { target: element, key } = event
-    const [boolNameCanUsed, strMessage] = objFile.checkFileNewName(element.value)
+  // renameEvent = (event: any, objFile: File) => {
+  //   const { target: element, key } = event
+  //   const [boolNameCanUsed, strMessage] = objFile.checkFileNewName(element.value)
 
-    if (key === "Enter" && boolNameCanUsed) {
-      objFile.setFileName(element.value)
-      setTemporaryFileName('')
-      FileManager.cleanSelectedFiles()
-      FileManager.addSelectedFile(objFile)
-      this.setState({
-        currentlySelectedItem: objFile,
-        renameState: this.initializationRenameState
-      })
-    } else {
-      // objFile.setFileName(element.value)
-      setTemporaryFileName(element.value)
-      // if(!boolNameCanUsed){
-      this.setState({
-        renameState: {
-          ...this.state.renameState,
-          // temporaryFileName: element.value,
-          message: strMessage,
-        }
-      })
-      // }
-    }
-  }
+  //   if (key === "Enter" && boolNameCanUsed) {
+  //     objFile.setFileName(element.value)
+  //     setTemporaryFileName('')
+  //     FileManager.cleanSelectedFiles()
+  //     FileManager.addSelectedFile(objFile)
+  //     this.setState({
+  //       currentlySelectedItem: objFile,
+  //       renameState: this.initializationRenameState
+  //     })
+  //   } else {
+  //     // objFile.setFileName(element.value)
+  //     setTemporaryFileName(element.value)
+  //     // if(!boolNameCanUsed){
+  //     this.setState({
+  //       renameState: {
+  //         ...this.state.renameState,
+  //         // temporaryFileName: element.value,
+  //         message: strMessage,
+  //       }
+  //     })
+  //     // }
+  //   }
+  // }
   renameCheckAndSetFileName = () => {
     const { renameState } = this.state
     const { file } = renameState
-    if(file.isRootFile()) return 
+    if (file.isRootFile()) return
     const temporaryFileName = getTemporaryFileName()
     const [fileNameState] = file.checkFileNewName(temporaryFileName)
 
-    return (fileNameState) ?
-      file.setFileName(temporaryFileName) :
+    if (fileNameState) {
+      file.setFileName(temporaryFileName)
+    } else {
       this.renameRollBack()
+    }
+    setTemporaryFileName('')
+    setTemporaryMessage('')
   }
   renameRollBack = () => {
     const { renameState } = this.state

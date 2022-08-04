@@ -13,7 +13,12 @@ import style from './index.module.scss'
 import File from '../lib/File'
 import FileManager from '../lib/FileManager'
 import { getDragPreview } from '../lib/PreviewTestFactory'
-import { setTemporaryFileName, getTemporaryFileName } from '../index'
+import {
+    setTemporaryFileName,
+    getTemporaryFileName,
+    setTemporaryMessage,
+    getTemporaryMessage
+} from '../index'
 
 interface IState { }
 
@@ -41,7 +46,7 @@ export const FileItem: FC<IProps> = function FileItem(props) {
         objFile,
         deep,
     } = props
-    const temporaryFileName = getTemporaryFileName()
+    const [count, setCount] = useState(0)
 
     const [{ isDragging }, drag, preview] = useDrag(() => ({
         type: 'fileItem',
@@ -150,6 +155,57 @@ export const FileItem: FC<IProps> = function FileItem(props) {
         event.target.setSelectionRange(0, renameState.oldName.indexOf('.'))
     }
 
+    const renameEvent = (event: any, objFile: File) => {
+        const { parentThis } = props
+        const { target: element, key } = event
+        const [boolNameCanUsed, strMessage] = objFile.checkFileNewName(element.value)
+
+        setTemporaryFileName(element.value)
+        setTemporaryMessage(strMessage as string)
+        if (key === "Enter" && boolNameCanUsed) {
+            objFile.setFileName(element.value)
+            setTemporaryFileName('')
+            setTemporaryMessage('')
+            FileManager.cleanSelectedFiles()
+            FileManager.addSelectedFile(objFile)
+            parentThis.setState({
+                currentlySelectedItem: objFile,
+                renameState: parentThis.initializationRenameState
+            })
+        } else {
+            setCount(count + 1)
+            // parentThis.setState({
+            //     renameState: {
+            //         ...parentThis.state.renameState,
+            //         // temporaryFileName: element.value,
+            //         message: strMessage,
+            //     }
+            // })
+            // }
+        }
+    }
+    // const renameCheckAndSetFileName = () => {
+    //     const { renameState } = this.state
+    //     const { file } = renameState
+    //     if (file.isRootFile()) return
+    //     const temporaryFileName = getTemporaryFileName()
+    //     const [fileNameState] = file.checkFileNewName(temporaryFileName)
+
+    //     return (fileNameState) ?
+    //         file.setFileName(temporaryFileName) :
+    //         this.renameRollBack()
+    // }
+    // const renameRollBack = () => {
+    //     const { renameState } = this.state
+    //     const { file, oldName } = renameState
+
+    //     if (renameState.oldName === '') {
+    //         file.delete()
+    //     } else {
+    //         file.setFileName(oldName)
+    //     }
+    // }
+
     const getFileClassName = (objFile: File) => {
         const { parentThis } = props
         const { renameState, currentlySelectedItem } = parentThis.state
@@ -198,7 +254,9 @@ export const FileItem: FC<IProps> = function FileItem(props) {
 
     const opacity = isDragging ? 0.4 : 1
     const dragPreview = getDragPreview(objFile.getId())
-
+    const strTemporaryFileName = getTemporaryFileName()
+    const strRenameMessage = getTemporaryMessage()
+    
     return (
         <>
             <DragPreviewImage
@@ -229,7 +287,7 @@ export const FileItem: FC<IProps> = function FileItem(props) {
 
                 {((renameState.file === objFile)) ?
                     <>
-                        {FileManager.getFileIcon(objFile, temporaryFileName)}
+                        {FileManager.getFileIcon(objFile, strTemporaryFileName)}
                         <span
                             className={style.renameBar}
                             // style={{ width: `calc(100px - ${item.deep! * 10 + 40 + 5}px)` }}
@@ -237,20 +295,20 @@ export const FileItem: FC<IProps> = function FileItem(props) {
                         >
                             <input
                                 className={
-                                    (renameState.message !== '') ?
+                                    (strRenameMessage !== '') ?
                                         style.renameInputWarning :
                                         style.renameInput
                                 }
                                 autoFocus
-                                defaultValue={objFile.getFileName()}
+                                defaultValue={strTemporaryFileName}
                                 onFocus={renameOnFocus}
-                                onChange={(event => parentThis.renameEvent(event, objFile))}
+                                onChange={(event => renameEvent(event, objFile))}
                                 onClick={(event) => event.stopPropagation()}
-                                onKeyDown={(event => parentThis.renameEvent(event, objFile))}
+                                onKeyDown={(event => renameEvent(event, objFile))}
                             />
-                            {(renameState.message !== '') ?
+                            {(strRenameMessage !== '') ?
                                 <div className={style.renameMessage}>
-                                    {renameState.message}
+                                    {strRenameMessage}
                                 </div> :
                                 <></>
                             }

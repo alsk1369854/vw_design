@@ -14,7 +14,7 @@ import {
 import style from './index.module.scss'
 import File from '../lib/File'
 import FileManager from '../lib/FileManager'
-import { icon, setTemporaryFileName } from '../index'
+import { icon, setTemporaryFileName, setTemporaryMessage } from '../index'
 
 
 interface IState { }
@@ -43,13 +43,14 @@ export default class ContextMenu extends Component<IProps, IState> {
     const { renameState } = parentThis.state
     // this.props.setRenameItem(objFile)
     setTemporaryFileName(objFile.getFileName())
+    setTemporaryMessage('')
     parentThis.setState({
       renameState: {
         ...renameState,
         file: objFile,
         oldName: objFile.getFileName(),
         // temporaryFileName: objFile.getFileName(),
-        message: '',
+        // message: '',
       },
       showContextMenu: false,
     })
@@ -74,13 +75,24 @@ export default class ContextMenu extends Component<IProps, IState> {
   }
 
   render() {
-    const {
+    let {
       parentThis,
       file,
       y: pageY,
       x: pageX
     } = this.props
-    // console.log(this.props)
+
+    // check browser visible context
+    // directory height: 220; file height: 175
+    const height = window.innerHeight
+      || document.documentElement.clientHeight
+      || document.body.clientHeight;
+    if (file.isDirectory() && pageY as number + 220 > height) {
+      pageY = height - 220
+    }else if(pageY as number + 175 > height){
+      pageY = height - 175
+    }
+
     return (
       <ul className={style.projectContextMenu}
         style={{
