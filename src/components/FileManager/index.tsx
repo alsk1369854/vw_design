@@ -37,8 +37,10 @@ export default class FileManagerView extends Component {
   initializationRenameState = {
     file: FileManager.getRootFile(),
     oldName: FileManager.getRootFile().getFileName(),
-    // temporaryFileName: FileManager.getRootFile().getFileName(),
-    // message: '',
+  }
+  initializationDragAndDropState = {
+    srcFile: undefined,
+    destFile: undefined
   }
 
   state = {
@@ -47,6 +49,7 @@ export default class FileManagerView extends Component {
     currentlySelectedItem: FileManager.getRootFile(),
     previouslySelectedItem: FileManager.getRootFile(),
     renameState: this.initializationRenameState,
+    activeDragAndDropState: this.initializationDragAndDropState,
   }
 
 
@@ -59,6 +62,7 @@ export default class FileManagerView extends Component {
       currentlySelectedItem: FileManager.getRootFile(),
       previouslySelectedItem: FileManager.getRootFile(),
       renameState: this.initializationRenameState,
+      activeDragAndDropState: this.initializationDragAndDropState,
     })
   }
   componentDidMount() {
@@ -135,33 +139,6 @@ export default class FileManagerView extends Component {
     })
   }
 
-  // renameEvent = (event: any, objFile: File) => {
-  //   const { target: element, key } = event
-  //   const [boolNameCanUsed, strMessage] = objFile.checkFileNewName(element.value)
-
-  //   if (key === "Enter" && boolNameCanUsed) {
-  //     objFile.setFileName(element.value)
-  //     setTemporaryFileName('')
-  //     FileManager.cleanSelectedFiles()
-  //     FileManager.addSelectedFile(objFile)
-  //     this.setState({
-  //       currentlySelectedItem: objFile,
-  //       renameState: this.initializationRenameState
-  //     })
-  //   } else {
-  //     // objFile.setFileName(element.value)
-  //     setTemporaryFileName(element.value)
-  //     // if(!boolNameCanUsed){
-  //     this.setState({
-  //       renameState: {
-  //         ...this.state.renameState,
-  //         // temporaryFileName: element.value,
-  //         message: strMessage,
-  //       }
-  //     })
-  //     // }
-  //   }
-  // }
   renameCheckAndSetFileName = () => {
     const { renameState } = this.state
     const { file } = renameState
@@ -188,12 +165,25 @@ export default class FileManagerView extends Component {
     }
   }
 
+  onMouseLeaveListener = () => {
+    const {activeDragAndDropState} = this.state
+    const {destFile} = activeDragAndDropState
+    if(destFile){
+      this.setState({
+        activeDragAndDropState: {
+          ...activeDragAndDropState,
+          destFile: undefined
+        }
+      })
+    } 
+  }
+
   render() {
     const {
       showContextMenu,
       mouseDownXY,
       currentlySelectedItem,
-      renameState
+      renameState,
     } = this.state
 
     console.log(this.state)
@@ -202,6 +192,7 @@ export default class FileManagerView extends Component {
         className={style.fileManagerBody}
         // onClick={() => this.setState({ showContextMenu: false })}
         onContextMenu={event => this.showItemContextMenu(event, FileManager.getRootFile())}
+        onMouseLeave={this.onMouseLeaveListener}
       >
         <Title parentThis={this} />
         <div

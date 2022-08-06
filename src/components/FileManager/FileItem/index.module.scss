@@ -5,11 +5,14 @@
 .fileItemCurrentlySelected,
 .fileItemCurrentlyContextMenu,
 .fileItemRenameItem,
-.fileItemRenameItemOnSelected {
-    height: 20px;
+.fileItemRenameItemOnSelected,
+.fileItemOnDragUnSelected,
+.fileItemDropArea {
+    height: 21.5px;
 
     // 名稱過長顯示省略符
-    overflow: hidden; // 超出文本隱藏
+    // overflow: hidden; 
+    overflow-y: hidden; // 超出文本隱藏
     text-overflow: ellipsis; // 溢出用省略符顯示
     white-space: nowrap; // 溢出不換行
 
@@ -55,7 +58,8 @@
         height: 15px;
     }
 
-    & .fileName {}
+    & .fileName {
+    }
 
     & .renameBar {
         position: absolute;
@@ -101,7 +105,8 @@
 }
 
 
-.fileItem:hover {
+.fileItem:hover,
+.fileItemOnDragUnSelected {
     background-color: rgb(42, 45, 46);
 }
 
@@ -121,7 +126,8 @@
 }
 
 .fileItemRenameItemOnSelected,
-.fileItemOnSelectedRenameState {
+.fileItemOnSelectedRenameState,
+.fileItemDropArea {
     background-color: rgb(55, 55, 61);
 }
 
@@ -137,5 +143,6 @@
     border: solid 1px rgb(0, 127, 212);
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-    margin: -0.5px -1px;
+    margin: -1px -1px 0px -1px;
 }
+

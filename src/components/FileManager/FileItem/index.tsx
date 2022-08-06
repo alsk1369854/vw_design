@@ -1,4 +1,4 @@
-import React, { Component, FC, CSSProperties, useState } from 'react'
+import React, { FC, useState, useEffect } from 'react'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -6,7 +6,7 @@ import {
     faAngleDown,
     faSquareFull,
 } from '@fortawesome/free-solid-svg-icons'
-import { DragPreviewOptions, DragPreviewImage, useDrag, useDrop } from 'react-dnd'
+import { DragPreviewImage, useDrag, useDrop } from 'react-dnd'
 
 
 import style from './index.module.scss'
@@ -54,7 +54,17 @@ export const FileItem: FC<IProps> = function FileItem(props) {
         end: (item, monitor) => {
             const dropResult = monitor.getDropResult<DropResult>()
             if (item && dropResult) {
-                alert(`You dropped ${item} into ${dropResult.name}!`)
+                const { srcFile, destFile } = parentThis.state.activeDragAndDropState
+                if (destFile) {
+                    console.log(`${srcFile.getFileName()} move to ${destFile.getFileName()}`)
+                    setTimeout(() => {
+
+                        parentThis.setState({
+                            activeDragAndDropState: parentThis.initializationDragAndDropState
+                        })
+                    }, 1)
+                }
+                // alert(`You dropped ${item} into ${dropResult.name}!`)
             }
         },
         collect: (monitor) => ({
@@ -62,6 +72,88 @@ export const FileItem: FC<IProps> = function FileItem(props) {
             handlerId: monitor.getHandlerId(),
         }),
     }))
+
+    const [{ canDrop, isOver }, drop] = useDrop(() => ({
+        accept: 'fileItem',
+        drop: () => ({ name: 'Dustbin' }),
+        collect: (monitor) => ({
+            isOver: monitor.isOver(),
+            canDrop: monitor.canDrop(),
+        }),
+    }))
+
+    useEffect(() => {
+        const { activeDragAndDropState } = parentThis.state
+        const { srcFile, destFile } = activeDragAndDropState
+        if (isDragging && (srcFile !== objFile || !srcFile)) {
+            // (() => {
+            parentThis.setState({
+                activeDragAndDropState: {
+                    srcFile: objFile,
+                    destFile: undefined
+                },
+                renameState: parentThis.initializationRenameState,
+                showContextMenu: false,
+            })
+            // })()
+        }
+
+        const isActive = canDrop && isOver
+        // const srcDirectoryFile = (srcFile.isDirectory()) ? srcFile : srcFile.getParent()
+        const destDirectoryFile = (objFile.isDirectory()) ? objFile : objFile.getParent()
+
+
+        if (isActive && destFile !== destDirectoryFile) {
+            const isSrcFileCanDrop = (): boolean => {
+                const arrFiles = (FileManager.selectedFileIsExists(srcFile)) ?
+                    FileManager.getSetSelectedFiles() :
+                    [srcFile]
+                for (const file of arrFiles) {
+                    const fileParentFile = file.getParent()
+                    // 同父底下 與 如是資料夾自己底下當按夾 不可
+                    if (fileParentFile === destDirectoryFile
+                        || (file.isDirectory() && destDirectoryFile!.isSubFileOf(file))) {
+                        return false
+                    }
+                }
+                // 停留1秒展開文件夾
+                if (!destDirectoryFile?.isExpand()) {
+                    setTimeout(() => {
+                        const { destFile } = parentThis.state.activeDragAndDropState
+                        console.log(destFile, destDirectoryFile)
+                        console.log(destFile === destDirectoryFile)
+                        if (destFile === destDirectoryFile) {
+                            destDirectoryFile?.setIsExpand(true)
+                            parentThis.setState({})
+                        }
+                    }, 1000)
+                }
+                return true
+            }
+
+            const isCanDropDown = isSrcFileCanDrop()
+            if (isCanDropDown) {
+                parentThis.setState({
+                    activeDragAndDropState: {
+                        ...activeDragAndDropState,
+                        destFile: destDirectoryFile
+                    },
+                    renameState: parentThis.initializationRenameState,
+                    showContextMenu: false,
+                })
+            } else if (!isCanDropDown && destFile) {
+                // console.log('test')
+                parentThis.setState({
+                    activeDragAndDropState: {
+                        ...activeDragAndDropState,
+                        destFile: undefined,
+                    },
+                    renameState: parentThis.initializationRenameState,
+                    showContextMenu: false,
+                })
+            }
+        }
+    })
 
     // const [{ canDrop, isOver }, drop] = useDrop(() => ({
     //     accept: 'box',
@@ -208,7 +300,12 @@ export const FileItem: FC<IProps> = function FileItem(props) {
 
     const getFileClassName = (objFile: File) => {
         const { parentThis } = props
-        const { renameState, currentlySelectedItem } = parentThis.state
+        const {
+            renameState,
+            currentlySelectedItem,
+            activeDragAndDropState
+        } = parentThis.state
+
         // 是否在 rename 狀態
         if (!renameState.file.isRootFile()) { // 是 rename 狀態
             // 是否為 rename 項目
@@ -241,7 +338,18 @@ export const FileItem: FC<IProps> = function FileItem(props) {
                 if (currentlySelectedItem === objFile) { // 是當前選取項
                     return style.fileItemCurrentlyContextMenu
                 } else { // 不是當前選取項
-                    return style.fileItem
+                    const { srcFile, destFile } = activeDragAndDropState
+                    // 使否為拖曳準備下降區域
+                    if (destFile && (objFile.isSubFileOf(destFile) || objFile === destFile)) { // 是拖曳準備下降區域
+                        return style.fileItemDropArea
+                    } else { // 不是拖曳準備下降區域
+                        // 是否為拖曳項目
+                        if (srcFile === objFile && isDragging) { //是拖曳項目
+                            return style.fileItemOnDragUnSelected
+                        } else {// 不是拖曳項目
+                            return style.fileItem
+                        }
+                    }
                 }
             }
         }
@@ -253,72 +361,90 @@ export const FileItem: FC<IProps> = function FileItem(props) {
     // }
 
     const opacity = isDragging ? 0.4 : 1
+
+
+    const isActive = canDrop && isOver
+    let backgroundColor = ''
+    if (isActive) {
+        backgroundColor = 'darkgreen'
+    } else if (canDrop) {
+        backgroundColor = 'darkkhaki'
+    }
+
     const dragPreview = getDragPreview(objFile.getId())
     const strTemporaryFileName = getTemporaryFileName()
     const strRenameMessage = getTemporaryMessage()
-    
+
     return (
         <>
+
             <DragPreviewImage
                 connect={preview}
                 src={dragPreview && dragPreview.src}
             />
             <div
-                ref={drag}
-                data-testid={`fileItem`}
-                onClick={(event) => clickItem(event, objFile)}
-                onDoubleClick={(event) => doubleClickItem(event, objFile)}
-                onContextMenu={(event) => parentThis.showItemContextMenu(event, objFile)}
-                className={getFileClassName(objFile)}
+                // data-testid="dustbin"
+                ref={drop}
+            // style={{ backgroundColor }}
             >
-                {getExpandLine(objFile.getId(), deep)}
 
-                <span className={style.angleIcon}>
-                    {(objFile.isDirectory()) ?
-                        (objFile.isExpand()) ?
-                            <FontAwesomeIcon icon={faAngleDown} /> :
-                            <FontAwesomeIcon icon={faAngleRight} /> :
-                        <FontAwesomeIcon
-                            icon={faSquareFull}
-                            className={style.isFileAngleIconBackground}
-                        />
-                    }
-                </span>
+                <div
+                    ref={drag}
+                    // data-testid={`fileItem`}
+                    onClick={(event) => clickItem(event, objFile)}
+                    onDoubleClick={(event) => doubleClickItem(event, objFile)}
+                    onContextMenu={(event) => parentThis.showItemContextMenu(event, objFile)}
+                    className={getFileClassName(objFile)}
+                >
+                    {getExpandLine(objFile.getId(), deep)}
 
-                {((renameState.file === objFile)) ?
-                    <>
-                        {FileManager.getFileIcon(objFile, strTemporaryFileName)}
-                        <span
-                            className={style.renameBar}
-                            // style={{ width: `calc(100px - ${item.deep! * 10 + 40 + 5}px)` }}
-                            style={{ width: `calc(100% - ${deep * 10 + 41}px)` }}
-                        >
-                            <input
-                                className={
-                                    (strRenameMessage !== '') ?
-                                        style.renameInputWarning :
-                                        style.renameInput
-                                }
-                                autoFocus
-                                defaultValue={strTemporaryFileName}
-                                onFocus={renameOnFocus}
-                                onChange={(event => renameEvent(event, objFile))}
-                                onClick={(event) => event.stopPropagation()}
-                                onKeyDown={(event => renameEvent(event, objFile))}
+                    <span className={style.angleIcon}>
+                        {(objFile.isDirectory()) ?
+                            (objFile.isExpand()) ?
+                                <FontAwesomeIcon icon={faAngleDown} /> :
+                                <FontAwesomeIcon icon={faAngleRight} /> :
+                            <FontAwesomeIcon
+                                icon={faSquareFull}
+                                className={style.isFileAngleIconBackground}
                             />
-                            {(strRenameMessage !== '') ?
-                                <div className={style.renameMessage}>
-                                    {strRenameMessage}
-                                </div> :
-                                <></>
-                            }
-                        </span>
-                    </> :
-                    <>
-                        {FileManager.getFileIcon(objFile)}
-                        <span className={style.fileName}>{objFile.getFileName()}</span>
-                    </>
-                }
+                        }
+                    </span>
+
+                    {((renameState.file === objFile)) ?
+                        <>
+                            {FileManager.getFileIcon(objFile, strTemporaryFileName)}
+                            <span
+                                className={style.renameBar}
+                                // style={{ width: `calc(100px - ${item.deep! * 10 + 40 + 5}px)` }}
+                                style={{ width: `calc(100% - ${deep * 10 + 41}px)` }}
+                            >
+                                <input
+                                    className={
+                                        (strRenameMessage !== '') ?
+                                            style.renameInputWarning :
+                                            style.renameInput
+                                    }
+                                    autoFocus
+                                    defaultValue={strTemporaryFileName}
+                                    onFocus={renameOnFocus}
+                                    onChange={(event => renameEvent(event, objFile))}
+                                    onClick={(event) => event.stopPropagation()}
+                                    onKeyDown={(event => renameEvent(event, objFile))}
+                                />
+                                {(strRenameMessage !== '') ?
+                                    <div className={style.renameMessage}>
+                                        {strRenameMessage}
+                                    </div> :
+                                    <></>
+                                }
+                            </span>
+                        </> :
+                        <>
+                            {FileManager.getFileIcon(objFile)}
+                            <span className={style.fileName}>{objFile.getFileName()}</span>
+                        </>
+                    }
+                </div>
             </div>
         </>
     )

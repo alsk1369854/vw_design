@@ -71,6 +71,7 @@ export default class File implements FileConstructor {
     }
 
     isSubFileOf = (objFileSuperFile: File): boolean => {
+        if(!objFileSuperFile.isDirectory()) return false
         // const numFileType = objFileSuperFile.getFileType();
         let parentFile: File = this.getParent()!;
         if (parentFile && objFileSuperFile.isDirectory()) {
