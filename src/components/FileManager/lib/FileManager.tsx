@@ -18,7 +18,7 @@ import {
 } from '@fortawesome/free-regular-svg-icons'
 
 
-import style from '../FileItem/index.module.scss'
+import FileItemStyle from '../Content/FileItem/index.module.scss'
 import { FileManagerDownloadDataTypeMismatchError } from '../../../tools/Error';
 import FunctionCaller from '../../../tools/FunctionCaller'
 import {
@@ -29,15 +29,15 @@ import {
 import File, { FileConstructor } from './File'
 
 const fileIconElement = {
-  directoryIsExpand: <FontAwesomeIcon icon={faFolderOpen} className={style.fileIcon} style={{ color: "rgb(220,182,122)" }} />,
-  directoryNotExpand: <FontAwesomeIcon icon={faFolder} className={style.fileIcon} style={{ color: "rgb(192,149,83)", width: '13px', height: '13px', marginTop: '1px', marginBottom: '1px' }} />,
+  directoryIsExpand: <FontAwesomeIcon icon={faFolderOpen} className={FileItemStyle.fileIcon} style={{ color: "rgb(220,182,122)" }} />,
+  directoryNotExpand: <FontAwesomeIcon icon={faFolder} className={FileItemStyle.fileIcon} style={{ color: "rgb(192,149,83)", width: '13px', height: '13px', marginTop: '1px', marginBottom: '1px' }} />,
 
-  unknown: <FontAwesomeIcon icon={faFile} className={style.fileIcon} />,
-  txt: <FontAwesomeIcon icon={faFileLines} className={style.fileIcon} style={{ color: "rgb(118,140,172)" }} />,
-  html: <FontAwesomeIcon icon={faHtml5} className={style.fileIcon} style={{ color: "rgb(241,101,42)" }} />,
-  css: <FontAwesomeIcon icon={faCss3Alt} className={style.fileIcon} style={{ color: "rgb(50,167,219)" }} />,
-  js: <FontAwesomeIcon icon={faJsSquare} className={style.fileIcon} style={{ color: "rgb(245,222,25)" }} />,
-  image: <FontAwesomeIcon icon={faImage} className={style.fileIcon} style={{ color: "rgb(45,204,159)" }} />,
+  unknown: <FontAwesomeIcon icon={faFile} className={FileItemStyle.fileIcon} />,
+  txt: <FontAwesomeIcon icon={faFileLines} className={FileItemStyle.fileIcon} style={{ color: "rgb(118,140,172)" }} />,
+  html: <FontAwesomeIcon icon={faHtml5} className={FileItemStyle.fileIcon} style={{ color: "rgb(241,101,42)" }} />,
+  css: <FontAwesomeIcon icon={faCss3Alt} className={FileItemStyle.fileIcon} style={{ color: "rgb(50,167,219)" }} />,
+  js: <FontAwesomeIcon icon={faJsSquare} className={FileItemStyle.fileIcon} style={{ color: "rgb(245,222,25)" }} />,
+  image: <FontAwesomeIcon icon={faImage} className={FileItemStyle.fileIcon} style={{ color: "rgb(45,204,159)" }} />,
 }
 
 export class FileManager {

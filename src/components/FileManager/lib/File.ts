@@ -83,8 +83,7 @@ export default class File implements FileConstructor {
 
     addSubFile = (objFile: File) => {
         if (this.isDirectory()) {
-            console.log('addSubFile')
-            const arrFileNewSubFIles = this.arrFileSubFiles.map(file => {
+            const arrFileNewSubFiles = this.arrFileSubFiles.map(file => {
                 if (file.getFileName() === objFile.getFileName()) {
                     const flag = window.confirm(`目的地資料夾中已經存在名稱 '${file.getFileName()}' 的檔案或資料夾。要加以取代嗎?`)
                     return (flag) ? objFile : file

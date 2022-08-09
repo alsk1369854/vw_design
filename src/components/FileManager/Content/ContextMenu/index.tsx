@@ -12,9 +12,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 import style from './index.module.scss'
-import File from '../lib/File'
-import FileManager from '../lib/FileManager'
-import { icon, setTemporaryFileName, setTemporaryMessage } from '../index'
+import File from '../../lib/File'
+import FileManager from '../../lib/FileManager'
+import { icon, setTemporaryFileName, setTemporaryMessage } from '../../index'
 
 
 interface IState { }

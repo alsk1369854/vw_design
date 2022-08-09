@@ -1,0 +1,23 @@
+.fileManagerContent {
+    margin: 0px;
+    padding: 0px;
+    position: relative;
+
+    top: 35px;
+    height: calc(100% - 35px);
+    width: 100%;
+
+    color: rgb(204, 204, 204);
+    background-color: rgb(37, 37, 38);
+
+    overflow: auto;
+
+    & .fillUnusedSpace,
+    & .fillUnusedSpaceDropArea {
+        background-color: transparent;
+    }
+
+    & .fillUnusedSpaceDropArea {
+        background-color:rgb(55, 55, 61);
+    }
+}

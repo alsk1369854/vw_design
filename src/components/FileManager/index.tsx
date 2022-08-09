@@ -10,9 +10,12 @@ import style from './index.module.scss'
 import File from './lib/File'
 import FileManager from './lib/FileManager'
 import Title from './Title'
-import ContextMenu from './ContextMenu'
-import { FileItem } from './FileItem'
+import { Content } from './Content'
+// import ContextMenu from './ContextMenu'
+// import { FileItem } from './FileItem'
 import FileFactory from './lib/FileFactory'
+import { ImageProps } from 'react-bootstrap'
+import { IconProp } from '@fortawesome/fontawesome-svg-core'
 
 export const icon = {
   addFile: <FontAwesomeIcon icon={faFileCirclePlus} className={style.icon} />,
@@ -32,7 +35,17 @@ export const setTemporaryMessage = (strRenameMessage: string) =>
 export const getTemporaryMessage = () =>
   RenameTemporaryStorage.renameMessage
 
-export default class FileManagerView extends Component {
+interface IProp { }
+interface IState {
+  showContextMenu: boolean,
+  mouseDownXY: any,
+  currentlySelectedItem: File,
+  previouslySelectedItem: File,
+  renameState: any,
+  activeDragAndDropState: any,
+}
+
+export default class FileManagerView extends Component<IProp, IState> {
 
   initializationRenameState = {
     file: FileManager.getRootFile(),
@@ -40,7 +53,8 @@ export default class FileManagerView extends Component {
   }
   initializationDragAndDropState = {
     srcFile: undefined,
-    destFile: undefined
+    destFile: undefined,
+    isActive: false,
   }
 
   state = {
@@ -71,19 +85,6 @@ export default class FileManagerView extends Component {
   }
   componentWillUnmount() {
     document.removeEventListener('click', this.documentOnClick);
-  }
-
-  getFileList = () => {
-    const fileList: any[] = [];
-    const buildFileList = (objFile: File, deep: number) => {
-      const temp = { objFile, deep }
-      fileList.push(temp)
-      if (objFile.isDirectory() && objFile.isExpand()) {
-        objFile.getSubFiles().forEach((file: File) => buildFileList(file, deep + 1))
-      }
-    }
-    FileManager.getRootFile().getSubFiles().forEach(file => buildFileList(file, 0))
-    return fileList
   }
 
   showItemContextMenu = (event: any, objFile: File) => {
@@ -165,18 +166,19 @@ export default class FileManagerView extends Component {
     }
   }
 
-  onMouseLeaveListener = () => {
-    const {activeDragAndDropState} = this.state
-    const {destFile} = activeDragAndDropState
-    if(destFile){
-      this.setState({
-        activeDragAndDropState: {
-          ...activeDragAndDropState,
-          destFile: undefined
-        }
-      })
-    } 
-  }
+  // onMouseLeaveListener = () => {
+  //   console.log('FileManagerLeave')
+  //   const { activeDragAndDropState } = this.state
+  //   const { destFile } = activeDragAndDropState
+  //   if (destFile) {
+  //     this.setState({
+  //       activeDragAndDropState: {
+  //         ...activeDragAndDropState,
+  //         destFile: undefined
+  //       }
+  //     })
+  //   }
+  // }
 
   render() {
     const {
@@ -192,10 +194,14 @@ export default class FileManagerView extends Component {
         className={style.fileManagerBody}
         // onClick={() => this.setState({ showContextMenu: false })}
         onContextMenu={event => this.showItemContextMenu(event, FileManager.getRootFile())}
-        onMouseLeave={this.onMouseLeaveListener}
+        // onMouseLeave={this.onMouseLeaveListener}
       >
         <Title parentThis={this} />
-        <div
+
+        <DndProvider backend={HTML5Backend}>
+          <Content parentThis={this} />
+        </DndProvider>
+        {/* <div
           className={style.fileManagerContent}
         >
           {showContextMenu ?
@@ -219,9 +225,7 @@ export default class FileManagerView extends Component {
               )}
             </div>
           </DndProvider>
-        </div>
-        <div style={{ height: '100px' }}></div>
-        <div style={{ height: '20px' }}></div>
+        </div> */}
       </div>
     )
   }

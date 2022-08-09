@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import style from './index.module.scss'
 
 import FileManager from '../lib/FileManager'
-import {icon} from '../index'
+import { icon } from '../index'
 
 interface IState { }
 
@@ -17,7 +17,10 @@ export default class FileManagerTitle extends Component<IProps, IState> {
     const { parentThis } = this.props
 
     return (
-      <div className={style.titleBody}>
+      <div
+        className={style.titleBody}
+        onContextMenu={(event: any) => event.stopPropagation()}
+      >
         {(FileManager.getRootFile()) ?
           <div className={style.titleBar}>
             <div className={style.projectName}>
