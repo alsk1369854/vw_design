@@ -166,66 +166,19 @@ export default class FileManagerView extends Component<IProp, IState> {
     }
   }
 
-  // onMouseLeaveListener = () => {
-  //   console.log('FileManagerLeave')
-  //   const { activeDragAndDropState } = this.state
-  //   const { destFile } = activeDragAndDropState
-  //   if (destFile) {
-  //     this.setState({
-  //       activeDragAndDropState: {
-  //         ...activeDragAndDropState,
-  //         destFile: undefined
-  //       }
-  //     })
-  //   }
-  // }
-
   render() {
-    const {
-      showContextMenu,
-      mouseDownXY,
-      currentlySelectedItem,
-      renameState,
-    } = this.state
 
-    console.log(this.state)
     return (
       <div
         className={style.fileManagerBody}
-        // onClick={() => this.setState({ showContextMenu: false })}
         onContextMenu={event => this.showItemContextMenu(event, FileManager.getRootFile())}
-        // onMouseLeave={this.onMouseLeaveListener}
       >
         <Title parentThis={this} />
 
         <DndProvider backend={HTML5Backend}>
           <Content parentThis={this} />
         </DndProvider>
-        {/* <div
-          className={style.fileManagerContent}
-        >
-          {showContextMenu ?
-            <ContextMenu
-              parentThis={this}
-              file={currentlySelectedItem}
-              x={mouseDownXY.x}
-              y={mouseDownXY.y}
-            /> :
-            <></>
-          }
-          <DndProvider backend={HTML5Backend}>
-            <div style={{ overflow: 'hidden', clear: 'both' }}>
-              {this.getFileList().map(item =>
-                <FileItem
-                  key={`FileItem_${item.objFile.getId()}`}
-                  parentThis={this}
-                  renameState={renameState}
-                  {...item}
-                />
-              )}
-            </div>
-          </DndProvider>
-        </div> */}
+
       </div>
     )
   }

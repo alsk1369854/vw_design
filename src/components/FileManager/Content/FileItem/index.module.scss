@@ -1,4 +1,5 @@
 .fileItem,
+.fileItemStatic,
 .fileItemRenameState,
 .fileItemOnSelected,
 .fileItemOnSelectedRenameState,
@@ -8,7 +9,7 @@
 .fileItemRenameItemOnSelected,
 .fileItemOnDragUnSelected,
 .fileItemDropArea {
-    height: 21.5px;
+    height: 21px;
 
     // 名稱過長顯示省略符
     // overflow: hidden; 

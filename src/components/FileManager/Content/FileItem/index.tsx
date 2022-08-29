@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from 'react'
+import React, { FC, useState, useEffect, memo } from 'react'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -19,11 +19,16 @@ import {
     setTemporaryMessage,
     getTemporaryMessage
 } from '../../index'
+import type DragAndDropControl from '../../lib/DragAndDropControl'
+import { idText } from 'typescript'
+import { setTimeout } from 'timers'
 
 
 interface IState { }
 
 interface IProps {
+    renderParentComponent: Function,
+    dragAndDropControl: DragAndDropControl,
     grandparentThis: any,
     renameState: any,
     getFileList: Function,
@@ -40,40 +45,53 @@ interface DropResult {
 }
 
 
-export const FileItem: FC<IProps> = function FileItem(props) {
+export const FileItem: FC<IProps> = memo(function FileItem({
+    dragAndDropControl,
+    grandparentThis,
+    getFileList,
+    renameState,
+    objFile,
+    deep,
+}: IProps) {
 
-    const {
-        grandparentThis,
-        getFileList,
-        renameState,
-        objFile,
-        deep,
-    } = props
+    // const {
+    //     dragAndDropControl,
+    //     grandparentThis,
+    //     getFileList,
+    //     renameState,
+    //     objFile,
+    //     deep,
+    // } = props
     const [count, setCount] = useState(0)
 
     const [{ isDragging }, drag, preview] = useDrag(() => ({
         type: 'fileItem',
         item: objFile.getFileName(),
         end: (item, monitor) => {
-            const dropResult = monitor.getDropResult<DropResult>()
-            if (item && dropResult) {
-                const { activeDragAndDropState } = grandparentThis.state
-                const { srcFile, destFile } = activeDragAndDropState
-                if (destFile) {
-                    const prepareMoveFiles = (FileManager.selectedFileIsExists(srcFile)) ?
-                        FileManager.getSetSelectedFiles() :
-                        srcFile
-                    // window.confirm()
-                    console.log(`${srcFile.getFileName()} move to ${destFile.getFileName()}`)
-
-                }
-            }
-            setTimeout(() => {
-                grandparentThis.setState({
-                    activeDragAndDropState: grandparentThis.initializationDragAndDropState
-                })
-            }, 1)
+            console.log('@ end reset')
+            dragAndDropControl.reset()
         },
+        // end: (item, monitor) => {
+        //     console.log('end')
+        //     const dropResult = monitor.getDropResult<DropResult>()
+        //     if (item && dropResult) {
+        //         const { activeDragAndDropState } = grandparentThis.state
+        //         const { srcFile, destFile } = activeDragAndDropState
+        //         if (destFile) {
+        //             const prepareMoveFiles = (FileManager.selectedFileIsExists(srcFile)) ?
+        //                 FileManager.getSetSelectedFiles() :
+        //                 srcFile
+        //             // window.confirm()
+        //             console.log(`${srcFile.getFileName()} move to ${destFile.getFileName()}`)
+
+        //         }
+        //     }
+        //     setTimeout(() => {
+        //         grandparentThis.setState({
+        //             activeDragAndDropState: grandparentThis.initializationDragAndDropState
+        //         })
+        //     }, 1)
+        // },
         collect: (monitor) => ({
             isDragging: monitor.isDragging(),
             handlerId: monitor.getHandlerId(),
@@ -82,7 +100,9 @@ export const FileItem: FC<IProps> = function FileItem(props) {
 
     const [{ canDrop, isOver }, drop] = useDrop(() => ({
         accept: 'fileItem',
-        drop: () => ({ name: 'Dustbin' }),
+        canDrop: () => dragAndDropControl.isSrcFileCanDrop(objFile),
+        // drop: () => ({ name: 'Dustbin' }),
+        drop: () => dragAndDropControl.action(),
         collect: (monitor) => ({
             isOver: monitor.isOver(),
             canDrop: monitor.canDrop(),
@@ -90,77 +110,81 @@ export const FileItem: FC<IProps> = function FileItem(props) {
     }))
 
     useEffect(() => {
-        const { activeDragAndDropState } = grandparentThis.state
-        const { srcFile, destFile } = activeDragAndDropState
-        if (isDragging && (srcFile !== objFile || !srcFile)) {
-            // (() => {
-            grandparentThis.setState({
-                activeDragAndDropState: {
-                    srcFile: objFile,
-                    destFile: undefined
-                },
-                renameState: grandparentThis.initializationRenameState,
-                showContextMenu: false,
-            })
-            // })()
+        if (isDragging && dragAndDropControl.getSrcFile() !== objFile) {
+            console.log(`drag up ${objFile.getFileName()}`)
+            dragAndDropControl.setSrcFile(objFile)
         }
+        // const { activeDragAndDropState } = grandparentThis.state
+        // const { srcFile, destFile } = activeDragAndDropState
+        // if (isDragging && (srcFile !== objFile || !srcFile)) {
+        //     // (() => {
+        //     grandparentThis.setState({
+        //         activeDragAndDropState: {
+        //             srcFile: objFile,
+        //             destFile: undefined
+        //         },
+        //         renameState: grandparentThis.initializationRenameState,
+        //         showContextMenu: false,
+        //     })
+        //     // })()
+        // }
 
-        const isActive = canDrop && isOver
-        // const srcDirectoryFile = (srcFile.isDirectory()) ? srcFile : srcFile.getParent()
-        const destDirectoryFile = (objFile.isDirectory()) ? objFile : objFile.getParent()
+        // const isActive = canDrop && isOver
+        // // const srcDirectoryFile = (srcFile.isDirectory()) ? srcFile : srcFile.getParent()
+        // const destDirectoryFile = (objFile.isDirectory()) ? objFile : objFile.getParent()
 
 
-        if (isActive && destFile !== destDirectoryFile) {
-            const isSrcFileCanDrop = (): boolean => {
-                const arrFiles = (FileManager.selectedFileIsExists(srcFile)) ?
-                    FileManager.getSetSelectedFiles() :
-                    [srcFile]
-                for (const file of arrFiles) {
-                    const fileParentFile = file.getParent()
-                    // 同父底下 與 如是資料夾自己底下當按夾 不可
-                    if (fileParentFile === destDirectoryFile
-                        || (file.isDirectory() && destDirectoryFile!.isSubFileOf(file))) {
-                        return false
-                    }
-                }
-                // 停留1秒展開文件夾
-                if (!destDirectoryFile?.isExpand()) {
-                    setTimeout(() => {
-                        const { destFile } = grandparentThis.state.activeDragAndDropState
-                        console.log(destFile, destDirectoryFile)
-                        console.log(destFile === destDirectoryFile)
-                        if (destFile === destDirectoryFile) {
-                            destDirectoryFile?.setIsExpand(true)
-                            grandparentThis.setState({})
-                        }
-                    }, 1000)
-                }
-                return true
-            }
+        // if (isActive && destFile !== destDirectoryFile) {
+        //     const isSrcFileCanDrop = (): boolean => {
+        //         const arrFiles = (FileManager.selectedFileIsExists(srcFile)) ?
+        //             FileManager.getSetSelectedFiles() :
+        //             [srcFile]
+        //         for (const file of arrFiles) {
+        //             const fileParentFile = file.getParent()
+        //             // 同父底下 與 如是資料夾自己底下當按夾 不可
+        //             if (fileParentFile === destDirectoryFile
+        //                 || (file.isDirectory() && destDirectoryFile!.isSubFileOf(file))) {
+        //                 return false
+        //             }
+        //         }
+        //         // 停留1秒展開文件夾
+        //         if (!destDirectoryFile?.isExpand()) {
+        //             setTimeout(() => {
+        //                 const { destFile } = grandparentThis.state.activeDragAndDropState
+        //                 console.log(destFile, destDirectoryFile)
+        //                 console.log(destFile === destDirectoryFile)
+        //                 if (destFile === destDirectoryFile) {
+        //                     destDirectoryFile?.setIsExpand(true)
+        //                     grandparentThis.setState({})
+        //                 }
+        //             }, 1000)
+        //         }
+        //         return true
+        //     }
 
-            const isCanDropDown = isSrcFileCanDrop()
-            if (isCanDropDown) {
-                grandparentThis.setState({
-                    activeDragAndDropState: {
-                        ...activeDragAndDropState,
-                        destFile: destDirectoryFile,
-                        isActive: true,
-                    },
-                    renameState: grandparentThis.initializationRenameState,
-                    showContextMenu: false,
-                })
-            } else if (!isCanDropDown && destFile) {
-                // console.log('test')
-                grandparentThis.setState({
-                    activeDragAndDropState: {
-                        ...activeDragAndDropState,
-                        destFile: undefined,
-                    },
-                    renameState: grandparentThis.initializationRenameState,
-                    showContextMenu: false,
-                })
-            }
-        }
+        //     const isCanDropDown = isSrcFileCanDrop()
+        //     if (isCanDropDown) {
+        //         grandparentThis.setState({
+        //             activeDragAndDropState: {
+        //                 ...activeDragAndDropState,
+        //                 destFile: destDirectoryFile,
+        //                 isActive: true,
+        //             },
+        //             renameState: grandparentThis.initializationRenameState,
+        //             showContextMenu: false,
+        //         })
+        //     } else if (!isCanDropDown && destFile) {
+        //         // console.log('test')
+        //         grandparentThis.setState({
+        //             activeDragAndDropState: {
+        //                 ...activeDragAndDropState,
+        //                 destFile: undefined,
+        //             },
+        //             renameState: grandparentThis.initializationRenameState,
+        //             showContextMenu: false,
+        //         })
+        //     }
+        // }
     })
 
     // const [{ canDrop, isOver }, drop] = useDrop(() => ({
@@ -191,7 +215,7 @@ export const FileItem: FC<IProps> = function FileItem(props) {
     const clickItem = (event: any, objFile: File) => {
         event.stopPropagation()
         // event.preventDefault()
-        const { grandparentThis } = props
+        // const { grandparentThis } = props
         const { currentlySelectedItem, previouslySelectedItem } = grandparentThis.state
 
         grandparentThis.renameCheckAndSetFileName()
@@ -209,13 +233,13 @@ export const FileItem: FC<IProps> = function FileItem(props) {
         })
     }
     const doubleClickItem = (event: any, objFile: File) => {
-        const { grandparentThis } = props
+        // const { grandparentThis } = props
         grandparentThis.renameCheckAndSetFileName()
         FileManager.addOpenFile(objFile)
     }
 
     const addToSelectedFiles = (event: any, objFile: File) => {
-        const { grandparentThis } = props
+        // const { grandparentThis } = props
         const { currentlySelectedItem, previouslySelectedItem } = grandparentThis.state
         const objFileRootFile = FileManager.getRootFile()
 
@@ -251,12 +275,12 @@ export const FileItem: FC<IProps> = function FileItem(props) {
     }
 
     const renameOnFocus = (event: any) => {
-        const { renameState } = props
+        // const { renameState } = props
         event.target.setSelectionRange(0, renameState.oldName.indexOf('.'))
     }
 
     const renameEvent = (event: any, objFile: File) => {
-        const { grandparentThis } = props
+        // const { grandparentThis } = props
         const { target: element, key } = event
         const [boolNameCanUsed, strMessage] = objFile.checkFileNewName(element.value)
 
@@ -307,11 +331,11 @@ export const FileItem: FC<IProps> = function FileItem(props) {
     // }
 
     const getFileClassName = (objFile: File) => {
-        const { grandparentThis } = props
+        // const { grandparentThis } = props
         const {
             renameState,
             currentlySelectedItem,
-            activeDragAndDropState
+            // activeDragAndDropState
         } = grandparentThis.state
 
         // 是否在 rename 狀態
@@ -346,16 +370,20 @@ export const FileItem: FC<IProps> = function FileItem(props) {
                 if (currentlySelectedItem === objFile) { // 是當前選取項
                     return style.fileItemCurrentlyContextMenu
                 } else { // 不是當前選取項
-                    const { srcFile, destFile } = activeDragAndDropState
+                    // const { srcFile, destFile } = activeDragAndDropState
+                    const srcFile = dragAndDropControl.getSrcFile()
+                    const destFile = dragAndDropControl.getDestFile()
+                    const isActive = canDrop && isOver
                     // 使否為拖曳準備下降區域
-                    if (destFile && (objFile.isSubFileOf(destFile) || objFile === destFile)) { // 是拖曳準備下降區域
+                    if (isActive) { // 是拖曳準備下降區域
+                        // if (canDrop && destFile && (objFile.isSubFileOf(destFile) || objFile === destFile)) { // 是拖曳準備下降區域
                         return style.fileItemDropArea
                     } else { // 不是拖曳準備下降區域
                         // 是否為拖曳項目
                         if (srcFile === objFile && isDragging) { //是拖曳項目
                             return style.fileItemOnDragUnSelected
                         } else {// 不是拖曳項目
-                            return style.fileItem
+                            return style.fileItemStatic
                         }
                     }
                 }
@@ -371,19 +399,29 @@ export const FileItem: FC<IProps> = function FileItem(props) {
     // const opacity = isDragging ? 0.4 : 1
 
 
-    // const isActive = canDrop && isOver
-    // let backgroundColor = ''
-    // if (isActive) {
-    //     backgroundColor = 'darkgreen'
-    // } else if (canDrop) {
-    //     backgroundColor = 'darkkhaki'
-    // }
+    const isActive = canDrop && isOver
+    let backgroundColor = ''
+    if (isActive) {
+        backgroundColor = 'darkgreen'
+    } else if (canDrop) {
+        backgroundColor = 'darkkhaki'
+    }
 
+    // if (isOver) {
+    if (isActive) {
+        dragAndDropControl.setOnOverFile(objFile, canDrop)
+        // window.setTimeout(() => {
+        //     if(isOver){
+        //         dragAndDropControl.setOnOverFile(objFile, canDrop)
+        //     }
+        // }, 300);
+    }
 
     const dragPreview = getDragPreview(objFile.getId())
     const strTemporaryFileName = getTemporaryFileName()
     const strRenameMessage = getTemporaryMessage()
 
+    console.log('render fileItem')
     return (
         <>
 
@@ -391,19 +429,20 @@ export const FileItem: FC<IProps> = function FileItem(props) {
                 connect={preview}
                 src={dragPreview && dragPreview.src}
             />
-            <div
-                // data-testid="dustbin"
-                ref={drop}
-            // style={{ backgroundColor }}
-            >
 
+
+            <div
+                ref={drag}
+                // data-testid={`fileItem`}
+                onClick={(event) => clickItem(event, objFile)}
+                onDoubleClick={(event) => doubleClickItem(event, objFile)}
+                onContextMenu={(event) => grandparentThis.showItemContextMenu(event, objFile)}
+                className={getFileClassName(objFile)}
+            >
                 <div
-                    ref={drag}
-                    // data-testid={`fileItem`}
-                    onClick={(event) => clickItem(event, objFile)}
-                    onDoubleClick={(event) => doubleClickItem(event, objFile)}
-                    onContextMenu={(event) => grandparentThis.showItemContextMenu(event, objFile)}
-                    className={getFileClassName(objFile)}
+                    // data-testid="dustbin"
+                    ref={drop}
+                // style={{ backgroundColor }}
                 >
                     {getExpandLine(objFile.getId(), deep)}
 
@@ -457,5 +496,5 @@ export const FileItem: FC<IProps> = function FileItem(props) {
             </div>
         </>
     )
-}
+})
 
