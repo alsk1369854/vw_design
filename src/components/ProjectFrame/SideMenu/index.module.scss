@@ -1,0 +1,46 @@
+.rightSideBar {
+    padding: 10px 0px;
+    width: 350px;
+    background-color: rgb(225, 226, 226);
+
+    & .utilMenuBar {
+
+        & .utilItem,
+        .selectedUtilItem {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            list-style: none;
+            padding: 10px 0px;
+            height: 30px;
+
+            & .icon {
+                color: #b2b3b4;
+                // margin-left: 30px;
+                margin: 0px 20px;
+                height: 35px;
+                width: 35px;
+            }
+
+            & span {}
+        }
+
+        & .utilItem:hover {
+            background-color: rgb(255, 255, 255);
+
+        }
+
+        & .selectedUtilItem {
+            cursor: default;
+            background-color: rgb(255, 255, 255);
+        }
+    }
+}
+
+.line {
+    width: auto;
+    height: 2px;
+    margin: 0px 20px;
+    background-color: rgb(210, 210, 211);
+    border-radius: 10px
+}

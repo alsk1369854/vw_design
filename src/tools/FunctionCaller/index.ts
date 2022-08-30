@@ -32,7 +32,8 @@ class FunctionCaller {
      * @returns 註冊函數運行後的回傳值
      */
     call(strKey: string, arrData?: any[]): any {
-        if (this.objFuncCollection[strKey] === undefined) throw new FunctionCallerError(ERROR_KEY_NO_EXISTS);
+        // if (this.objFuncCollection[strKey] === undefined) throw new FunctionCallerError(ERROR_KEY_NO_EXISTS);
+        if (this.objFuncCollection[strKey] === undefined) return;
         const { [strKey]: func } = this.objFuncCollection;
         if (arrData === undefined) return func();
         return func(...arrData);
@@ -44,7 +45,8 @@ class FunctionCaller {
      * @returns 註冊函數
      */
     remove(strKey: string): Function | void {
-        if (this.objFuncCollection[strKey] === undefined) throw new FunctionCallerError(ERROR_KEY_NO_EXISTS);
+        // if (this.objFuncCollection[strKey] === undefined) throw new FunctionCallerError(ERROR_KEY_NO_EXISTS);
+        if (this.objFuncCollection[strKey] === undefined) return;
         const func = this.objFuncCollection[strKey];
         delete this.objFuncCollection[strKey];
         return func;

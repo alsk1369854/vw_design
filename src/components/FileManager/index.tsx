@@ -14,8 +14,6 @@ import { Content } from './Content'
 // import ContextMenu from './ContextMenu'
 // import { FileItem } from './FileItem'
 import FileFactory from './lib/FileFactory'
-import { ImageProps } from 'react-bootstrap'
-import { IconProp } from '@fortawesome/fontawesome-svg-core'
 
 export const icon = {
   addFile: <FontAwesomeIcon icon={faFileCirclePlus} className={style.icon} />,
@@ -42,7 +40,6 @@ interface IState {
   currentlySelectedItem: File,
   previouslySelectedItem: File,
   renameState: any,
-  activeDragAndDropState: any,
 }
 
 export default class FileManagerView extends Component<IProp, IState> {
@@ -51,11 +48,6 @@ export default class FileManagerView extends Component<IProp, IState> {
     file: FileManager.getRootFile(),
     oldName: FileManager.getRootFile().getFileName(),
   }
-  initializationDragAndDropState = {
-    srcFile: undefined,
-    destFile: undefined,
-    isActive: false,
-  }
 
   state = {
     showContextMenu: false,
@@ -63,7 +55,6 @@ export default class FileManagerView extends Component<IProp, IState> {
     currentlySelectedItem: FileManager.getRootFile(),
     previouslySelectedItem: FileManager.getRootFile(),
     renameState: this.initializationRenameState,
-    activeDragAndDropState: this.initializationDragAndDropState,
   }
 
 
@@ -76,7 +67,7 @@ export default class FileManagerView extends Component<IProp, IState> {
       currentlySelectedItem: FileManager.getRootFile(),
       previouslySelectedItem: FileManager.getRootFile(),
       renameState: this.initializationRenameState,
-      activeDragAndDropState: this.initializationDragAndDropState,
+      // activeDragAndDropState: this.initializationDragAndDropState,
     })
   }
   componentDidMount() {
@@ -85,6 +76,8 @@ export default class FileManagerView extends Component<IProp, IState> {
   }
   componentWillUnmount() {
     document.removeEventListener('click', this.documentOnClick);
+    FileManager.cleanSelectedFiles()
+    this.renameCheckAndSetFileName()
   }
 
   showItemContextMenu = (event: any, objFile: File) => {

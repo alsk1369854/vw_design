@@ -1,0 +1,58 @@
+.listItem {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0px 15px;
+    padding: 10px 0px;
+    list-style: none;
+    height: auto;
+
+    border-radius: 5px;
+
+    & .itemName {
+        width: 40%;
+        display: flex;
+        align-items: center;
+
+        & img {
+            border-radius: 10px;
+            height: 50px;
+            width: 50px;
+            margin: 0px 10px;
+        }
+    }
+
+    & .itemOwner {
+        width: 10%;
+
+        @media (max-width:1100px) {
+            width: 20%;
+        }
+
+        @media (max-width:700px) {
+            display: none;
+        }
+    }
+
+    & .itemLastTime {
+        width: 20%;
+
+        @media (max-width:1170px) {
+            display: none;
+        }
+    }
+}
+
+.listItem:hover {
+    background-color: rgb(255, 255, 255);
+}
+
+
+.line {
+    width: auto;
+    height: 2px;
+    margin: 0px 20px;
+    background-color: rgb(210, 210, 211);
+    border-radius: 10px
+}

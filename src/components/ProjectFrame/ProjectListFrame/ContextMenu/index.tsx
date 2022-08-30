@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 
 import style from './index.module.scss'
-import OpenIcon from '../../../assets/icon/Open.png'
-import DownloadIcon from '../../../assets/icon/Download.png'
-import CopyIcon from '../../../assets/icon/Copy.png'
-import RenameIcon from '../../../assets/icon/Rename.png'
-import MarkIcon from '../../../assets/icon/Star.png'
-import DetailIcon from '../../../assets/icon/Detail.png'
-import AshcanIcon from '../../../assets/icon/Ashcan.png'
+import OpenIcon from '../../../../assets/icon/Open.png'
+import DownloadIcon from '../../../../assets/icon/Download.png'
+import CopyIcon from '../../../../assets/icon/Copy.png'
+import RenameIcon from '../../../../assets/icon/Rename.png'
+import MarkIcon from '../../../../assets/icon/Star.png'
+import DetailIcon from '../../../../assets/icon/Detail.png'
+import AshcanIcon from '../../../../assets/icon/Ashcan.png'
 
 interface IState { }
 

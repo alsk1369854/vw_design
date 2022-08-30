@@ -115,7 +115,7 @@ export class FileManager {
         FileManager.objMapFileIconMap.get('directoryIsExpand') :
         FileManager.objMapFileIconMap.get('directoryNotExpand')
     } else {
-      const arrStrFileExtension = (strTemporaryFileName) ?
+      const arrStrFileExtension = (strTemporaryFileName || strTemporaryFileName?.length===0) ?
         File.getFileNameExtensionStrArray(strTemporaryFileName) :
         objFile.getFileExtension()
 
@@ -132,7 +132,7 @@ export class FileManager {
   // }
 
   getFileById = (strId: string) => this.objMapFileMap.get(strId)
-  getFileByPath = (strFilePath:string) => this.getRootFile().getFileByPath(strFilePath)
+  getFileByPath = (strFilePath: string) => this.getRootFile().getFileByPath(strFilePath)
 
   getRootFile = () => this.objFileRootFile
   setRootFile = (objFileRootFile: FileConstructor) => {
@@ -350,6 +350,7 @@ const fileListRoot = {
     },
   ]
 }
+console.log(JSON.stringify(fileListRoot))
 objFileManager.setRootFile(fileListRoot)
 
 // let destFile = objFileManager.getRootFile().getFileByPath('dir2/html.html')

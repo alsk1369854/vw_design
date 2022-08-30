@@ -1,0 +1,54 @@
+.ProjectListBar {
+    width: 100%;
+    background-color: rgb(239, 239, 239);
+
+    & .listHeaderBar {
+        color: rgb(183, 183, 183);
+        display: flex;
+        margin: 0px 20px;
+        justify-content: space-between;
+        align-items: flex-end;
+        height: 8%;
+        width: auto;
+        margin-bottom: 3px;
+
+        & .headerNameTitle {
+            width: 40%;
+        }
+
+        & .headerOwnerTitle {
+            width: 10%;
+
+            @media (max-width:1100px) {
+                width: 20%;
+            }
+
+            @media (max-width:700px) {
+                display: none;
+            }
+        }
+
+        & .headerLastTimeTitle {
+            width: 20%;
+
+            @media (max-width:1170px) {
+                display: none;
+            }
+        }
+
+    }
+
+    & .listMenuBar {
+        margin: 0px 5px;
+        height: auto;
+    }
+
+}
+
+.line {
+    width: auto;
+    height: 2px;
+    margin: 0px 20px;
+    background-color: rgb(210, 210, 211);
+    border-radius: 10px
+}

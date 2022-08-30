@@ -1,5 +1,6 @@
 import FileManager from "./FileManager";
 import { FileGetFileByPathError } from "../../../tools/Error";
+import Swal from 'sweetalert2'
 
 export interface FileConstructor {
     strId: string,
@@ -64,14 +65,22 @@ export default class File implements FileConstructor {
 
         const fileParent = this.getParent()
         if (fileParent) {
+            // fileParent.removeSubFile(this)
             const fileParentSubFiles = fileParent.getSubFiles()
             const newSubFiles = fileParentSubFiles.filter(file => file.getId() !== this.getId())
             fileParent.setSubFiles(newSubFiles)
         }
     }
 
+    private removeSubFile = (objFile: File) => {
+        if (this.isDirectory()) {
+            const newSubFiles = this.getSubFiles().filter(file => file.getId() !== objFile.getId())
+            this.setSubFiles(newSubFiles)
+        }
+    }
+
     isSubFileOf = (objFileSuperFile: File): boolean => {
-        if(!objFileSuperFile.isDirectory()) return false
+        if (!objFileSuperFile.isDirectory()) return false
         // const numFileType = objFileSuperFile.getFileType();
         let parentFile: File = this.getParent()!;
         if (parentFile && objFileSuperFile.isDirectory()) {
@@ -83,34 +92,34 @@ export default class File implements FileConstructor {
 
     addSubFile = (objFile: File) => {
         if (this.isDirectory()) {
-            const arrFileNewSubFiles = this.arrFileSubFiles.map(file => {
-                if (file.getFileName() === objFile.getFileName()) {
-                    const flag = window.confirm(`目的地資料夾中已經存在名稱 '${file.getFileName()}' 的檔案或資料夾。要加以取代嗎?`)
-                    return (flag) ? objFile : file
-                } else {
-                    return file
-                }
-            })
             objFile.setParent(this)
             this.arrFileSubFiles.push(objFile)
-            this.sortSubFiles()
         }
     }
 
     private sortSubFiles = (arrFile?: Array<File>) => {
         if (!arrFile) arrFile = this.arrFileSubFiles
-        // Folder 在前 File 在後，按首字母遞增排序，相同首字符，按長度排序
+
+        // Folder 在前 File 在後，按名稱遞增排序
         arrFile.sort((f1, f2) => {
             if (f1.isDirectory() === f2.isDirectory()) {
-                const s1 = f1.strFileName.charAt(0)
-                const s2 = f2.strFileName.charAt(0)
-                return (s1.toLocaleUpperCase() === s2.toLocaleUpperCase()) ?
-                    f1.strFileName.length - f2.strFileName.length : // 相同首字符，按長度排序
-                    f1.strFileName.localeCompare(f2.strFileName) // 按首字母遞增排序
+                return f1.strFileName.localeCompare(f2.strFileName) // 按名稱遞增排序
             } else { // Folder 在前 File 在後
                 return (f2.isDirectory()) ? 1 : -1
             }
         })
+        // Folder 在前 File 在後，按首字母遞增排序，相同首字符，按長度排序
+        // arrFile.sort((f1, f2) => {
+        //     if (f1.isDirectory() === f2.isDirectory()) {
+        //         const s1 = f1.strFileName.charAt(0)
+        //         const s2 = f2.strFileName.charAt(0)
+        //         return (s1.toLocaleUpperCase() === s2.toLocaleUpperCase()) ?
+        //             f1.strFileName.length - f2.strFileName.length : // 相同首字符，按長度排序
+        //             f1.strFileName.localeCompare(f2.strFileName) // 按首字母遞增排序
+        //     } else { // Folder 在前 File 在後
+        //         return (f2.isDirectory()) ? 1 : -1
+        //     }
+        // })
         return arrFile
     }
 
@@ -147,9 +156,9 @@ export default class File implements FileConstructor {
     getFileName = () => this.strFileName
     setFileName = (strNewFileName: string) => {
         this.strFileName = strNewFileName
-        if (!(this.isDirectory())) {
+        if (!this.isDirectory()) {
             this.buildFileExtension()
-            const arrStrFileExtensionData = this.getFileExtension()
+            // const arrStrFileExtensionData = this.getFileExtension()
             // if (arrStrFileExtensionData.length === 0) {
             //     this.setFileType(FileManager.getFileType('unknown'))
             // } else {
@@ -175,9 +184,9 @@ export default class File implements FileConstructor {
     static checkFileName = (newFileName: string) => {
         const regExp = /^\s|\s$/g
 
-        if (newFileName.replaceAll(/\s/g, '').length === 0) {
+        if (newFileName.replaceAll(/\s/g, '').length === 0) { // 檢查名稱是否為空
             return [false, '必須提供檔案或資料夾名稱']
-        } else if (regExp.test(newFileName)) {
+        } else if (regExp.test(newFileName)) { // 檢查名稱前後是否有空格
             return [false, `名稱 ${newFileName} 不能作為檔案或資料夾名稱。請選擇不同的名稱。`]
         }
         return [true, '']
@@ -187,6 +196,7 @@ export default class File implements FileConstructor {
         const [fileNameState, message] = File.checkFileName(newFileName)
         const parentFile = this.getParent()
 
+        // 檢查名稱是否重複
         if (fileNameState && parentFile) {
             let checkNameExistedFlag = false
             for (let file of parentFile.getSubFiles()!) {
@@ -235,17 +245,64 @@ export default class File implements FileConstructor {
         return currentFile
     }
 
-    isAbove = (objFile: File) => {
-        const objFileRootFile = FileManager.getRootFile()
-        let srcRootSubFile: File = this
-        let destRootSubFile: File = objFile
-        while (srcRootSubFile.getParent() !== objFileRootFile) {
-            srcRootSubFile = srcRootSubFile.getParent()!
+    subFileNameIsExist = (strFileName: string) => {
+        for (const file of this.getSubFiles()) {
+            if (file.getFileName().toUpperCase() === strFileName.toUpperCase()) {
+                return file
+            }
         }
-        while (destRootSubFile.getParent() !== objFileRootFile){
-            destRootSubFile = destRootSubFile.getParent()!
-        }
-        const sortedFiles = this.sortSubFiles([srcRootSubFile, destRootSubFile])
-        return (sortedFiles[0] === srcRootSubFile)
+        return false
     }
+
+    moveToThisFile = (arrFile: File[]) => {
+        if (this.isDirectory()) {
+            for (const file of arrFile) {
+                const fileNameIsExist = this.subFileNameIsExist(file.getFileName())
+                const fileOldParentFile = file.getParent()
+                if (fileNameIsExist) {
+                    // Swal.fire({
+                    //     title: `目的地資料夾中已經存在名稱 '${file.getFileName()}' 的檔案或資料夾。要加以取代嗎?`,
+                    //     // text: `目的地資料夾中已經存在名稱 '${file.getFileName()}' 的檔案或資料夾。要加以取代嗎?`,
+                    //     // icon: 'warning',
+                    //     showCancelButton: true,
+                    //     // position:'top',
+                    //     // background: '#252526',
+                    //     confirmButtonColor: '#3085d6',
+                    //     cancelButtonColor: '#d33',
+                    //     confirmButtonText: 'Yes!'
+                    // }).then((result) => {
+                    //     if (result.isConfirmed) {
+                    //         fileNameIsExist.delete()
+                    //         fileOldParentFile?.removeSubFile(file)
+                    //         this.addSubFile(file)
+                    //     }
+                    // })
+                    const cover = window.confirm(`目的地資料夾中已經存在名稱 '${file.getFileName()}' 的檔案或資料夾。要加以取代嗎?`)
+                    if (cover) {
+                        fileNameIsExist.delete()
+                        fileOldParentFile?.removeSubFile(file)
+                        this.addSubFile(file)
+                    }
+                } else {
+                    fileOldParentFile?.removeSubFile(file)
+                    this.addSubFile(file)
+                }
+            }
+            this.sortSubFiles()
+        }
+    }
+
+    // isAbove = (objFile: File) => {
+    //     const objFileRootFile = FileManager.getRootFile()
+    //     let srcRootSubFile: File = this
+    //     let destRootSubFile: File = objFile
+    //     while (srcRootSubFile.getParent() !== objFileRootFile) {
+    //         srcRootSubFile = srcRootSubFile.getParent()!
+    //     }
+    //     while (destRootSubFile.getParent() !== objFileRootFile){
+    //         destRootSubFile = destRootSubFile.getParent()!
+    //     }
+    //     const sortedFiles = this.sortSubFiles([srcRootSubFile, destRootSubFile])
+    //     return (sortedFiles[0] === srcRootSubFile)
+    // }
 }

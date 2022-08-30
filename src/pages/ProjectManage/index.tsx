@@ -6,7 +6,7 @@ import { Test } from '../../tools/Test';
 import HeaderStyle from '../Edit/index.module.scss'
 import logo from '../../assets/logo.png';
 import ToolBar from '../../components/ToolBar';
-import ProjectListFrame from '../../components/ProjectListFrame'
+import ProjectFrame from '../../components/ProjectFrame'
 
 const cssHelmet = `
     html, body, #app {
@@ -69,7 +69,7 @@ export default class ProjectManagePage extends React.Component {
                 </div>
 
                 {/* ProjectList */}
-                <ProjectListFrame
+                <ProjectFrame
                     showContextMenu={this.state.showContextMenu}
                     openProjectContextMenu={this.openProjectContextMenu} />
             </div>
