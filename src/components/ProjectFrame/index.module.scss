@@ -1,8 +1,14 @@
 .mainFrame {
+    // 防止文字被選中
+    -moz-user-select: none; // 火狐
+    -webkit-user-select: none; // 谷歌
+    -ms-user-sele: none; // IE
+    user-select: none;
+    box-sizing: border-box;
 
     font-size: 15px;
     font-family: monospace;
-    
+
     color: black;
     display: flex;
     height: 100vh;

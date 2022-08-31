@@ -350,7 +350,7 @@ const fileListRoot = {
     },
   ]
 }
-console.log(JSON.stringify(fileListRoot))
+// console.log(JSON.stringify(fileListRoot))
 objFileManager.setRootFile(fileListRoot)
 
 // let destFile = objFileManager.getRootFile().getFileByPath('dir2/html.html')

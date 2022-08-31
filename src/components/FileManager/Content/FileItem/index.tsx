@@ -179,12 +179,14 @@ export const FileItem: FC<IProps> = memo(function FileItem({
     const renameEvent = (event: any, objFile: File) => {
         // const { grandparentThis } = props
         const { target: element, key } = event
-        const [boolNameCanUsed, strMessage] = objFile.checkFileNewName(element.value)
+        // const strNewFileName = element.value.trim()
+        const result = objFile.checkFileNewName(element.value)
+        const {state:boolNameCanUsed, message, newFileName} = result
 
-        setTemporaryFileName(element.value)
-        setTemporaryMessage(strMessage as string)
+        setTemporaryFileName(newFileName)
+        setTemporaryMessage(message as string)
         if (key === "Enter" && boolNameCanUsed) {
-            objFile.setFileName(element.value)
+            objFile.setFileName(newFileName)
             setTemporaryFileName('')
             setTemporaryMessage('')
             FileManager.cleanSelectedFiles()

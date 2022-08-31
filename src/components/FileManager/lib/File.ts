@@ -182,22 +182,33 @@ export default class File implements FileConstructor {
     }
 
     static checkFileName = (newFileName: string) => {
-        const regExp = /^\s|\s$/g
-
-        if (newFileName.replaceAll(/\s/g, '').length === 0) { // 檢查名稱是否為空
-            return [false, '必須提供檔案或資料夾名稱']
-        } else if (regExp.test(newFileName)) { // 檢查名稱前後是否有空格
-            return [false, `名稱 ${newFileName} 不能作為檔案或資料夾名稱。請選擇不同的名稱。`]
+        const regExp = /[\\|/|:|\*|\?|"|<|>|]/g
+        
+        newFileName = newFileName.trim()
+        const result = {
+            state: false,
+            message: '',
+            newFileName: newFileName,
         }
-        return [true, '']
+
+        if (newFileName.length === 0) { // 檢查名稱是否為空
+            result.message = '必須提供檔案或資料夾名稱'
+            return result
+        } else if (regExp.test(newFileName)) { // 檢查名稱前後是否有空格
+            result.message = `名稱 ${newFileName} 不能作為檔案或資料夾名稱。請選擇不同的名稱。`
+            return result
+        }
+        result.state = true
+        return result
     }
     checkFileNewName = (newFileName: string) => {
         // console.log(newFileName)
-        const [fileNameState, message] = File.checkFileName(newFileName)
+        const result = File.checkFileName(newFileName)
+        const {state} = result
         const parentFile = this.getParent()
 
         // 檢查名稱是否重複
-        if (fileNameState && parentFile) {
+        if (state && parentFile) {
             let checkNameExistedFlag = false
             for (let file of parentFile.getSubFiles()!) {
                 if (file.getId() !== this.getId()
@@ -207,10 +218,12 @@ export default class File implements FileConstructor {
                 }
             }
             if (checkNameExistedFlag) {
-                return [false, `這個位置已經存在檔案或資料夾 ${newFileName} 。請選擇不同名稱。`]
+                result.state = false
+                result.message = `這個位置已經存在檔案或資料夾 ${newFileName} 。請選擇不同名稱。`
+                return result
             }
         }
-        return [fileNameState, message]
+        return result
     }
 
     isRootFile = () => this === FileManager.getRootFile()

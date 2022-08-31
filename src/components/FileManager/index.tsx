@@ -138,9 +138,10 @@ export default class FileManagerView extends Component<IProp, IState> {
     const { file } = renameState
     if (file.isRootFile()) return
     const temporaryFileName = getTemporaryFileName()
-    const [fileNameState] = file.checkFileNewName(temporaryFileName)
+    const result = file.checkFileNewName(temporaryFileName)
+    const {state} = result
 
-    if (fileNameState) {
+    if (state) {
       file.setFileName(temporaryFileName)
     } else {
       this.renameRollBack()

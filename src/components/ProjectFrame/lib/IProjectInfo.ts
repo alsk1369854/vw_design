@@ -5,3 +5,9 @@ export default interface ProjectInfo{
     owner?: string,
     lastEditTime? : string
 }
+export interface ProjectNameCheck{
+    state: boolean,
+    message: string,
+    newProjectName: string,
+}
+export const DATE_FORMAT = 'YYYY/MM/DD, HH:mm:ss'
