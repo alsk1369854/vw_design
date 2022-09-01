@@ -32,3 +32,10 @@ export class FileGetFileByPathError extends Error{
         this.name = "FileGetFileByPathError";
     }
 }
+
+export class ProjectManagerSaveEditingProjectError extends Error{
+    constructor(message:string){
+        super(message);
+        this.name = "Handle project is not the same as Editing project"
+    }
+}

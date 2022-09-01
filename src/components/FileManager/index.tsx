@@ -4,7 +4,13 @@ import React, { Component } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFileCirclePlus, faFolderPlus } from '@fortawesome/free-solid-svg-icons'
+import {
+  faSquarePlus, // add file
+  faFolderPlus, // add directory
+} from '@fortawesome/free-solid-svg-icons'
+import {
+  faFolderClosed, // close all directory
+} from '@fortawesome/free-regular-svg-icons'
 
 import style from './index.module.scss'
 import File from './lib/File'
@@ -16,8 +22,9 @@ import { Content } from './Content'
 import FileFactory from './lib/FileFactory'
 
 export const icon = {
-  addFile: <FontAwesomeIcon icon={faFileCirclePlus} className={style.icon} />,
+  addFile: <FontAwesomeIcon icon={faSquarePlus} className={style.icon} />,
   addDirectory: <FontAwesomeIcon icon={faFolderPlus} className={style.icon} />,
+  closeAllDirectory: <FontAwesomeIcon icon={faFolderClosed} className={style.icon} />,
 }
 
 const RenameTemporaryStorage = {
@@ -139,7 +146,7 @@ export default class FileManagerView extends Component<IProp, IState> {
     if (file.isRootFile()) return
     const temporaryFileName = getTemporaryFileName()
     const result = file.checkFileNewName(temporaryFileName)
-    const {state} = result
+    const { state } = result
 
     if (state) {
       file.setFileName(temporaryFileName)

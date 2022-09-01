@@ -22,9 +22,9 @@ import FileItemStyle from '../Content/FileItem/index.module.scss'
 import { FileManagerDownloadDataTypeMismatchError } from '../../../tools/Error';
 import FunctionCaller from '../../../tools/FunctionCaller'
 import {
-  // FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_BAR,
+  // FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_ITEMS,
   // FUNCTION_CALLER_KEY_GET_OPEN_FILE_ITEMS,
-  FUNCTION_CALLER_KEY_SET_OPEN_FILE_ITEMS,
+  FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_ITEMS,
 } from '../../MainFrame/EditArea/OpenedFileBar'
 import File, { FileConstructor } from './File'
 
@@ -40,8 +40,19 @@ const fileIconElement = {
   image: <FontAwesomeIcon icon={faImage} className={FileItemStyle.fileIcon} style={{ color: "rgb(45,204,159)" }} />,
 }
 
+const DISABLED_ROOT_FILE_ID = 'DisabledRootFile'
+const DISABLED_ROOT_FILE = {
+  strId: DISABLED_ROOT_FILE_ID,
+  boolIsDirectory: true,
+  strFileName: "VW DESIGN",
+  strData: "",
+  strDataType: "directory",
+  boolIsExpand: true,
+  arrFileSubFiles: []
+}
+
 export class FileManager {
-  strId: string = "";
+  // strId: string = "";
   objFileRootFile!: File;
   objMapFileMap: Map<string, File> = new Map()
   static objMapFileIconMap: Map<string, JSX.Element> = new Map();
@@ -53,16 +64,30 @@ export class FileManager {
 
   getNextId = () => nanoid();
 
-  getOpenFiles = () => this.arrFileOpenFiles
-  setOpenFiles = (arrFileOpenFiles: Array<File>) => {
-    this.arrFileOpenFiles = arrFileOpenFiles
-    FunctionCaller.call(FUNCTION_CALLER_KEY_SET_OPEN_FILE_ITEMS, [this.arrFileOpenFiles])
+  rootFileIsDisabled = () => this.getRootFile().getId() === DISABLED_ROOT_FILE_ID
+
+  closeAllExpandDirectory = () => {
+    const closeExpandDirectory = (objFile: File) => {
+      if (objFile.isDirectory()) {
+        objFile.getSubFiles().forEach(file => closeExpandDirectory(file))
+        objFile.setIsExpand(false)
+      }
+    }
+    this.getRootFile().getSubFiles().forEach(file => closeExpandDirectory(file))
   }
+
+  getOpenFiles = () => this.arrFileOpenFiles
+  updateOpenFiles = (arrFileOpenFiles: Array<File>) => {
+    this.arrFileOpenFiles = arrFileOpenFiles
+    FunctionCaller.call(FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_ITEMS, this.arrFileOpenFiles)
+  }
+  setOpenFiles = (arrFileOpenFiles: Array<File>) => this.arrFileOpenFiles = arrFileOpenFiles
+
   addOpenFile = (objFile: File) => {
     if (objFile.isDirectory()) return
     if (!this.openFileIsExists(objFile)) {
       this.arrFileOpenFiles.push(objFile)
-      FunctionCaller.call(FUNCTION_CALLER_KEY_SET_OPEN_FILE_ITEMS, [this.arrFileOpenFiles])
+      FunctionCaller.call(FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_ITEMS, this.arrFileOpenFiles)
     }
   }
   addOpenFileSeletedFiles = () => {
@@ -71,11 +96,11 @@ export class FileManager {
   }
   deleteOpenFile = (objFile: File) => {
     this.arrFileOpenFiles = this.arrFileOpenFiles.filter((file: File) => file !== objFile)
-    FunctionCaller.call(FUNCTION_CALLER_KEY_SET_OPEN_FILE_ITEMS, [this.arrFileOpenFiles])
+    FunctionCaller.call(FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_ITEMS, this.arrFileOpenFiles)
   }
   cleanOpenFiles = () => {
     this.arrFileOpenFiles = []
-    FunctionCaller.call(FUNCTION_CALLER_KEY_SET_OPEN_FILE_ITEMS, [this.arrFileOpenFiles])
+    FunctionCaller.call(FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_ITEMS, this.arrFileOpenFiles)
   }
   openFileIsExists = (objFile: File): boolean => {
     const fileIndex = this.arrFileOpenFiles.indexOf(objFile)
@@ -115,7 +140,7 @@ export class FileManager {
         FileManager.objMapFileIconMap.get('directoryIsExpand') :
         FileManager.objMapFileIconMap.get('directoryNotExpand')
     } else {
-      const arrStrFileExtension = (strTemporaryFileName || strTemporaryFileName?.length===0) ?
+      const arrStrFileExtension = (strTemporaryFileName || strTemporaryFileName?.length === 0) ?
         File.getFileNameExtensionStrArray(strTemporaryFileName) :
         objFile.getFileExtension()
 
@@ -137,6 +162,8 @@ export class FileManager {
   getRootFile = () => this.objFileRootFile
   setRootFile = (objFileRootFile: FileConstructor) => {
     this.objMapFileMap = new Map()
+    this.objMapSelectedFiles = new Map()
+    this.arrFileOpenFiles = []
     this.objFileRootFile = new File(objFileRootFile)
   }
 
@@ -249,6 +276,7 @@ FileManager.objMapFileIconMap.set('png', fileIconElement.image)
 
 const objFileManager = new FileManager()
 export default objFileManager;
+objFileManager.setRootFile(DISABLED_ROOT_FILE)
 
 
 
@@ -350,8 +378,11 @@ const fileListRoot = {
     },
   ]
 }
+// objFileManager.setRootFile(fileListRoot)
 // console.log(JSON.stringify(fileListRoot))
-objFileManager.setRootFile(fileListRoot)
+
+
+
 
 // let destFile = objFileManager.getRootFile().getFileByPath('dir2/html.html')
 // console.log('@1',destFile)

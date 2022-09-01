@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import type IProjectInfo from '../../lib/IProjectInfo'
+import type { IProjectInfo } from '../../lib/IProjectInfo'
 
 import style from './index.module.scss'
 

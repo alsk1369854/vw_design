@@ -18,7 +18,29 @@
     }
 
     & .fillUnusedSpaceDropArea {
-        background-color:rgb(55, 55, 61);
+        background-color: rgb(55, 55, 61);
     }
 }
 
+.createProjectContent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0px;
+    padding: 0px;
+    position: relative;
+
+    top: 35px;
+    height: calc(100% - 35px);
+    width: 100%;
+
+    // color: rgb(204, 204, 204);
+    background-color: rgb(37, 37, 38);
+
+    & .icon {
+        height: 80px;
+        width: 80px;
+        color: rgb(84,84,84);
+    }
+}

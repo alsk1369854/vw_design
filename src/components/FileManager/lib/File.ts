@@ -1,6 +1,6 @@
 import FileManager from "./FileManager";
 import { FileGetFileByPathError } from "../../../tools/Error";
-import Swal from 'sweetalert2'
+// import Swal from 'sweetalert2'
 
 export interface FileConstructor {
     strId: string,
@@ -9,7 +9,7 @@ export interface FileConstructor {
     strData: string,
     strDataType: string,
     boolIsExpand: boolean,
-    arrFileSubFiles?: Array<FileConstructor>,
+    arrFileSubFiles: Array<FileConstructor>,
     objFileParent?: File | undefined,
     deep?: number
 }
@@ -183,7 +183,7 @@ export default class File implements FileConstructor {
 
     static checkFileName = (newFileName: string) => {
         const regExp = /[\\|/|:|\*|\?|"|<|>|]/g
-        
+
         newFileName = newFileName.trim()
         const result = {
             state: false,
@@ -204,7 +204,7 @@ export default class File implements FileConstructor {
     checkFileNewName = (newFileName: string) => {
         // console.log(newFileName)
         const result = File.checkFileName(newFileName)
-        const {state} = result
+        const { state } = result
         const parentFile = this.getParent()
 
         // 檢查名稱是否重複
@@ -302,6 +302,18 @@ export default class File implements FileConstructor {
                 }
             }
             this.sortSubFiles()
+        }
+    }
+
+    toFileConstructor = (): FileConstructor => {
+        return {
+            strId: this.getId(),
+            boolIsDirectory: this.isDirectory(),
+            strFileName: this.getFileName(),
+            strData: this.getData(),
+            strDataType: this.getDataType(),
+            boolIsExpand: this.isExpand(),
+            arrFileSubFiles: this.getSubFiles().map(file => file.toFileConstructor()),
         }
     }
 

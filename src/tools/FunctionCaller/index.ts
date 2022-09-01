@@ -1,8 +1,8 @@
 import { FunctionCallerError } from '../Error/index'
 
 // Error message
-const ERROR_KEY_EXISTS = 'Key is exists';
-const ERROR_KEY_NO_EXISTS = 'Key is not exists';
+const ERROR_KEY_EXISTS = 'FunctionCaller:Key is exists';
+const ERROR_KEY_NO_EXISTS = 'FunctionCaller:Key is not exists';
 
 /**
  * @description 函數互叫者，可專案任意地方使用 set() 添加要註冊的函數， 並在任何替方透過 call() 進行調用
@@ -31,8 +31,9 @@ class FunctionCaller {
      * @param arrData 註冊函數的傳參 (typeof Array<any>) 
      * @returns 註冊函數運行後的回傳值
      */
-    call(strKey: string, arrData?: any[]): any {
+    call(strKey: string, ...arrData: any[]): any {
         // if (this.objFuncCollection[strKey] === undefined) throw new FunctionCallerError(ERROR_KEY_NO_EXISTS);
+        if (this.objFuncCollection[strKey] === undefined) console.error(ERROR_KEY_NO_EXISTS+`\nKEY:'${strKey}'`);
         if (this.objFuncCollection[strKey] === undefined) return;
         const { [strKey]: func } = this.objFuncCollection;
         if (arrData === undefined) return func();

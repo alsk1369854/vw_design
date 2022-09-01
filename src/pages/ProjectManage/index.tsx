@@ -37,21 +37,12 @@ const cssHelmet = `
 `
 
 export default class ProjectManagePage extends React.Component {
-    state = {
-        showContextMenu: false
-    }
-
-    closeProjectContextMenu = () => {
-        this.setState({ showContextMenu: false })
-    }
-    openProjectContextMenu = () => {
-        this.setState({ showContextMenu: true })
-    }
-
     render() {
         return (
-            <div data-testid={Test.setTestId("ProjectManagePage")}
-                onClick={this.closeProjectContextMenu}>
+            <div
+                data-testid={Test.setTestId("ProjectManagePage")}
+            // onClick={this.closeProjectContextMenu}
+            >
                 <Helmet>
                     <style>
                         {cssHelmet}
@@ -69,9 +60,7 @@ export default class ProjectManagePage extends React.Component {
                 </div>
 
                 {/* ProjectList */}
-                <ProjectFrame
-                    showContextMenu={this.state.showContextMenu}
-                    openProjectContextMenu={this.openProjectContextMenu} />
+                <ProjectFrame />
             </div>
         )
     }

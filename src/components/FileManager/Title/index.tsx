@@ -12,9 +12,9 @@ interface IProps {
 
 export default class FileManagerTitle extends Component<IProps, IState> {
 
-
   render() {
     const { parentThis } = this.props
+    const isDisabled = FileManager.rootFileIsDisabled()
 
     return (
       <div
@@ -28,16 +28,22 @@ export default class FileManagerTitle extends Component<IProps, IState> {
             </div>
             <span className={style.iconBar}>
               <div // add File
-                onClick={(event) => parentThis.addFile(event, false)}
-                className={style.iconItem}
+                onClick={(isDisabled) ? () => { } : (event) => parentThis.addFile(event, false)}
+                className={(isDisabled) ? style.iconItemDisabled : style.iconItem}
               >
                 {icon.addFile}
               </div>
               <div // add Directory
-                onClick={(event) => parentThis.addFile(event, true)}
-                className={style.iconItem}
+                onClick={(isDisabled) ? () => { } : (event) => parentThis.addFile(event, true)}
+                className={(isDisabled) ? style.iconItemDisabled : style.iconItem}
               >
                 {icon.addDirectory}
+              </div>
+              <div // close all Directory
+                onClick={(isDisabled) ? () => { } : FileManager.closeAllExpandDirectory}
+                className={(isDisabled) ? style.iconItemDisabled : style.iconItem}
+              >
+                {icon.closeAllDirectory}
               </div>
             </span>
           </div> :

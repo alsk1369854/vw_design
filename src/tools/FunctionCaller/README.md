@@ -2,7 +2,7 @@
     /****** API *******/ 
     set('funcKey', myFunction)  // void
     call('funcKey')             // return function Return Value
-    call('funcKey', [1,2])      // return function Return Value
+    call('funcKey', 1, 2)      // return function Return Value
     remove('funcKey')           // return function
     hasKey('keyName')           // return true/false 
     getKeys()                   // return ['key1', 'key2', ....]    
@@ -26,7 +26,7 @@
             // 假設註冊 一個 sum Function
             fc.set('sumFn', (num1, num2)=> return num1 + num2);
             // 呼叫函數傳參方式
-            const returnValue = fc.call('sumFn', [1,2]);
+            const returnValue = fc.call('sumFn', 1, 2);
 
     (3). 刪除已註冊的函數
         1). 使用key註銷函數

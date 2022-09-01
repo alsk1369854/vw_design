@@ -32,26 +32,8 @@ export default function SideMenu({
   selectUtilMenuItem
 }: IProps) {
 
-  const [count, setCount] = useState(0)
-  const render = () => setCount(count + 1)
-
-  const [isCreateProject, setIsCreateProject] = useState(false)
-
-  const url = useHref('/Edit');
-  const history = useNavigate();
-
-  useEffect(() => {
-    if (isCreateProject) {
-      history(url)
-      setIsCreateProject(false)
-    }
-  })
-
-  const createProject = () => {
-    ProjectManager.createProject()
-    setIsCreateProject(true)
-  }
-
+  // const [count, setCount] = useState(0)
+  // const render = () => setCount(count + 1)
 
   return (
     <div className={style.rightSideBar}>
@@ -72,7 +54,7 @@ export default function SideMenu({
 
         <li
           className={style.utilItem}
-          onClick={createProject}
+          onClick={ProjectManager.createProject}
         >
           <FontAwesomeIcon icon={faFileMedical} className={style.icon} />
           {/* <img src={ComputerIcon} alt="Open Directory Icon" /> */}

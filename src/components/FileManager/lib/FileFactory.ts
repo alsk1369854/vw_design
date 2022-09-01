@@ -10,6 +10,7 @@ export default class FileFactory {
             strData: '',
             strDataType: (boolIsDirectory) ? 'directory' : 'text',
             boolIsExpand: false,
+            arrFileSubFiles: []
         }
         return new File(FileConstructor)
     }

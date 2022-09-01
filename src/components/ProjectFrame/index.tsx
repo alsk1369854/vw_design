@@ -1,54 +1,52 @@
-import React, { Component } from 'react'
-// import { Container, Row, Col, Button } from 'react-bootstrap';
-// import 'bootstrap/dist/css/bootstrap.min.css';
-
-// icons 
-import MyProjectsIcon from '../../assets/icon/Folder_gray.png'
-import MarkIcon from '../../assets/icon/Star_gray.png'
-import AshcanIcon from '../../assets/icon/Ashcan_gray.png'
-import ComputerIcon from '../../assets/icon/Computer_gray.png'
+import React, { Component, useEffect, useState } from 'react'
 
 import ProjectListFrame from './ProjectListFrame'
 import SideMenu from './SideMenu'
 
-// import ContextMenu from './ContextMenu'
+import FunctionCaller from '../../tools/FunctionCaller'
 import style from './index.module.scss'
+import { useHref, useNavigate } from 'react-router-dom'
 
+export const FUNCTION_CALLER_KEY_TO_EDIT_PAGE = 'ProjectFrame_toEditPage'
 
-interface IProps {
-    showContextMenu: boolean,
-    openProjectContextMenu: Function,
-}
-
+interface IProps { }
 interface IState { }
 
-export default class ProjectFrame extends Component<IProps, IState> {
-    state = {
-        // showContextProjectId: "",
-        // mouseDownXY: { x: 0, y: 0 },
-        utilMenuState: "MyProjects"
-    }
+export default function ProjectFrame() {
+    const [utilMenuState, setUtilMenuState] = useState("MyProjects")
+    const [goToEditPage, setGoToEditPage] = useState(false)
 
-    selectUtilMenuItem = (event: any, strItemName: string) => {
-        this.setState({ utilMenuState: strItemName })
+    const routePath = useHref('/Edit');
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (goToEditPage) {
+            navigate(routePath)
+            setGoToEditPage(false)
+        }
+        FunctionCaller.set(FUNCTION_CALLER_KEY_TO_EDIT_PAGE, () => setGoToEditPage(true))
+        return () => {
+            FunctionCaller.remove(FUNCTION_CALLER_KEY_TO_EDIT_PAGE)
+        }
+    })
+
+    const selectUtilMenuItem = (event: any, strItemName: string) => {
+        setUtilMenuState(strItemName)
         console.log("util Menu item: ", strItemName)
     }
 
-    render() {
-        // console.log(this.state)
-        const { utilMenuState } = this.state
-        return (
-            <div className={style.mainFrame}>
+    return (
+        <div className={style.mainFrame}>
 
-                <ProjectListFrame
-                    utilMenuState={utilMenuState}
-                />
+            <ProjectListFrame
+                utilMenuState={utilMenuState}
+            />
 
-                <SideMenu
-                    utilMenuState={utilMenuState}
-                    selectUtilMenuItem={this.selectUtilMenuItem}
-                />
-            </div>
-        )
-    }
+            <SideMenu
+                utilMenuState={utilMenuState}
+                selectUtilMenuItem={selectUtilMenuItem}
+            />
+        </div>
+    )
 }
+

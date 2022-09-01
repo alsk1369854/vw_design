@@ -5,7 +5,7 @@ import { abstractTestable } from '../../tools/Test';
 import { UsageError } from '../../tools/Error';
 import ToolBarMenu from './ToolBarMenu';
 
-
+import ProjectManage from '../ProjectFrame/lib/ProjectManager'
 
 
 export const ToolBar = memo((props: {arrToolBarButtons: Array<ToolBarButton>}) => {
@@ -166,7 +166,7 @@ const container = memo(() => {
                     new Node("Open File",       "HotKey02", () => {console.log("Open File...")}),
                 ]),
                 new Group([
-                    new Node("Save",            "HotKey03", () => {console.log("Save...")}),
+                    new Node("Save",            "HotKey03", () => {ProjectManage.saveEditingProject()}),
                 ])
             ])
         ),
