@@ -60,7 +60,10 @@ export default function SideMenu({
           {/* <img src={ComputerIcon} alt="Open Directory Icon" /> */}
           <span>Create Project</span>
         </li>
-        <li className={style.utilItem}>
+        <li
+          className={style.utilItem}
+          onClick={ProjectManager.openLocalProject}
+        >
           <FontAwesomeIcon icon={faLaptopFile} className={style.icon} />
           {/* <img src={ComputerIcon} alt="Open Directory Icon" /> */}
           <span>Open Project</span>

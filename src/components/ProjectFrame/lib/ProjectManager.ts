@@ -139,8 +139,39 @@ export default class ProjectManager {
         })
     }
 
-    static uploadLocalProject = () => {
-
+    static openLocalProject = () => {
+        const options = {
+            types: [{
+                description: 'JSON',
+                accept: {
+                    'text/plain': ['.json']
+                }
+            }],
+            excludeAcceptAllOption: true,
+            multiple: false
+        };
+        const fileHandlePromise = ProjectManager.getOpenFileHandle(options)
+        fileHandlePromise.then((fileHandleList:FileSystemFileHandle[]) => {
+            const fileHandle = fileHandleList[0]
+            fileHandle.getFile().then((file:File)=>{
+                console.log(file)
+                if(file.type === "application/json"){
+                    const reader = new FileReader()
+                    reader.onload = ()=>{
+                        // console.log[()]
+                        // console.log(reader.result)
+                        console.log('readult: ', reader.result)
+                        console.log('error: ' , reader.error)
+                    }
+                    reader.readAsText(file,'13')
+                }
+            }).catch((error)=>{
+                console.error('2ProjectManager:\nFunction: openLocalProject\n'  + error)
+            }) 
+            // console.log(fileHandle.getFile())
+        }).catch((error)=>{
+            console.error('ProjectManager:\nFunction: openLocalProject\n'  + error)
+        })
     }
 
     static saveEditingProject = (): void => {
@@ -178,9 +209,9 @@ export default class ProjectManager {
     static getOpenFileHandle = async (options?: any) => {
         const opts = (options) ? options : {
             types: [{
-                description: 'Images',
+                description: 'JSON',
                 accept: {
-                    'image/*': ['.png', '.gif', '.jpeg', '.jpg']
+                    'text/plain': ['.json']
                 }
             }],
             excludeAcceptAllOption: true,
