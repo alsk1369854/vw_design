@@ -378,7 +378,7 @@ const fileListRoot = {
     },
   ]
 }
-// objFileManager.setRootFile(fileListRoot)
+objFileManager.setRootFile(fileListRoot)
 // console.log(JSON.stringify(fileListRoot))
 
 

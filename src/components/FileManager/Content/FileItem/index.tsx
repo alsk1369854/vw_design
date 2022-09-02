@@ -12,7 +12,7 @@ import { DragPreviewImage, useDrag, useDrop } from 'react-dnd'
 import style from './index.module.scss'
 import File from '../../lib/File'
 import FileManager from '../../lib/FileManager'
-import { getDragPreview } from '../../lib/PreviewTestFactory'
+import { getDragPreview } from '../../lib/DragPreviewTextFactory'
 import type DragAndDropControl from '../../lib/DragAndDropControl'
 import {
     setTemporaryFileName,

@@ -89,7 +89,7 @@ export default class ProjectManager {
                         accept: { 'text/plain': ['.json'] },
                     }],
                 };
-                const fileHandlePromise = ProjectManager.getNewFileHandle(options)
+                const fileHandlePromise = ProjectManager.getSaveFileHandle(options)
                 fileHandlePromise.then((fileHandle) => {
                     const projectId = nanoid()
                     const contents: IProjectInfo = {
@@ -127,7 +127,7 @@ export default class ProjectManager {
                     ProjectManager.showProjectList = [contents]
                     ProjectManager.toEditPage()
                 }).catch((error) => {
-                    if(process.env.NODE_ENV === "development"){
+                    if (process.env.NODE_ENV === "development") {
                         console.log('ProjectManager:\nFunction: createProject\n' + error)
                     }
                     Swal.fire({
@@ -137,6 +137,10 @@ export default class ProjectManager {
                 })
             }
         })
+    }
+
+    static uploadLocalProject = () => {
+
     }
 
     static saveEditingProject = (): void => {
@@ -160,7 +164,7 @@ export default class ProjectManager {
 
     static toEditPage = () => FunctionCaller.call(FUNCTION_CALLER_KEY_TO_EDIT_PAGE)
 
-    static getNewFileHandle = async (options?: any) => {
+    static getSaveFileHandle = async (options?: any) => {
         const opts = (options) ? options : {
             suggestedName: "VW_Project.json",
             types: [{
@@ -169,6 +173,20 @@ export default class ProjectManager {
             }],
         };
         return await window.showSaveFilePicker(opts);
+    }
+
+    static getOpenFileHandle = async (options?: any) => {
+        const opts = (options) ? options : {
+            types: [{
+                description: 'Images',
+                accept: {
+                    'image/*': ['.png', '.gif', '.jpeg', '.jpg']
+                }
+            }],
+            excludeAcceptAllOption: true,
+            multiple: false
+        };
+        return await window.showOpenFilePicker(opts)
     }
 
     static writeFile = async (fileHandle: FileSystemFileHandle, contents: Blob) => {
