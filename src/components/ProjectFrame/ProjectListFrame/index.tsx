@@ -66,7 +66,7 @@ export default function ProjectListFrame({ utilMenuState }: IProps) {
 
           {showProjectList.map(projectInfo =>
             <ProjectItem
-              key={`ProjectItem_${projectInfo.id}`}
+              key={`ProjectItem_${projectInfo.strId}`}
               openProjectContextMenu={openProjectContextMenu}
               projectInfo={projectInfo}
             />

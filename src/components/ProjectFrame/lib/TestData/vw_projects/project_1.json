@@ -1,12 +1,12 @@
 {
-  "id": "PA49imG4uD3ydqP_zRsOR",
-  "name": "project_1",
-  "type": "vw_project",
-  "iconSrc": "https://picsum.photos/50/50",
-  "owner": "Ming",
-  "lastEditTime": "2022/09/02, 14:02:10",
-  "rootFile": {
-    "strId": "root",
+  "strId": "Qj9JHrPSoNIimXkOq0eSG",
+  "strName": "project_1",
+  "strType": "vw_project",
+  "strIconSrc": "https://picsum.photos/50/50",
+  "strOwner": "Ming",
+  "strLastEditTime": "2022/09/02, 21:32:47",
+  "objRootFile": {
+    "strId": "Qj9JHrPSoNIimXkOq0eSG",
     "boolIsDirectory": true,
     "strFileName": "project_1",
     "strData": "",

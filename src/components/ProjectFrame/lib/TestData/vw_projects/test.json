@@ -1,0 +1,27 @@
+{
+  "strId": "Qj9JHrPSoNIimXkOq0eSG",
+  "strName": "test",
+  "strType": "vw_project",
+  "strIconSrc": "https://picsum.photos/50/50",
+  "strOwner": "Ming",
+  "strLastEditTime": "2022/09/02, 21:32:47",
+  "objRootFile": {
+    "strId": "Qj9JHrPSoNIimXkOq0eSG",
+    "boolIsDirectory": true,
+    "strFileName": "test",
+    "strData": "",
+    "strDataType": "directory",
+    "boolIsExpand": true,
+    "arrFileSubFiles": [
+      {
+        "strId": "D6TW-XdTnkZMW3SzrEv2o",
+        "boolIsDirectory": false,
+        "strFileName": "index.html",
+        "strData": "<!DOCTYPE html><html lang=\"en\"><head></head><body><h1>Hello World!</h1></body><script src=\"\"></script></html>",
+        "strDataType": "text",
+        "boolIsExpand": false,
+        "arrFileSubFiles": []
+      }
+    ]
+  }
+}

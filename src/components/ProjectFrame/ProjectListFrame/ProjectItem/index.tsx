@@ -19,12 +19,12 @@ export default class projectItem extends Component<IProps> {
             <>
                 <li
                     className={style.listItem}
-                    onContextMenu={event => openProjectContextMenu(event, projectInfo.id)}
-                    onClick={() => console.log(`open ${projectInfo.id}`)}
+                    onContextMenu={event => openProjectContextMenu(event, projectInfo.strId)}
+                    onClick={() => console.log(`open ${projectInfo.strId}`)}
                 >
-                    <span className={style.itemName}><img src={projectInfo.iconSrc} alt="icon" />{projectInfo.name}</span>
-                    <span className={style.itemOwner}>{projectInfo.owner}</span>
-                    <span className={style.itemLastTime}>{projectInfo.lastEditTime}</span>
+                    <span className={style.itemName}><img src={projectInfo.strIconSrc} alt="icon" />{projectInfo.strName}</span>
+                    <span className={style.itemOwner}>{projectInfo.strOwner}</span>
+                    <span className={style.itemLastTime}>{projectInfo.strLastEditTime}</span>
                 </li>
                 <div className={style.line}></div>
             </>

@@ -8,7 +8,7 @@ import FunctionCaller from '../../../tools/FunctionCaller'
 import { FUNCTION_CALLER_KEY_TO_EDIT_PAGE } from '../index'
 import { FUNCTION_CALLER_KEY_SET_ARR_PROJECT_LIST } from '../ProjectListFrame/index'
 import FileManager from '../../FileManager/lib/FileManager'
-
+import { FileConstructor } from '../../FileManager/lib/File';
 
 interface IEditingProjectState {
     fileHandle: FileSystemFileHandle | undefined,
@@ -16,13 +16,13 @@ interface IEditingProjectState {
 }
 
 const TestProjectList = [{
-    id: '1',
-    name: 'project01',
-    type: 'vw_project',
-    iconSrc: 'https://picsum.photos/100/100',
-    owner: 'Ming',
-    lastEditTime: '2020/06/03 01:05:30',
-    rootFile: {
+    strId: '1',
+    strName: 'project01',
+    strType: 'vw_project',
+    strIconSrc: 'https://picsum.photos/100/100',
+    strOwner: 'Ming',
+    strLastEditTime: '2020/06/03 01:05:30',
+    objRootFile: {
         strId: '1',
         boolIsDirectory: true,
         strFileName: 'project01',
@@ -33,13 +33,13 @@ const TestProjectList = [{
     }
 },
 {
-    id: '2',
-    name: 'project02',
-    type: 'vw_project',
-    iconSrc: 'https://picsum.photos/50/50',
-    owner: 'Ming',
-    lastEditTime: '2020/06/03 01:05:30',
-    rootFile: {
+    strId: '2',
+    strName: 'project02',
+    strType: 'vw_project',
+    strIconSrc: 'https://picsum.photos/50/50',
+    strOwner: 'Ming',
+    strLastEditTime: '2020/06/03 01:05:30',
+    objRootFile: {
         strId: '2',
         boolIsDirectory: true,
         strFileName: 'project02',
@@ -49,7 +49,6 @@ const TestProjectList = [{
         arrFileSubFiles: []
     }
 }]
-
 
 export default class ProjectManager {
     static editingProjectState: IEditingProjectState = {
@@ -86,20 +85,20 @@ export default class ProjectManager {
                     suggestedName: `${newProjectName}.json`,
                     types: [{
                         description: 'JSON',
-                        accept: { 'text/plain': ['.json'] },
+                        accept: { 'application/json': ['.json'] },
                     }],
                 };
                 const fileHandlePromise = ProjectManager.getSaveFileHandle(options)
                 fileHandlePromise.then((fileHandle) => {
                     const projectId = nanoid()
                     const contents: IProjectInfo = {
-                        id: projectId,
-                        name: newProjectName,
-                        type: 'vw_project',
-                        iconSrc: 'https://picsum.photos/50/50',
-                        owner: 'Ming',
-                        lastEditTime: this.getNowDateTimeToString(),
-                        rootFile: {
+                        strId: projectId,
+                        strName: newProjectName,
+                        strType: 'vw_project',
+                        strIconSrc: 'https://picsum.photos/50/50',
+                        strOwner: 'Ming',
+                        strLastEditTime: this.getNowDateTimeToString(),
+                        objRootFile: {
                             strId: projectId,
                             boolIsDirectory: true,
                             strFileName: newProjectName,
@@ -123,7 +122,7 @@ export default class ProjectManager {
                     const blob = this.getBlob(contents)
                     ProjectManager.writeFile(fileHandle, blob)
                     ProjectManager.setEditingProjectState({ fileHandle, contents })
-                    FileManager.setRootFile(contents.rootFile)
+                    FileManager.setRootFile(contents.objRootFile)
                     ProjectManager.showProjectList = [contents]
                     ProjectManager.toEditPage()
                 }).catch((error) => {
@@ -144,33 +143,47 @@ export default class ProjectManager {
             types: [{
                 description: 'JSON',
                 accept: {
-                    'text/plain': ['.json']
+                    'application/json': ['.json']
                 }
             }],
             excludeAcceptAllOption: true,
             multiple: false
         };
         const fileHandlePromise = ProjectManager.getOpenFileHandle(options)
-        fileHandlePromise.then((fileHandleList:FileSystemFileHandle[]) => {
+        fileHandlePromise.then((fileHandleList: FileSystemFileHandle[]) => {
             const fileHandle = fileHandleList[0]
-            fileHandle.getFile().then((file:File)=>{
-                console.log(file)
-                if(file.type === "application/json"){
+            fileHandle.getFile().then((file: File) => {
+                if (file.type === "application/json") {
                     const reader = new FileReader()
-                    reader.onload = ()=>{
-                        // console.log[()]
-                        // console.log(reader.result)
-                        console.log('readult: ', reader.result)
-                        console.log('error: ' , reader.error)
+                    reader.onload = () => {
+                        const fileContent = reader.result
+                        if (fileContent) {
+                            try {
+                                const objJsonData: any = JSON.parse(fileContent.toString())
+                                const isProjectInfo = ProjectManager.isVWProjectInfo(objJsonData)
+                                if(isProjectInfo){
+
+                                }else{
+                                    
+                                }
+                                console.log('isProjectInfo: ' + isProjectInfo)
+                            } catch (error) {
+                                console.error('ProjectManager: JSON is incomplete\n' + error)
+                                Swal.fire({
+                                    title: '加載文件出錯',
+                                    text: '非專案文件',
+                                    icon: 'error',
+                                })
+                            }
+                        }
                     }
-                    reader.readAsText(file,'13')
+                    reader.readAsText(file)
                 }
-            }).catch((error)=>{
-                console.error('2ProjectManager:\nFunction: openLocalProject\n'  + error)
-            }) 
-            // console.log(fileHandle.getFile())
-        }).catch((error)=>{
-            console.error('ProjectManager:\nFunction: openLocalProject\n'  + error)
+            })
+        }).catch((error) => {
+            if (process.env.NODE_ENV === "development") {
+                console.error('ProjectManager:\nFunction: openLocalProject\n' + error)
+            }
         })
     }
 
@@ -178,9 +191,9 @@ export default class ProjectManager {
         const { fileHandle, contents } = this.getEditingProjectState()
         const rootFile = FileManager.getRootFile()
         if (fileHandle && contents) {
-            if (rootFile.getId() === contents.id) {
-                contents.rootFile = rootFile.toFileConstructor()
-                contents.lastEditTime = this.getNowDateTimeToString()
+            if (rootFile.getId() === contents.strId) {
+                contents.objRootFile = rootFile.toFileConstructor()
+                contents.strLastEditTime = this.getNowDateTimeToString()
                 const blob = this.getBlob(contents)
                 ProjectManager.writeFile(fileHandle, blob)
             } else {
@@ -200,7 +213,7 @@ export default class ProjectManager {
             suggestedName: "VW_Project.json",
             types: [{
                 description: 'JSON',
-                accept: { 'text/plain': ['.json'] },
+                accept: { 'application/json': ['.json'] },
             }],
         };
         return await window.showSaveFilePicker(opts);
@@ -211,7 +224,7 @@ export default class ProjectManager {
             types: [{
                 description: 'JSON',
                 accept: {
-                    'text/plain': ['.json']
+                    'application/json': ['.json']
                 }
             }],
             excludeAcceptAllOption: true,
@@ -224,6 +237,58 @@ export default class ProjectManager {
         const writable = await fileHandle.createWritable(); // createWritable
         await writable.write(contents);
         await writable.close();
+    }
+
+    static isVWProjectInfo = (objJsonData: object) => {
+        if (typeof objJsonData === 'object') {
+            const {
+                strId,
+                strType,
+                strName,
+                strIconSrc,
+                // strOwner,
+                strLastEditTime,
+                objRootFile,
+            } = objJsonData as IProjectInfo
+
+            if (typeof strId === "string"
+                && typeof strType === "string"
+                && typeof strName === "string"
+                && typeof strIconSrc === "string"
+                // && typeof strOwner === 'string'
+                && typeof strLastEditTime === "string"
+                && typeof objRootFile === "object") {
+                const isFileConstructor = (objFileConstructor: FileConstructor): boolean => {
+                    const {
+                        strId,
+                        boolIsDirectory,
+                        strFileName,
+                        strData,
+                        strDataType,
+                        boolIsExpand,
+                        arrFileSubFiles
+                    } = objFileConstructor as FileConstructor
+
+                    if (typeof strId === 'string'
+                        && typeof boolIsDirectory === 'boolean'
+                        && typeof strFileName === 'string'
+                        && typeof strData === 'string'
+                        && typeof strDataType === 'string'
+                        && typeof boolIsExpand === 'boolean'
+                        && typeof arrFileSubFiles === 'object' && Array.isArray(arrFileSubFiles)) {
+                        for(const objSubFileConstructor of arrFileSubFiles){
+                            if(!isFileConstructor(objSubFileConstructor)){
+                                return false
+                            }
+                        }
+                        return true
+                    }
+                    return false
+                }
+                return isFileConstructor(objRootFile)
+            }
+        }
+        return false
     }
 
     static checkNewProjectName = (newProjectName: string): IProjectNameCheck => {

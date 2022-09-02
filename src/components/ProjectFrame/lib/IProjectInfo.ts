@@ -1,13 +1,13 @@
 import { FileConstructor } from "../../FileManager/lib/File"
 
 export interface IProjectInfo {
-    id: string,
-    type: string,
-    name: string,
-    iconSrc?: string,
-    owner?: string,
-    lastEditTime: string,
-    rootFile: FileConstructor,
+    strId: string,
+    strType: string,
+    strName: string,
+    strIconSrc: string,
+    strOwner?: string,
+    strLastEditTime: string,
+    objRootFile: FileConstructor,
 }
 export interface IProjectNameCheck {
     state: boolean,
