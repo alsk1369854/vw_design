@@ -10,24 +10,24 @@ import FunctionCaller from '../../../../tools/FunctionCaller';
 import FileManager from '../../../FileManager/lib/FileManager';
 import type File from '../../../FileManager/lib/File';
 
-/*
-// 直接嵌入 array-move arrayMoveImmutable
-function arrayMoveMutable(array: any, fromIndex: any, toIndex: any) {
-	const startIndex = fromIndex < 0 ? array.length + fromIndex : fromIndex;
 
-	if (startIndex >= 0 && startIndex < array.length) {
-		const endIndex = toIndex < 0 ? array.length + toIndex : toIndex;
+// // 直接嵌入 array-move arrayMoveImmutable
+// function arrayMoveMutable(array: any, fromIndex: any, toIndex: any) {
+// 	const startIndex = fromIndex < 0 ? array.length + fromIndex : fromIndex;
 
-		const [item] = array.splice(fromIndex, 1);
-		array.splice(endIndex, 0, item);
-	}
-}
-function arrayMoveImmutable(array: any, fromIndex: any, toIndex: any) {
-	array = [...array];
-	arrayMoveMutable(array, fromIndex, toIndex);
-	return array;
-}
-*/
+// 	if (startIndex >= 0 && startIndex < array.length) {
+// 		const endIndex = toIndex < 0 ? array.length + toIndex : toIndex;
+
+// 		const [item] = array.splice(fromIndex, 1);
+// 		array.splice(endIndex, 0, item);
+// 	}
+// }
+// function arrayMoveImmutable(array: any, fromIndex: any, toIndex: any) {
+// 	array = [...array];
+// 	arrayMoveMutable(array, fromIndex, toIndex);
+// 	return array;
+// }
+
 
 const SortableItem = SortableElement(({ file, setEditFile }: any) => {
     return (
