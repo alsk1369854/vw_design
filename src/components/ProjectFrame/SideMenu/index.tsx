@@ -54,11 +54,11 @@ export default function SideMenu({
 
         <li
           className={style.utilItem}
-          onClick={ProjectManager.createProject}
+          onClick={ProjectManager.createNewProject}
         >
           <FontAwesomeIcon icon={faFileMedical} className={style.icon} />
           {/* <img src={ComputerIcon} alt="Open Directory Icon" /> */}
-          <span>Create Project</span>
+          <span>Create New Project</span>
         </li>
         <li
           className={style.utilItem}
@@ -68,7 +68,10 @@ export default function SideMenu({
           {/* <img src={ComputerIcon} alt="Open Directory Icon" /> */}
           <span>Open Project</span>
         </li>
-        <li className={style.utilItem}>
+        <li
+          className={style.utilItem}
+          onClick={ProjectManager.openLocalProjectsHouse}
+        >
           <FontAwesomeIcon icon={faHouseLaptop} className={style.icon} />
           {/* <img src={ComputerIcon} alt="Open Directory Icon" /> */}
           <span>Open Projects House</span>

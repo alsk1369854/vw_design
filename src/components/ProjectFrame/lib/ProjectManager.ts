@@ -1,67 +1,50 @@
 import Swal from 'sweetalert2'
 import moment from 'moment'
-import { nanoid } from 'nanoid';
 
 import { ProjectManagerSaveEditingProjectError } from '../../../tools/Error/index'
-import { IProjectInfo, IProjectNameCheck, DATE_FORMAT } from './IProjectInfo'
+import { IProjectContents, IProjectNameCheck, DATE_FORMAT, IProjectState } from './ProjectInterfaceCollection'
 import FunctionCaller from '../../../tools/FunctionCaller'
 import { FUNCTION_CALLER_KEY_TO_EDIT_PAGE } from '../index'
-import { FUNCTION_CALLER_KEY_SET_ARR_PROJECT_LIST } from '../ProjectListFrame/index'
+import { FUNCTION_CALLER_KEY_UPDATE_SHOW_PROJECT_LIST } from '../ProjectListFrame/index'
 import FileManager from '../../FileManager/lib/FileManager'
-import { FileConstructor } from '../../FileManager/lib/File';
+import FileMangerFile, { FileConstructor } from '../../FileManager/lib/File';
+import ProjectFactory, { INewProjectValues } from './ProjectFactory';
 
-interface IEditingProjectState {
-    fileHandle: FileSystemFileHandle | undefined,
-    contents: IProjectInfo | undefined
-}
 
-const TestProjectList = [{
-    strId: '1',
-    strName: 'project01',
-    strType: 'vw_project',
-    strIconSrc: 'https://picsum.photos/100/100',
-    strOwner: 'Ming',
-    strLastEditTime: '2020/06/03 01:05:30',
-    objRootFile: {
-        strId: '1',
-        boolIsDirectory: true,
-        strFileName: 'project01',
-        strData: "",
-        strDataType: "directory",
-        boolIsExpand: true,
-        arrFileSubFiles: []
-    }
-},
-{
-    strId: '2',
-    strName: 'project02',
-    strType: 'vw_project',
-    strIconSrc: 'https://picsum.photos/50/50',
-    strOwner: 'Ming',
-    strLastEditTime: '2020/06/03 01:05:30',
-    objRootFile: {
-        strId: '2',
-        boolIsDirectory: true,
-        strFileName: 'project02',
-        strData: "",
-        strDataType: "directory",
-        boolIsExpand: true,
-        arrFileSubFiles: []
-    }
-}]
+const regExpJsonExtension = /.json$/ig
 
 export default class ProjectManager {
-    static editingProjectState: IEditingProjectState = {
+    static editingProjectState: IProjectState = {
         fileHandle: undefined,
         contents: undefined,
     }
-    static showProjectList: IProjectInfo[] = TestProjectList
 
-    static getEditingProjectState = () => ProjectManager.editingProjectState
-    static setEditingProjectState = (objNewEditingProjectState: IEditingProjectState) =>
+    static projectHouseDirectoryHandle: FileSystemDirectoryHandle | null = null
+    static showProjectStateList: IProjectState[] = []
+
+    static getEditingProjectState = (): IProjectState => ProjectManager.editingProjectState
+    static setEditingProjectState = (objNewEditingProjectState: IProjectState) => {
+        ProjectManager.saveEditingProject()
         ProjectManager.editingProjectState = objNewEditingProjectState
+        const { contents } = ProjectManager.editingProjectState
+        if (contents) FileManager.setRootFile(contents.objRootFile)
+    }
 
-    static createProject = () => {
+    static getProjectHouseDirectoryHandle = () => ProjectManager.projectHouseDirectoryHandle
+    static setProjectHouseDirectoryHandle = (newProjectHouseDirectoryHandle: FileSystemDirectoryHandle | null) =>
+        ProjectManager.projectHouseDirectoryHandle = newProjectHouseDirectoryHandle
+
+    static getShowProjectStateList = (): IProjectState[] => ProjectManager.showProjectStateList
+    static setShowProjectStateList = (arrNewShowProjectStateList: IProjectState[]) => {
+        ProjectManager.showProjectStateList = arrNewShowProjectStateList
+        FunctionCaller.call(FUNCTION_CALLER_KEY_UPDATE_SHOW_PROJECT_LIST, ProjectManager.showProjectStateList)
+    }
+    static addShowProjectStateList = (objProjectState: IProjectState) => {
+        ProjectManager.getShowProjectStateList().push(objProjectState)
+        FunctionCaller.call(FUNCTION_CALLER_KEY_UPDATE_SHOW_PROJECT_LIST, ProjectManager.showProjectStateList)
+    }
+
+    static createNewProject = () => {
         Swal.fire({
             title: 'New Project Name',
             input: 'text',
@@ -72,15 +55,15 @@ export default class ProjectManager {
             confirmButtonText: 'Create',
             showLoaderOnConfirm: true,
             preConfirm: (strProjectName) => {
-                const IProjectNameCheck = ProjectManager.checkNewProjectName(strProjectName)
-                const { state, message } = IProjectNameCheck
-                if (state) return IProjectNameCheck
+                const objProjectNameCheck = ProjectManager.checkNewProjectName(strProjectName)
+                const { state, message } = objProjectNameCheck
+                if (state) return objProjectNameCheck
                 Swal.showValidationMessage(message)
             },
         }).then((response) => {
-            const { isConfirmed, value } = response
+            const { isConfirmed, value: objProjectNameCheck } = response
             if (isConfirmed) {
-                const { newProjectName } = value as IProjectNameCheck
+                const { newProjectName } = objProjectNameCheck as IProjectNameCheck
                 const options = {
                     suggestedName: `${newProjectName}.json`,
                     types: [{
@@ -90,44 +73,27 @@ export default class ProjectManager {
                 };
                 const fileHandlePromise = ProjectManager.getSaveFileHandle(options)
                 fileHandlePromise.then((fileHandle) => {
-                    const projectId = nanoid()
-                    const contents: IProjectInfo = {
-                        strId: projectId,
-                        strName: newProjectName,
-                        strType: 'vw_project',
-                        strIconSrc: 'https://picsum.photos/50/50',
+                    const objNewProjectValues: INewProjectValues = {
+                        strProjectName: newProjectName,
+                        // strIconSrc: 'https://picsum.photos/50/50',
                         strOwner: 'Ming',
-                        strLastEditTime: this.getNowDateTimeToString(),
-                        objRootFile: {
-                            strId: projectId,
-                            boolIsDirectory: true,
-                            strFileName: newProjectName,
-                            strData: "",
-                            strDataType: "directory",
-                            boolIsExpand: true,
-                            arrFileSubFiles: [
-                                {
-                                    "strId": nanoid(),
-                                    "boolIsDirectory": false,
-                                    "strFileName": "index.html",
-                                    "strData": "<!DOCTYPE html><html lang=\"en\"><head></head><body><h1>Hello World!</h1></body><script src=\"\"></script></html>",
-                                    "strDataType": "text",
-                                    "boolIsExpand": false,
-                                    "arrFileSubFiles": []
-                                },
-                            ]
-                        }
                     }
-                    // const blob = new Blob([JSON.stringify(contents)], { type: 'application/json;charset=utf-8' })
-                    const blob = this.getBlob(contents)
+
+                    const contents = ProjectFactory.getNewProject(objNewProjectValues)
+                    const blob = ProjectManager.getBlob(contents)
                     ProjectManager.writeFile(fileHandle, blob)
-                    ProjectManager.setEditingProjectState({ fileHandle, contents })
-                    FileManager.setRootFile(contents.objRootFile)
-                    ProjectManager.showProjectList = [contents]
+
+                    const objProjectState: IProjectState = {
+                        fileHandle: fileHandle,
+                        contents: contents,
+                    }
+                    ProjectManager.setShowProjectStateList([objProjectState])
+                    ProjectManager.setEditingProjectState(objProjectState)
                     ProjectManager.toEditPage()
                 }).catch((error) => {
                     if (process.env.NODE_ENV === "development") {
-                        console.log('ProjectManager:\nFunction: createProject\n' + error)
+                        console.log('ProjectManager')
+                        console.log('ProjectManager:\nFunction: createNewProject\n' + error)
                     }
                     Swal.fire({
                         title: '創建失敗',
@@ -138,7 +104,16 @@ export default class ProjectManager {
         })
     }
 
+    static alertLoadFileError = (strText?: string): void => {
+        Swal.fire({
+            title: '加載文件出錯',
+            text: strText,
+            icon: 'error',
+        })
+    }
+
     static openLocalProject = () => {
+        const loadFileErrorTest = '非專案文件'
         const options = {
             types: [{
                 description: 'JSON',
@@ -152,28 +127,32 @@ export default class ProjectManager {
         const fileHandlePromise = ProjectManager.getOpenFileHandle(options)
         fileHandlePromise.then((fileHandleList: FileSystemFileHandle[]) => {
             const fileHandle = fileHandleList[0]
-            fileHandle.getFile().then((file: File) => {
+            const filePromise = fileHandle.getFile()
+            filePromise.then((file: File) => {
                 if (file.type === "application/json") {
                     const reader = new FileReader()
                     reader.onload = () => {
-                        const fileContent = reader.result
-                        if (fileContent) {
+                        const fileContents = reader.result
+                        if (fileContents && typeof fileContents === 'string') {
                             try {
-                                const objJsonData: any = JSON.parse(fileContent.toString())
+                                const objJsonData: any = JSON.parse(fileContents.toString())
                                 const isProjectInfo = ProjectManager.isVWProjectInfo(objJsonData)
-                                if(isProjectInfo){
+                                if (isProjectInfo) {
+                                    const strNewProjectName = file.name.replace(regExpJsonExtension, '')
+                                    objJsonData.objRootFile.strFileName = objJsonData.strName = strNewProjectName
 
-                                }else{
-                                    
+                                    const objProjectState: IProjectState = {
+                                        fileHandle: fileHandle,
+                                        contents: objJsonData as IProjectContents,
+                                    }
+                                    ProjectManager.setProjectHouseDirectoryHandle(null)
+                                    ProjectManager.setShowProjectStateList([objProjectState])
+                                } else {
+                                    ProjectManager.alertLoadFileError(loadFileErrorTest)
                                 }
-                                console.log('isProjectInfo: ' + isProjectInfo)
                             } catch (error) {
                                 console.error('ProjectManager: JSON is incomplete\n' + error)
-                                Swal.fire({
-                                    title: '加載文件出錯',
-                                    text: '非專案文件',
-                                    icon: 'error',
-                                })
+                                ProjectManager.alertLoadFileError(loadFileErrorTest)
                             }
                         }
                     }
@@ -182,21 +161,100 @@ export default class ProjectManager {
             })
         }).catch((error) => {
             if (process.env.NODE_ENV === "development") {
+                console.log('ProjectManager')
                 console.error('ProjectManager:\nFunction: openLocalProject\n' + error)
             }
         })
     }
 
+    static openLocalProjectsHouse = () => {
+        const directoryHandlePromise = window.showDirectoryPicker()
+
+        directoryHandlePromise.then((directoryHandle: FileSystemDirectoryHandle) => {
+            ProjectManager.setProjectHouseDirectoryHandle(null)
+            ProjectManager.setShowProjectStateList([])
+
+            const readDirectory = async () => {
+                for await (const [strFileName, objHandle] of directoryHandle.entries()) {
+                    if (objHandle.kind === "file") {
+                        const filePromise = objHandle.getFile()
+
+                        // eslint-disable-next-line no-loop-func
+                        await filePromise.then((file) => {
+                            const { type } = file as File
+                            if ("application/json" === type) {
+                                const reader = new FileReader()
+                                reader.onload = () => {
+                                    const fileContents = reader.result
+                                    if (fileContents && typeof fileContents === 'string') {
+                                        try {
+                                            const objJsonData: any = JSON.parse(fileContents.toString())
+                                            const isProjectContents = ProjectManager.isVWProjectInfo(objJsonData)
+                                            if (isProjectContents) {
+                                                const strNewProjectName = file.name.replace(regExpJsonExtension, '')
+                                                objJsonData.objRootFile.strFileName = objJsonData.strName = strNewProjectName
+
+                                                const objProjectState: IProjectState = {
+                                                    fileHandle: objHandle as FileSystemFileHandle,
+                                                    contents: objJsonData as IProjectContents,
+                                                }
+                                                ProjectManager.addShowProjectStateList(objProjectState)
+                                            }
+                                        } catch (error) {
+                                            if (process.env.NODE_ENV === "development") {
+                                                console.log('ProjectManager')
+                                                console.error('ProjectManager\n Function: openLocalProjectsHouse\n ' + error)
+                                            }
+                                        }
+                                    }
+                                }
+                                reader.readAsText(file as File)
+                            }
+                        })
+                    }
+                }
+                ProjectManager.setProjectHouseDirectoryHandle(directoryHandle)
+            }
+            readDirectory()
+
+
+            // const fileHandlePromise = directoryHandle.getFileHandle('directoryHandle_create', { create: false })
+            // fileHandlePromise.then(() => {
+            //     console.log('get')
+            // }).catch(() => {
+            //     console.log('not get')
+            // })
+
+            // directoryHandle.removeEntry()
+        }).catch((error) => {
+            if (process.env.NODE_ENV === "development") {
+                console.log('ProjectManager')
+                console.error('ProjectManager\n Function: openLocalProjectsHouse\n ' + error)
+            }
+        })
+    }
+
+    static saveEditingRootFile = (objRootFile: FileMangerFile) => {
+        const { fileHandle, contents } = ProjectManager.getEditingProjectState()
+        if (fileHandle && contents) {
+            if (objRootFile.getId() === contents.strId) {
+                contents.objRootFile = objRootFile.toFileConstructor()
+            }
+        }
+    }
+
     static saveEditingProject = (): void => {
-        const { fileHandle, contents } = this.getEditingProjectState()
+        const { fileHandle, contents } = ProjectManager.getEditingProjectState()
         const rootFile = FileManager.getRootFile()
         if (fileHandle && contents) {
             if (rootFile.getId() === contents.strId) {
-                contents.objRootFile = rootFile.toFileConstructor()
-                contents.strLastEditTime = this.getNowDateTimeToString()
-                const blob = this.getBlob(contents)
+                ProjectManager.saveEditingRootFile(rootFile)
+                contents.strLastEditTime = ProjectManager.getNowDateTimeToString()
+                const blob = ProjectManager.getBlob(contents)
                 ProjectManager.writeFile(fileHandle, blob)
             } else {
+                console.log(rootFile)
+                console.log(contents)
                 throw new ProjectManagerSaveEditingProjectError('Handle project is not the same as Editing project')
             }
         }
@@ -233,6 +291,10 @@ export default class ProjectManager {
         return await window.showOpenFilePicker(opts)
     }
 
+    static getDirectoryHandle = async () => {
+        return await window.showDirectoryPicker()
+    }
+
     static writeFile = async (fileHandle: FileSystemFileHandle, contents: Blob) => {
         const writable = await fileHandle.createWritable(); // createWritable
         await writable.write(contents);
@@ -249,7 +311,7 @@ export default class ProjectManager {
                 // strOwner,
                 strLastEditTime,
                 objRootFile,
-            } = objJsonData as IProjectInfo
+            } = objJsonData as IProjectContents
 
             if (typeof strId === "string"
                 && typeof strType === "string"
@@ -276,8 +338,8 @@ export default class ProjectManager {
                         && typeof strDataType === 'string'
                         && typeof boolIsExpand === 'boolean'
                         && typeof arrFileSubFiles === 'object' && Array.isArray(arrFileSubFiles)) {
-                        for(const objSubFileConstructor of arrFileSubFiles){
-                            if(!isFileConstructor(objSubFileConstructor)){
+                        for (const objSubFileConstructor of arrFileSubFiles) {
+                            if (!isFileConstructor(objSubFileConstructor)) {
                                 return false
                             }
                         }
@@ -312,3 +374,115 @@ export default class ProjectManager {
         return result
     }
 }
+
+// Test Data
+const TestProjectList: IProjectContents[] = [{
+    strId: '1',
+    strName: 'project_1',
+    strType: 'vw_project',
+    strIconSrc: 'https://picsum.photos/100/100',
+    strOwner: 'Ming',
+    strLastEditTime: '2020/06/03 01:05:30',
+    objRootFile: {
+        strId: "1",
+        boolIsDirectory: true,
+        strFileName: "root",
+        strData: "",
+        strDataType: "directory",
+        boolIsExpand: true,
+        arrFileSubFiles: [
+            {
+                strId: "1-1",
+                boolIsDirectory: false,
+                strFileName: "file1.txt",
+                strData: "file1",
+                strDataType: "text",
+                boolIsExpand: false,
+                arrFileSubFiles: []
+            },
+            {
+                strId: "1-2",
+                boolIsDirectory: true,
+                strFileName: "dir2",
+                strData: "",
+                strDataType: "directory",
+                boolIsExpand: true,
+                arrFileSubFiles: [
+                    {
+                        strId: "1-2-1",
+                        boolIsDirectory: false,
+                        strFileName: "html.html",
+                        strData: '<!DOCTYPE html><html lang="en"><head><link rel="stylesheet" href="./style.css"></head><body><h1>Hello World!</h1><img src="../img.png" alt=""></body><script src="./javascript.js"></script></html>',
+                        strDataType: "text",
+                        boolIsExpand: false,
+                        arrFileSubFiles: []
+                    },
+                    {
+                        strId: "1-2-2",
+                        boolIsDirectory: false,
+                        strFileName: "style.css",
+                        strData: "body {background-color: rgb(255,0,0)}",
+                        strDataType: "text",
+                        boolIsExpand: false,
+                        arrFileSubFiles: []
+                    },
+                    {
+                        strId: "1-2-3",
+                        boolIsDirectory: true,
+                        strFileName: "dir2-3",
+                        strData: "",
+                        strDataType: "directory",
+                        boolIsExpand: true,
+                        arrFileSubFiles: [
+                            {
+                                strId: "1-2-3-1",
+                                boolIsDirectory: false,
+                                strFileName: "file2-3-1.tx",
+                                strData: "file2-3-1",
+                                strDataType: "text",
+                                boolIsExpand: false,
+                                arrFileSubFiles: []
+                            },
+                        ]
+                    },
+                    {
+                        strId: "1-2-4",
+                        boolIsDirectory: false,
+                        strFileName: "javascript.js",
+                        strData: "console.log('Hello World!')",
+                        strDataType: "text",
+                        boolIsExpand: false,
+                        arrFileSubFiles: []
+                    },
+                ]
+            },
+            {
+                strId: "3",
+                boolIsDirectory: false,
+                strFileName: "img.png",
+                strData: "iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAApgAAAKYB3X3/OAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAANCSURBVEiJtZZPbBtFFMZ/M7ubXdtdb1xSFyeilBapySVU8h8OoFaooFSqiihIVIpQBKci6KEg9Q6H9kovIHoCIVQJJCKE1ENFjnAgcaSGC6rEnxBwA04Tx43t2FnvDAfjkNibxgHxnWb2e/u992bee7tCa00YFsffekFY+nUzFtjW0LrvjRXrCDIAaPLlW0nHL0SsZtVoaF98mLrx3pdhOqLtYPHChahZcYYO7KvPFxvRl5XPp1sN3adWiD1ZAqD6XYK1b/dvE5IWryTt2udLFedwc1+9kLp+vbbpoDh+6TklxBeAi9TL0taeWpdmZzQDry0AcO+jQ12RyohqqoYoo8RDwJrU+qXkjWtfi8Xxt58BdQuwQs9qC/afLwCw8tnQbqYAPsgxE1S6F3EAIXux2oQFKm0ihMsOF71dHYx+f3NND68ghCu1YIoePPQN1pGRABkJ6Bus96CutRZMydTl+TvuiRW1m3n0eDl0vRPcEysqdXn+jsQPsrHMquGeXEaY4Yk4wxWcY5V/9scqOMOVUFthatyTy8QyqwZ+kDURKoMWxNKr2EeqVKcTNOajqKoBgOE28U4tdQl5p5bwCw7BWquaZSzAPlwjlithJtp3pTImSqQRrb2Z8PHGigD4RZuNX6JYj6wj7O4TFLbCO/Mn/m8R+h6rYSUb3ekokRY6f/YukArN979jcW+V/S8g0eT/N3VN3kTqWbQ428m9/8k0P/1aIhF36PccEl6EhOcAUCrXKZXXWS3XKd2vc/TRBG9O5ELC17MmWubD2nKhUKZa26Ba2+D3P+4/MNCFwg59oWVeYhkzgN/JDR8deKBoD7Y+ljEjGZ0sosXVTvbc6RHirr2reNy1OXd6pJsQ+gqjk8VWFYmHrwBzW/n+uMPFiRwHB2I7ih8ciHFxIkd/3Omk5tCDV1t+2nNu5sxxpDFNx+huNhVT3/zMDz8usXC3ddaHBj1GHj/As08fwTS7Kt1HBTmyN29vdwAw+/wbwLVOJ3uAD1wi/dUH7Qei66PfyuRj4Ik9is+hglfbkbfR3cnZm7chlUWLdwmprtCohX4HUtlOcQjLYCu+fzGJH2QRKvP3UNz8bWk1qMxjGTOMThZ3kvgLI5AzFfo379UAAAAASUVORK5CYII=",
+                strDataType: "image",
+                boolIsExpand: false,
+                arrFileSubFiles: []
+            },
+        ]
+    }
+},
+{
+    strId: '2',
+    strName: 'project_2',
+    strType: 'vw_project',
+    strIconSrc: 'https://picsum.photos/50/50',
+    strOwner: 'Ming',
+    strLastEditTime: '2020/06/03 01:05:30',
+    objRootFile: {
+        strId: '2',
+        boolIsDirectory: true,
+        strFileName: 'project02',
+        strData: "",
+        strDataType: "directory",
+        boolIsExpand: true,
+        arrFileSubFiles: []
+    }
+}]
+// ProjectManager.showProjectList = TestProjectList

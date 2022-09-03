@@ -20,9 +20,14 @@ export const FUNCTION_CALLER_KYE_RENDER_FILE_MANAGER_CONTENT = 'FileManager/Cont
 
 interface IProps {
     parentThis: any,
+    isEditing: boolean,
 }
 
-export const Content: FC<IProps> = function Content({ parentThis }: IProps) {
+export const Content: FC<IProps> = function Content({
+    parentThis,
+    isEditing,
+}: IProps) {
+
     const [count, setCount] = useState(0)
     const renderComponent = () => setCount(count + 1)
 
@@ -80,7 +85,7 @@ export const Content: FC<IProps> = function Content({ parentThis }: IProps) {
 
     const createProject = () => {
         setGoToProjectManage(true)
-        ProjectManager.createProject()
+        ProjectManager.createNewProject()
     }
 
     const isActive = canDrop && isOver
@@ -98,18 +103,10 @@ export const Content: FC<IProps> = function Content({ parentThis }: IProps) {
     const prepareFileList = getFileList()
     // const destFile = dragAndDropControl.getDestFile()
 
-    const IsDisabled = FileManager.rootFileIsDisabled()
     // console.log('render Content')
-
     return (
-        (IsDisabled) ?
-            <div
-                className={style.createProjectContent}
-                onClick={createProject}
-            >
-                <FontAwesomeIcon icon={faPlus} className={style.icon} />
-            </div>
-            : <>
+        (isEditing) ?
+            <>
                 {showContextMenu ?
                     <ContextMenu
                         parentThis={parentThis}
@@ -146,12 +143,19 @@ export const Content: FC<IProps> = function Content({ parentThis }: IProps) {
                             style={{ height: `21px` }}
                         />
                         {/* <div
-                    ref={drop}
-                    className={(isActive && destFile === rootFile) ? style.fillUnusedSpaceDropArea : style.fillUnusedSpace}
-                    style={{ height: `calc(100% - ${prepareFileList.length * 21 + 1}px)` }}
-                > */}
+            ref={drop}
+            className={(isActive && destFile === rootFile) ? style.fillUnusedSpaceDropArea : style.fillUnusedSpace}
+            style={{ height: `calc(100% - ${prepareFileList.length * 21 + 1}px)` }}
+        > */}
                     </div>
                 </div>
             </>
+            : <div
+                className={style.createProjectContent}
+                onClick={createProject}
+            >
+                <FontAwesomeIcon icon={faPlus} className={style.icon} />
+            </div>
+
     )
 }

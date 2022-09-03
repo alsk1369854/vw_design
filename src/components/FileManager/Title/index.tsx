@@ -3,18 +3,25 @@ import style from './index.module.scss'
 
 import FileManager from '../lib/FileManager'
 import { icon } from '../index'
+import { IProjectContents } from '../../ProjectFrame/lib/ProjectInterfaceCollection'
 
 interface IState { }
 
 interface IProps {
   parentThis: any,
+  isEditing: boolean,
+  projectContents: IProjectContents | undefined,
 }
 
 export default class FileManagerTitle extends Component<IProps, IState> {
 
   render() {
-    const { parentThis } = this.props
-    const isDisabled = FileManager.rootFileIsDisabled()
+    const {
+      parentThis,
+      isEditing,
+      projectContents,
+    } = this.props
+    // const isDisabled = FileManager.rootFileIsDisabled()
 
     return (
       <div
@@ -24,24 +31,24 @@ export default class FileManagerTitle extends Component<IProps, IState> {
         {(FileManager.getRootFile()) ?
           <div className={style.titleBar}>
             <div className={style.projectName}>
-              {FileManager.getRootFile().getFileName()}
+              {(isEditing && projectContents) ? projectContents.strName : 'VW DESIGN'}
             </div>
             <span className={style.iconBar}>
               <div // add File
-                onClick={(isDisabled) ? () => { } : (event) => parentThis.addFile(event, false)}
-                className={(isDisabled) ? style.iconItemDisabled : style.iconItem}
+                onClick={(isEditing) ? (event) => parentThis.addFile(event, false) : () => { }}
+                className={(isEditing) ? style.iconItem : style.iconItemDisabled}
               >
                 {icon.addFile}
               </div>
               <div // add Directory
-                onClick={(isDisabled) ? () => { } : (event) => parentThis.addFile(event, true)}
-                className={(isDisabled) ? style.iconItemDisabled : style.iconItem}
+                onClick={(isEditing) ? (event) => parentThis.addFile(event, true) : () => { }}
+                className={(isEditing) ? style.iconItem : style.iconItemDisabled}
               >
                 {icon.addDirectory}
               </div>
               <div // close all Directory
-                onClick={(isDisabled) ? () => { } : FileManager.closeAllExpandDirectory}
-                className={(isDisabled) ? style.iconItemDisabled : style.iconItem}
+                onClick={(isEditing) ? FileManager.closeAllExpandDirectory : () => { }}
+                className={(isEditing) ? style.iconItem : style.iconItemDisabled}
               >
                 {icon.closeAllDirectory}
               </div>

@@ -20,6 +20,7 @@ import { Content } from './Content'
 // import ContextMenu from './ContextMenu'
 // import { FileItem } from './FileItem'
 import FileFactory from './lib/FileFactory'
+import ProjectManager from '../ProjectFrame/lib/ProjectManager'
 
 export const icon = {
   addFile: <FontAwesomeIcon icon={faSquarePlus} className={style.icon} />,
@@ -82,6 +83,7 @@ export default class FileManagerView extends Component<IProp, IState> {
     // this.setState({currentlySelectedItem: FileManager.getRootFile()})
   }
   componentWillUnmount() {
+    ProjectManager.saveEditingRootFile(FileManager.getRootFile())
     document.removeEventListener('click', this.documentOnClick);
     FileManager.cleanSelectedFiles()
     this.renameCheckAndSetFileName()
@@ -168,16 +170,18 @@ export default class FileManagerView extends Component<IProp, IState> {
   }
 
   render() {
+    const { fileHandle, contents: projectContents } = ProjectManager.getEditingProjectState()
+    const isEditing = (fileHandle && projectContents) ? true : false
 
     return (
       <div
         className={style.fileManagerBody}
         onContextMenu={event => this.showItemContextMenu(event, FileManager.getRootFile())}
       >
-        <Title parentThis={this} />
+        <Title parentThis={this} isEditing={isEditing} projectContents={projectContents}/>
 
         <DndProvider backend={HTML5Backend}>
-          <Content parentThis={this} />
+          <Content parentThis={this} isEditing={isEditing}/>
         </DndProvider>
 
       </div>

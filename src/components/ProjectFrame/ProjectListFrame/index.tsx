@@ -3,12 +3,12 @@ import React, { Component, useEffect, useState } from 'react'
 import ContextMenu from './ContextMenu'
 import ProjectItem from './ProjectItem'
 import FunctionCaller from '../../../tools/FunctionCaller'
-import type { IProjectInfo } from '../lib/IProjectInfo'
+import type { IProjectState } from '../lib/ProjectInterfaceCollection'
 import ProjectManager from '../lib/ProjectManager'
 
 import style from './index.module.scss'
 
-export const FUNCTION_CALLER_KEY_SET_ARR_PROJECT_LIST = 'ProjectListFrame_setArrProjectList'
+export const FUNCTION_CALLER_KEY_UPDATE_SHOW_PROJECT_LIST = 'ProjectListFrame_setShowProjectList'
 
 interface IProps {
   utilMenuState: string
@@ -21,26 +21,27 @@ export default function ProjectListFrame({ utilMenuState }: IProps) {
   const [showContextMenu, setShowContextMenu] = useState(false)
   const [showContextProjectId, setShowContextProjectId] = useState("")
   const [mouseDownXY, setMouseDownXY] = useState({ x: 0, y: 0 })
-  const [showProjectList, setShowProjectList] = useState<IProjectInfo[]>(ProjectManager.showProjectList)
+  const [showProjectStateList, setShowProjectStateList] = useState<IProjectState[]>(ProjectManager.getShowProjectStateList())
 
   const documentOnClick = () => {
     setShowContextMenu(false)
   }
 
-  // const setProjectList = (arrProjectList: IProjectInfo[], callback: Function) => {
-  //   setArrProjectList(arrProjectList)
-  //   render()
-  //   // callback()
-  // }
+  const updateShowProjectStateList = (arrProjectStateList: IProjectState[]) => {
+    setShowProjectStateList(arrProjectStateList)
+    render()
+  }
 
   useEffect(() => {
-    // FunctionCaller.set(FUNCTION_CALLER_KEY_SET_ARR_PROJECT_LIST, setProjectList)
+    FunctionCaller.set(FUNCTION_CALLER_KEY_UPDATE_SHOW_PROJECT_LIST, updateShowProjectStateList)
     document.addEventListener('click', documentOnClick)
     return () => {
-      // FunctionCaller.remove(FUNCTION_CALLER_KEY_SET_ARR_PROJECT_LIST)
+      FunctionCaller.remove(FUNCTION_CALLER_KEY_UPDATE_SHOW_PROJECT_LIST)
       document.removeEventListener('click', documentOnClick)
     }
   })
+
+
 
   const openProjectContextMenu = (event: any, id: string) => {
     event.stopPropagation()
@@ -64,11 +65,11 @@ export default function ProjectListFrame({ utilMenuState }: IProps) {
         <div className={style.line}></div>
         <div className={style.listMenuBar} >
 
-          {showProjectList.map(projectInfo =>
+          {showProjectStateList.map((projectState) =>
             <ProjectItem
-              key={`ProjectItem_${projectInfo.strId}`}
+              key={`ProjectItem_${projectState.contents!.strId}`}
               openProjectContextMenu={openProjectContextMenu}
-              projectInfo={projectInfo}
+              projectState={projectState}
             />
           )}
 

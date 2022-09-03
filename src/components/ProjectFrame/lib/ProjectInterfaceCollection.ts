@@ -1,6 +1,6 @@
 import { FileConstructor } from "../../FileManager/lib/File"
 
-export interface IProjectInfo {
+export interface IProjectContents {
     strId: string,
     strType: string,
     strName: string,
@@ -9,6 +9,12 @@ export interface IProjectInfo {
     strLastEditTime: string,
     objRootFile: FileConstructor,
 }
+
+export interface IProjectState {
+    fileHandle: FileSystemFileHandle | undefined,
+    contents: IProjectContents | undefined
+}
+
 export interface IProjectNameCheck {
     state: boolean,
     message: string,
