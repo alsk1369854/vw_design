@@ -5,8 +5,8 @@ import Home from './pages/Home';
 import ProjectMange from './pages/ProjectManage';
 import Edit from './pages/Edit';
 
-
 function App() {
+
   return (
     <BrowserRouter>
       <Routes>

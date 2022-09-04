@@ -16,17 +16,12 @@ export default function projectItem({
 }: IProps) {
     const { contents } = projectState
 
-    const editing = () => {
-        ProjectManager.setEditingProjectState(projectState)
-        ProjectManager.toEditPage()
-    }
-
     return (
         <>
             <li
                 className={style.listItem}
-                onContextMenu={event => openProjectContextMenu(event, contents!.strId)}
-                onClick={editing}
+                onContextMenu={event => openProjectContextMenu(event, projectState)}
+                onClick={() => ProjectManager.doEditProject(projectState)}
             >
                 <span className={style.itemName}>
                     <img src={contents!.strIconSrc} alt="icon" />
@@ -34,10 +29,10 @@ export default function projectItem({
                 </span>
                 <span className={style.itemOwner}>
                     {contents!.strOwner}
-                    </span>
+                </span>
                 <span className={style.itemLastTime}>
                     {contents!.strLastEditTime}
-                    </span>
+                </span>
             </li>
             <div className={style.line}></div>
         </>

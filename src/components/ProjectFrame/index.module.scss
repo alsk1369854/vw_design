@@ -11,9 +11,11 @@
 
     color: black;
     display: flex;
-    height: 100vh;
+    
+    
+    height: calc(100vh - 60px);
     width: 100%;
-    // justify-content: space-between;
+    justify-content: space-between;
     // justify-content: center;
 }
 

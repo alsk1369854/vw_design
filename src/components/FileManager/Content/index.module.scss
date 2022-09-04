@@ -22,7 +22,7 @@
     }
 }
 
-.createProjectContent {
+.createNewProjectArea {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -35,8 +35,9 @@
     height: calc(100% - 35px);
     width: 100%;
 
-    // color: rgb(204, 204, 204);
     background-color: rgb(37, 37, 38);
+
+    cursor: crosshair;
 
     & .icon {
         height: 80px;

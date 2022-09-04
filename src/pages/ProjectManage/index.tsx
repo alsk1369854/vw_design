@@ -1,5 +1,5 @@
-import React from 'react'
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react'
+import { Link, useHref, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 
 import { Test } from '../../tools/Test';
@@ -7,6 +7,9 @@ import HeaderStyle from '../Edit/index.module.scss'
 import logo from '../../assets/logo.png';
 import ToolBar from '../../components/ToolBar';
 import ProjectFrame from '../../components/ProjectFrame'
+import FunctionCaller from '../../tools/FunctionCaller';
+
+export const FUNCTION_CALLER_KEY_SET_GO_TO_EDIT_PAGE = 'ProjectManagePage: goToEditPage'
 
 const cssHelmet = `
     html, body, #app {
@@ -36,32 +39,50 @@ const cssHelmet = `
     }
 `
 
-export default class ProjectManagePage extends React.Component {
-    render() {
-        return (
-            <div
-                data-testid={Test.setTestId("ProjectManagePage")}
-            // onClick={this.closeProjectContextMenu}
-            >
-                <Helmet>
-                    <style>
-                        {cssHelmet}
-                    </style>
-                </Helmet>
+export default function ProjectManagePage() {
 
-                {/* Page Header */}
-                <div className={HeaderStyle.div} >
-                    <header>
-                        <Link to="/" className={HeaderStyle.container} data-testid={Test.setTestId("linkHomePage")} >
-                            <img id={HeaderStyle.logo} src={logo} />
-                        </Link>
-                        <ToolBar />
-                    </header>
-                </div>
+    const navigate = useNavigate();
 
-                {/* ProjectList */}
-                <ProjectFrame />
+    const [toEditPagePage, setToEditPagePage] = useState(false)
+    const strPagePathEdit = useHref('/Edit')
+    const goToEditPage = () => setToEditPagePage(true)
+
+    useEffect(() => {
+        if (toEditPagePage) {
+            navigate(strPagePathEdit)
+            setToEditPagePage(false)
+        }
+
+        FunctionCaller.set(FUNCTION_CALLER_KEY_SET_GO_TO_EDIT_PAGE, goToEditPage)
+        return () => {
+            FunctionCaller.remove(FUNCTION_CALLER_KEY_SET_GO_TO_EDIT_PAGE)
+        }
+    })
+
+    return (
+        <div
+            data-testid={Test.setTestId("ProjectManagePage")}
+        // onClick={this.closeProjectContextMenu}
+        >
+            <Helmet>
+                <style>
+                    {cssHelmet}
+                </style>
+            </Helmet>
+
+            {/* Page Header */}
+            <div className={HeaderStyle.div} >
+                <header>
+                    <Link to="/" className={HeaderStyle.container} data-testid={Test.setTestId("linkHomePage")} >
+                        <img id={HeaderStyle.logo} src={logo} />
+                    </Link>
+                    <ToolBar />
+                </header>
             </div>
-        )
-    }
+
+            {/* ProjectList */}
+            <ProjectFrame />
+        </div>
+    )
 }
+

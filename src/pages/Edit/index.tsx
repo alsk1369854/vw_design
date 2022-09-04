@@ -1,5 +1,5 @@
-import React, { memo } from 'react';
-import { Link } from 'react-router-dom';
+import React, { memo, useEffect, useState } from 'react';
+import { Link, useHref, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import style from './index.module.scss';
 import logo from '../../assets/logo.png';
@@ -7,8 +7,9 @@ import logo from '../../assets/logo.png';
 import { Test } from '../../tools/Test';
 import ToolBar from '../../components/ToolBar';
 import MainFrame from '../../components/MainFrame';
+import FunctionCaller from '../../tools/FunctionCaller';
 
-
+export const FUNCTION_CALLER_KEY_SET_GO_TO_PROJECT_MANAGER_PAGE = 'EditPage: goToProjectManagePage'
 
 
 const cssHelmet = `
@@ -40,6 +41,23 @@ const cssHelmet = `
 `
 
 const EditPage = memo(() => {
+    const navigate = useNavigate();
+
+    const [toProjectManagePage, setToProjectManagePage] = useState(false)
+    const strPagePathProjectManager = useHref('/ProjectManage')
+    const goToProjectManagePage = () => setToProjectManagePage(true)
+
+    useEffect(() => {
+        if (toProjectManagePage) {
+            navigate(strPagePathProjectManager)
+            setToProjectManagePage(false)
+        }
+        FunctionCaller.set(FUNCTION_CALLER_KEY_SET_GO_TO_PROJECT_MANAGER_PAGE, goToProjectManagePage)
+        return () => {
+            FunctionCaller.remove(FUNCTION_CALLER_KEY_SET_GO_TO_PROJECT_MANAGER_PAGE)
+        }
+    })
+
     return (
         <div
             className={style.div}

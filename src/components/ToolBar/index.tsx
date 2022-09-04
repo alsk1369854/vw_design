@@ -162,8 +162,8 @@ const container = memo(() => {
         new ToolBarButton("File",
             new Menu([
                 new Group([
-                    new Node("Open Project",    "HotKey01", () => {console.log("Open Project...")}),
-                    new Node("Open File",       "HotKey02", () => {console.log("Open File...")}),
+                    new Node("Open Project",            "HotKey01", () => {ProjectManage.openLocalProject()}),
+                    new Node("Open Project Home",       "HotKey02", () => {ProjectManage.openLocalProjectsHome()}),
                 ]),
                 new Group([
                     new Node("Save",            "HotKey03", () => {ProjectManage.saveEditingProject()}),

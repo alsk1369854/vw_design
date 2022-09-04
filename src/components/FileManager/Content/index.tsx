@@ -1,4 +1,4 @@
-import React, { FC, memo, useEffect, useLayoutEffect, useMemo, useState } from 'react'
+import React, { FC, useEffect, useMemo, useState } from 'react'
 
 import { useDrop } from 'react-dnd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -13,7 +13,6 @@ import style from './index.module.scss'
 import FileManager from '../lib/FileManager'
 import DragAndDropControl from '../lib/DragAndDropControl'
 import FunctionCaller from '../../../tools/FunctionCaller'
-import { useHref, useNavigate } from 'react-router-dom'
 import ProjectManager from '../../ProjectFrame/lib/ProjectManager'
 
 export const FUNCTION_CALLER_KYE_RENDER_FILE_MANAGER_CONTENT = 'FileManager/Content: renderFileManagerContent'
@@ -30,11 +29,6 @@ export const Content: FC<IProps> = function Content({
 
     const [count, setCount] = useState(0)
     const renderComponent = () => setCount(count + 1)
-
-    const [goToProjectManage, setGoToProjectManage] = useState(false)
-
-    const routePath = useHref('/ProjectManage');
-    const navigate = useNavigate();
 
     const dragAndDropControl = useMemo(() => new DragAndDropControl(), [])
     const rootFile = FileManager.getRootFile()
@@ -60,10 +54,6 @@ export const Content: FC<IProps> = function Content({
     }), [dragAndDropControl])
 
     useEffect(() => {
-        if (goToProjectManage) {
-            navigate(routePath)
-            setGoToProjectManage(false)
-        }
         FunctionCaller.set(FUNCTION_CALLER_KYE_RENDER_FILE_MANAGER_CONTENT, renderComponent)
         return function () {
             FunctionCaller.remove(FUNCTION_CALLER_KYE_RENDER_FILE_MANAGER_CONTENT)
@@ -81,11 +71,6 @@ export const Content: FC<IProps> = function Content({
         }
         FileManager.getRootFile().getSubFiles().forEach(file => buildFileList(file, 0))
         return fileList
-    }
-
-    const createProject = () => {
-        setGoToProjectManage(true)
-        ProjectManager.createNewProject()
     }
 
     const isActive = canDrop && isOver
@@ -151,8 +136,8 @@ export const Content: FC<IProps> = function Content({
                 </div>
             </>
             : <div
-                className={style.createProjectContent}
-                onClick={createProject}
+                className={style.createNewProjectArea}
+                onClick={ProjectManager.createNewProject}
             >
                 <FontAwesomeIcon icon={faPlus} className={style.icon} />
             </div>

@@ -1,8 +1,8 @@
 import { FunctionCallerError } from '../Error/index'
 
 // Error message
-const ERROR_KEY_EXISTS = 'FunctionCaller:Key is exists';
-const ERROR_KEY_NO_EXISTS = 'FunctionCaller:Key is not exists';
+const ERROR_KEY_EXISTS = 'FunctionCaller: Key is exists \n';
+const ERROR_KEY_NO_EXISTS = 'FunctionCaller: Key is not exists \n';
 
 /**
  * @description 函數互叫者，可專案任意地方使用 set() 添加要註冊的函數， 並在任何替方透過 call() 進行調用
@@ -18,10 +18,10 @@ class FunctionCaller {
     /**
      * @description 註冊函數器
      * @param strKey 註冊函數的key (typeof String) 
-     * @param func 要註冊的函數 (typeopf Function)
+     * @param func 要註冊的函數 (typeof Function)
      */
     set(strKey: string, func: Function): void {
-        if (this.objFuncCollection[strKey] !== undefined) throw new FunctionCallerError(ERROR_KEY_EXISTS);
+        if (this.objFuncCollection[strKey] !== undefined) throw new FunctionCallerError(ERROR_KEY_EXISTS + `\nKEY:'${strKey}'`);
         this.objFuncCollection = { [strKey]: func, ...this.objFuncCollection };
     }
 
@@ -32,8 +32,10 @@ class FunctionCaller {
      * @returns 註冊函數運行後的回傳值
      */
     call(strKey: string, ...arrData: any[]): any {
-        // if (this.objFuncCollection[strKey] === undefined) throw new FunctionCallerError(ERROR_KEY_NO_EXISTS);
-        if (this.objFuncCollection[strKey] === undefined) console.error(ERROR_KEY_NO_EXISTS+`\nKEY:'${strKey}'`);
+        if (process.env.NODE_ENV === "development" && this.objFuncCollection[strKey] === undefined) {
+            console.log('FunctionCaller')
+            console.error(ERROR_KEY_NO_EXISTS + `\nKEY:'${strKey}'`);
+        }
         if (this.objFuncCollection[strKey] === undefined) return;
         const { [strKey]: func } = this.objFuncCollection;
         if (arrData === undefined) return func();
@@ -46,7 +48,10 @@ class FunctionCaller {
      * @returns 註冊函數
      */
     remove(strKey: string): Function | void {
-        // if (this.objFuncCollection[strKey] === undefined) throw new FunctionCallerError(ERROR_KEY_NO_EXISTS);
+        if (process.env.NODE_ENV === "development" && this.objFuncCollection[strKey] === undefined) {
+            console.log('FunctionCaller')
+            console.error(ERROR_KEY_NO_EXISTS + `\nKEY:'${strKey}'`);
+        }
         if (this.objFuncCollection[strKey] === undefined) return;
         const func = this.objFuncCollection[strKey];
         delete this.objFuncCollection[strKey];
@@ -76,7 +81,7 @@ class FunctionCaller {
      * @param strKey 註冊函數的key
      * @returns 所註冊的函數實體 (typeof Function)
      */
-    getFunctions(strKey: string): Function {
+    getFunctions(strKey: string): Function | undefined {
         return this.objFuncCollection[strKey];
     }
 }

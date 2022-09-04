@@ -21,6 +21,10 @@ import {
 
 import style from './index.module.scss'
 import ProjectManager from '../lib/ProjectManager'
+import FunctionCaller from '../../../tools/FunctionCaller'
+
+
+export const FUNCTION_CALLER_KEY_SET_HAS_PROJECT_HOME_DIRECTORY = 'ProjectFrame/SideMenu: setHasProjectHomeDirectory'
 
 interface IProps {
   utilMenuState: string,
@@ -31,6 +35,15 @@ export default function SideMenu({
   utilMenuState,
   selectUtilMenuItem
 }: IProps) {
+
+  const [boolHasProjectHomeDirectory, setHasProjectHomeDirectory] = useState(ProjectManager.getProjectHomeDirectoryHandle())
+
+  useEffect(()=>{
+    FunctionCaller.set(FUNCTION_CALLER_KEY_SET_HAS_PROJECT_HOME_DIRECTORY, setHasProjectHomeDirectory)
+    return ()=>{
+      FunctionCaller.remove(FUNCTION_CALLER_KEY_SET_HAS_PROJECT_HOME_DIRECTORY)
+    }
+  })
 
   // const [count, setCount] = useState(0)
   // const render = () => setCount(count + 1)
@@ -72,17 +85,17 @@ export default function SideMenu({
           className={style.utilItem}
           onClick={ProjectManager.openLocalProjectsHome}
         >
-          <FontAwesomeIcon icon={faHouseLaptop} className={style.icon} />
+          <FontAwesomeIcon icon={faHouseLaptop} className={style.icon}  />
           {/* <img src={ComputerIcon} alt="Open Directory Icon" /> */}
           <span>Open Project Home</span>
         </li>
         <li
-          className={style.utilItem}
-          onClick={ProjectManager.reloadProjectHomeDirectoryHandle}
+          className={(boolHasProjectHomeDirectory) ? style.utilItem : style.disabledUtilItem}
+          onClick={(boolHasProjectHomeDirectory) ? ProjectManager.reloadProjectHomeDirectoryHandle : () => { }}
         >
           <FontAwesomeIcon icon={faArrowsRotate} className={style.icon} />
           {/* <img src={AshcanIcon} alt="Renew Icon" /> */}
-          <span>Renew</span>
+          <span>Reload Project Home</span>
         </li>
       </div>
     </div>

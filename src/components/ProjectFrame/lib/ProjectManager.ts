@@ -4,12 +4,13 @@ import moment from 'moment'
 import { ProjectManagerSaveEditingProjectError } from '../../../tools/Error/index'
 import { IProjectContents, IProjectNameCheck, DATE_FORMAT, IProjectState, IInitialEditingProjectState } from './ProjectInterfaceCollection'
 import FunctionCaller from '../../../tools/FunctionCaller'
-import { FUNCTION_CALLER_KEY_TO_EDIT_PAGE } from '../index'
+import { FUNCTION_CALLER_KEY_SET_GO_TO_PROJECT_MANAGER_PAGE } from '../../../pages/Edit'
+import { FUNCTION_CALLER_KEY_SET_GO_TO_EDIT_PAGE } from '../../../pages/ProjectManage'
 import { FUNCTION_CALLER_KEY_UPDATE_SHOW_PROJECT_LIST } from '../ProjectListFrame/index'
+import { FUNCTION_CALLER_KEY_SET_HAS_PROJECT_HOME_DIRECTORY } from '../SideMenu'
 import FileManager from '../../FileManager/lib/FileManager'
 import FileMangerFile, { FileConstructor } from '../../FileManager/lib/File';
 import ProjectFactory, { INewProjectValues } from './ProjectFactory';
-import { file } from 'jszip'
 
 
 const regExpJsonExtension = /.json$/ig
@@ -54,6 +55,7 @@ export default class ProjectManager {
     static setProjectHomeDirectoryHandle = (newProjectHomeDirectoryHandle: FileSystemDirectoryHandle | null) => {
         ProjectManager.setShowProjectStateList([])
         ProjectManager.projectHomeDirectoryHandle = newProjectHomeDirectoryHandle
+        FunctionCaller.call(FUNCTION_CALLER_KEY_SET_HAS_PROJECT_HOME_DIRECTORY, newProjectHomeDirectoryHandle)
         if (newProjectHomeDirectoryHandle) {
             ProjectManager.setEditingProjectState({ ...ProjectManager.initialEditingProjectState })
             const readDirectory = async () => {
@@ -115,6 +117,7 @@ export default class ProjectManager {
     }
 
     static createNewProject = () => {
+        ProjectManager.goToProjectManagerPage()
         Swal.fire({
             title: 'New Project Name',
             input: 'text',
@@ -186,7 +189,7 @@ export default class ProjectManager {
                             }
                             ProjectManager.setShowProjectStateList([objProjectState])
                             ProjectManager.setEditingProjectState(objProjectState)
-                            ProjectManager.toEditPage()
+                            ProjectManager.goToEditPage()
                         }).catch((error) => {
                             if (process.env.NODE_ENV === "development") {
                                 console.log('ProjectManager')
@@ -275,8 +278,12 @@ export default class ProjectManager {
         const directoryHandlePromise = window.showDirectoryPicker()
 
         directoryHandlePromise.then((directoryHandle: FileSystemDirectoryHandle) => {
+            ProjectManager.goToProjectManagerPage()
             directoryHandle.requestPermission({ mode: 'readwrite' })
-            ProjectManager.setProjectHomeDirectoryHandle(directoryHandle)
+            setTimeout(() => {
+                ProjectManager.setProjectHomeDirectoryHandle(directoryHandle)
+                FunctionCaller.call(FUNCTION_CALLER_KEY_SET_HAS_PROJECT_HOME_DIRECTORY, ProjectManager.getProjectHomeDirectoryHandle())
+            }, 1);
 
             // directoryHandle.removeEntry()
         }).catch((error) => {
@@ -306,8 +313,10 @@ export default class ProjectManager {
                 const blob = ProjectManager.getBlob(contents)
                 ProjectManager.writeFile(fileHandle, blob)
             } else {
-                console.log(rootFile)
-                console.log(contents)
+                if (process.env.NODE_ENV === "development") {
+                    console.log('ProjectManger')
+                    console.error('ProjectManager: \nFunction: saveEditingProject \nHandle project is not the same as Editing project')
+                }
                 throw new ProjectManagerSaveEditingProjectError('Handle project is not the same as Editing project')
             }
         }
@@ -317,7 +326,9 @@ export default class ProjectManager {
 
     static getNowDateTimeToString = (): string => moment().format(DATE_FORMAT)
 
-    static toEditPage = () => FunctionCaller.call(FUNCTION_CALLER_KEY_TO_EDIT_PAGE)
+    static goToEditPage = () => FunctionCaller.call(FUNCTION_CALLER_KEY_SET_GO_TO_EDIT_PAGE)
+
+    static goToProjectManagerPage = () => FunctionCaller.call(FUNCTION_CALLER_KEY_SET_GO_TO_PROJECT_MANAGER_PAGE)
 
     static getSaveFileHandle = async (options?: any) => {
         const opts = (options) ? options : {
@@ -425,6 +436,11 @@ export default class ProjectManager {
         }
         result.state = true
         return result
+    }
+
+    static doEditProject = (objProjectState: IProjectState) => {
+        ProjectManager.setEditingProjectState(objProjectState)
+        ProjectManager.goToEditPage()
     }
 }
 

@@ -1,18 +1,24 @@
 .rightSideBar {
     padding: 10px 0px;
     width: 350px;
+    color: rgb(78, 78, 78);
     background-color: rgb(225, 226, 226);
+    font-weight: bold;
+
+    overflow:auto;
 
     & .utilMenuBar {
 
         & .utilItem,
-        .selectedUtilItem {
+        & .selectedUtilItem,
+        & .disabledUtilItem {
             cursor: pointer;
             display: flex;
             align-items: center;
             list-style: none;
             padding: 10px 0px;
             height: 30px;
+            width: 100%;
 
             & .icon {
                 color: #b2b3b4;
@@ -22,7 +28,10 @@
                 width: 35px;
             }
 
-            & span {}
+            & span {
+                width: 190.45px;
+                white-space: nowrap; // 溢出不換行
+            }
         }
 
         & .utilItem:hover {
@@ -33,6 +42,12 @@
         & .selectedUtilItem {
             cursor: default;
             background-color: rgb(255, 255, 255);
+        }
+        & .disabledUtilItem{
+            cursor: no-drop;
+            opacity: 0.5;
+            color: white;
+            background-color: rgb(63, 63, 63);
         }
     }
 }
