@@ -222,6 +222,7 @@ export class FileManager {
     document.body.removeChild(element);
   }
 }
+export default new FileManager()
 
 // START setting FileIconMap ============================================
 // directory open and close
@@ -246,6 +247,7 @@ FileManager.objMapFileIconMap.set('png', fileIconElement.image)
 // END setting FileIconMap ============================================
 
 
+
 // // START setting FileTypeMap ============================================
 // FileManager.objMapFileTypeMap.set('unknown', -1)    // unknown
 // FileManager.objMapFileTypeMap.set('vw', 0)  // vs_project
@@ -260,19 +262,8 @@ FileManager.objMapFileIconMap.set('png', fileIconElement.image)
 // FileManager.objMapFileTypeMap.set('png', 6)
 // // END setting FileTypeMap ============================================
 
-const objFileManger = new FileManager();
-export default objFileManger
 
-const DEFAULT_ROOT_FILE = {
-  strId: "default_rootFile_cannot_edit",
-  boolIsDirectory: true,
-  strFileName: "root",
-  strData: "",
-  strDataType: "directory",
-  boolIsExpand: true,
-  arrFileSubFiles: []
-}
-objFileManger.setRootFile(DEFAULT_ROOT_FILE)
+// objFileManger.setRootFile({...initialEditingProjectState.contents.objRootFile})
 
 
 

@@ -20,6 +20,6 @@
 ## Load Test Projects
 進入 [ProjectManager Page](http://localhost:3000/ProjectManage) 
 ```
-選擇右方功能項: Open Projects House
+選擇右方功能項: Open Project Home
 選擇文件夾: visual-website-design\Test_Data\vw_projects
 ```

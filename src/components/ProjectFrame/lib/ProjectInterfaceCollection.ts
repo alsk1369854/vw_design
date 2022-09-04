@@ -15,6 +15,11 @@ export interface IProjectState {
     contents: IProjectContents | undefined
 }
 
+export interface IInitialEditingProjectState {
+    readonly fileHandle: undefined,
+    readonly contents: IProjectContents
+}
+
 export interface IProjectNameCheck {
     state: boolean,
     message: string,

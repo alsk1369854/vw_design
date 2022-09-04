@@ -70,13 +70,16 @@ export default function SideMenu({
         </li>
         <li
           className={style.utilItem}
-          onClick={ProjectManager.openLocalProjectsHouse}
+          onClick={ProjectManager.openLocalProjectsHome}
         >
           <FontAwesomeIcon icon={faHouseLaptop} className={style.icon} />
           {/* <img src={ComputerIcon} alt="Open Directory Icon" /> */}
-          <span>Open Projects House</span>
+          <span>Open Project Home</span>
         </li>
-        <li className={style.utilItem}>
+        <li
+          className={style.utilItem}
+          onClick={ProjectManager.reloadProjectHomeDirectoryHandle}
+        >
           <FontAwesomeIcon icon={faArrowsRotate} className={style.icon} />
           {/* <img src={AshcanIcon} alt="Renew Icon" /> */}
           <span>Renew</span>
