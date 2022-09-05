@@ -113,7 +113,17 @@ export default class ProjectManager {
     }
     static addShowProjectStateList = (objProjectState: IProjectState) => {
         ProjectManager.getShowProjectStateList().push(objProjectState)
+        ProjectManager.sortShowProjectStateList()
         FunctionCaller.call(FUNCTION_CALLER_KEY_UPDATE_SHOW_PROJECT_LIST, ProjectManager.showProjectStateList)
+    }
+    static sortShowProjectStateList = () => {
+        ProjectManager.showProjectStateList.sort((p1: IProjectState, p2: IProjectState) => {
+            if (p1.contents && p2.contents) {
+                return p1.contents.strName.localeCompare(p2.contents.strName)
+            } else {
+                return 0
+            }
+        })
     }
 
     static checkProjectNameCanCreate = async (strProjectName: string) => {
