@@ -38,7 +38,7 @@ export default function ContextMenu({
         <img src={OpenIcon} alt="Open icon" />
         <span>Edit</span>
       </li>
-      <li>
+      <li onClick={() => ProjectManager.copyProject(showContextProjectState)}>
         <img src={CopyIcon} alt="Copy icon"></img>
         <span>Copy</span>
       </li>
@@ -51,19 +51,19 @@ export default function ContextMenu({
         <span>Detail</span>
       </li> */}
       <div className={style.line}></div>
-      <li onClick={() => ProjectManager.downloadProject(contents!)}>
+      <li onClick={() => ProjectManager.downloadProject(showContextProjectState)}>
         <img src={DownloadIcon} alt="Download icon" />
         <span>Download</span>
       </li>
       {(boolHasProjectHomeDirectory) ?
         <>
           <div className={style.line}></div>
-          <li onClick={()=> ProjectManager.renameProject(fileHandle!)}>
+          <li onClick={()=> ProjectManager.renameProject(showContextProjectState)}>
             <img src={RenameIcon} alt="Rename icon" />
             <span>Rename</span>
           </li>
 
-          <li onClick={() => ProjectManager.deleteProject(fileHandle!)}>
+          <li onClick={() => ProjectManager.deleteProject(showContextProjectState)}>
             <img src={AshcanIcon} alt="Delete icon" />
             <span>Delete</span>
           </li>

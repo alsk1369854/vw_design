@@ -23,6 +23,7 @@ export interface IInitialEditingProjectState {
 export interface IProjectNameCheck {
     state: boolean,
     message: string,
-    newProjectName: string,
+    projectName: string,
 }
+
 export const DATE_FORMAT = 'YYYY/MM/DD, HH:mm:ss'

@@ -1,4 +1,5 @@
 import { nanoid } from "nanoid"
+import { FileConstructor } from "../../FileManager/lib/File"
 import { IProjectContents } from "./ProjectInterfaceCollection"
 import ProjectManager from "./ProjectManager"
 
@@ -9,10 +10,25 @@ export interface INewProjectValues {
 }
 
 export default class ProjectFactory {
+
+    static getCopyProject = (objSrcProjectContents: IProjectContents, copyProjectName: string): IProjectContents => {
+        const copyProjectID = nanoid()
+        const copyRootFile: FileConstructor = JSON.parse(JSON.stringify(objSrcProjectContents.objRootFile))
+        copyRootFile.strId = copyProjectID
+        
+        const copyContents: IProjectContents = {
+            ...objSrcProjectContents,
+            strId: copyProjectID,
+            strName: copyProjectName,
+            objRootFile: copyRootFile
+        }
+        return copyContents
+    }
+
     static getNewProject = (objNewProjectValues: INewProjectValues) => {
         const { strProjectName, strIconSrc, strOwner } = objNewProjectValues
         const projectID = nanoid()
-        const projectInfo: IProjectContents = {
+        const projectContents: IProjectContents = {
             strId: projectID,
             strName: strProjectName,
             strType: 'vw_project',
@@ -40,6 +56,6 @@ export default class ProjectFactory {
                 ]
             }
         }
-        return projectInfo
+        return projectContents
     }
 }

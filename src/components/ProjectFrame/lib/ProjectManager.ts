@@ -75,8 +75,8 @@ export default class ProjectManager {
                                             const objJsonData: any = JSON.parse(fileContents.toString())
                                             const isProjectContents = ProjectManager.isVWProjectInfo(objJsonData)
                                             if (isProjectContents) {
-                                                const strNewProjectName = file.name.replace(regExpJsonExtension, '')
-                                                objJsonData.objRootFile.strFileName = objJsonData.strName = strNewProjectName
+                                                const strprojectName = file.name.replace(regExpJsonExtension, '')
+                                                objJsonData.objRootFile.strFileName = objJsonData.strName = strprojectName
 
                                                 const objProjectState: IProjectState = {
                                                     fileHandle: objHandle as FileSystemFileHandle,
@@ -116,24 +116,28 @@ export default class ProjectManager {
         FunctionCaller.call(FUNCTION_CALLER_KEY_UPDATE_SHOW_PROJECT_LIST, ProjectManager.showProjectStateList)
     }
 
-    static checkProjectNameCanCreateFunc = async (strProjectName: string) => {
+    static checkProjectNameCanCreate = async (strProjectName: string) => {
         const projectHomeDirectoryHandle: FileSystemDirectoryHandle | null = ProjectManager.getProjectHomeDirectoryHandle()
-        const objProjectNameCheck = ProjectManager.checkNewProjectName(strProjectName)
-        const { state, message, newProjectName } = objProjectNameCheck
-        if (projectHomeDirectoryHandle && state) { // 有 select Project Home\
-            const objSubProjectNameCheck = await ProjectManager.hasSubProjectName(projectHomeDirectoryHandle, newProjectName)
-            const { state: stateSubProjectName, message: messageSubProjectName } = objSubProjectNameCheck
-            if (stateSubProjectName) {
-                return objSubProjectNameCheck
-            } else {
-                Swal.showValidationMessage(messageSubProjectName)
-            }
-        } else if (state) { // 無 select Project Home
+        const objProjectNameCheck = ProjectManager.checkprojectName(strProjectName)
+        const { state, projectName } = objProjectNameCheck
+        if (projectHomeDirectoryHandle && state) { // 有 select Project Home
+            return await ProjectManager.hasSubProjectName(projectHomeDirectoryHandle, projectName)
+        } else {// 無 select Project Home
+            return objProjectNameCheck
+        }
+    }
+
+    static alertCheckProjectNameCanCreate = async (strProjectName: string) => {
+        const objProjectNameCheck = await ProjectManager.checkProjectNameCanCreate(strProjectName)
+        const { state, message } = objProjectNameCheck
+        if (state) {
             return objProjectNameCheck
         } else {
             Swal.showValidationMessage(message)
         }
     }
+
+
 
     static createNewProject = () => {
         ProjectManager.goToProjectManagerPage()
@@ -147,34 +151,33 @@ export default class ProjectManager {
             confirmButtonText: 'Create',
             showLoaderOnConfirm: true,
             inputPlaceholder: 'Enter your project name',
-            preConfirm: (strProjectName) => ProjectManager.checkProjectNameCanCreateFunc(strProjectName),
+            preConfirm: (strProjectName) => ProjectManager.alertCheckProjectNameCanCreate(strProjectName),
         }).then((response) => {
             const { isConfirmed, value: objProjectNameCheck } = response
             if (isConfirmed) {
                 const projectCreateFunc = async () => {
-                    const { newProjectName } = objProjectNameCheck as IProjectNameCheck
+                    const { projectName } = objProjectNameCheck as IProjectNameCheck
                     const objNewProjectValues: INewProjectValues = {
-                        strProjectName: newProjectName,
+                        strProjectName: projectName,
                         // strIconSrc: 'https://picsum.photos/50/50',
                         strOwner: 'VW DESIGN',
                     }
-                    const options = {
-                        suggestedName: `${newProjectName}.json`,
-                        types: [{
-                            description: 'JSON',
-                            accept: { 'application/json': ['.json'] },
-                        }],
-                    };
-
                     const projectHomeDirectoryHandle: FileSystemDirectoryHandle | null = ProjectManager.getProjectHomeDirectoryHandle()
                     if (projectHomeDirectoryHandle) { // 有 Select Project Home
-                        const strNewProjectFileName = newProjectName + '.json'
+                        const strNewProjectFileName = projectName + '.json'
                         const objFileHandle = await projectHomeDirectoryHandle.getFileHandle(strNewProjectFileName, { create: true })
                         const contents = ProjectFactory.getNewProject(objNewProjectValues)
                         const blob = ProjectManager.getBlob(contents)
                         await ProjectManager.writeFile(objFileHandle, blob)
                         ProjectManager.reloadProjectHomeDirectoryHandle()
                     } else { // 沒有 Select Project Home
+                        const options = {
+                            suggestedName: `${projectName}.json`,
+                            types: [{
+                                description: 'JSON',
+                                accept: { 'application/json': ['.json'] },
+                            }],
+                        };
                         const objFileHandlePromise = ProjectManager.getSaveFileHandle(options)
                         objFileHandlePromise.then((objFileHandle) => {
                             const contents = ProjectFactory.getNewProject(objNewProjectValues)
@@ -240,8 +243,8 @@ export default class ProjectManager {
                                 const objJsonData: any = JSON.parse(fileContents.toString())
                                 const isProjectInfo = ProjectManager.isVWProjectInfo(objJsonData)
                                 if (isProjectInfo) {
-                                    const strNewProjectName = file.name.replace(regExpJsonExtension, '')
-                                    objJsonData.objRootFile.strFileName = objJsonData.strName = strNewProjectName
+                                    const strprojectName = file.name.replace(regExpJsonExtension, '')
+                                    objJsonData.objRootFile.strFileName = objJsonData.strName = strprojectName
 
                                     const objProjectState: IProjectState = {
                                         fileHandle: fileHandle,
@@ -320,7 +323,11 @@ export default class ProjectManager {
         }
     }
 
-    static getBlob = (contents: any): Blob => new Blob([JSON.stringify(contents, null, 2)], { type: 'application/json;charset=utf-8' })
+    static getBlob = (contents: any): Blob => {
+        return (process.env.NODE_ENV === 'development') ?
+            new Blob([JSON.stringify(contents, null, 2)], { type: 'application/json;charset=utf-8' })
+            : new Blob([JSON.stringify(contents)], { type: 'application/json;charset=utf-8' })
+    }
 
     static getNowDateTimeToString = (): string => moment().format(DATE_FORMAT)
 
@@ -353,7 +360,7 @@ export default class ProjectManager {
         return await window.showOpenFilePicker(opts)
     }
 
-    static getDirectoryHandle = async () => {
+    static getOpenDirectoryHandle = async () => {
         return await window.showDirectoryPicker()
     }
 
@@ -415,21 +422,21 @@ export default class ProjectManager {
         return false
     }
 
-    static checkNewProjectName = (newProjectName: string): IProjectNameCheck => {
+    static checkprojectName = (projectName: string): IProjectNameCheck => {
         const regExp = /[\\|/|:|\*|\?|"|<|>|]/g
 
-        newProjectName = newProjectName.trim()
+        projectName = projectName.trim()
         let result: IProjectNameCheck = {
             state: false,
             message: '',
-            newProjectName: newProjectName,
+            projectName: projectName,
         }
 
-        if (newProjectName.length === 0) {
+        if (projectName.length === 0) {
             result.message = '必須提供專案名稱'
             return result
-        } else if (regExp.test(newProjectName)) { // 檢查名稱前後是否有空格
-            result.message = `名稱 ${newProjectName} 不能作為專案名稱。請選擇不同的名稱。`
+        } else if (regExp.test(projectName)) { // 檢查名稱前後是否有空格
+            result.message = `名稱 ${projectName} 不能作為專案名稱。請選擇不同的名稱。`
             return result
         }
         result.state = true
@@ -437,20 +444,29 @@ export default class ProjectManager {
     }
 
     static doEditProject = (objProjectState: IProjectState) => {
-        ProjectManager.setEditingProjectState(objProjectState)
-        ProjectManager.goToEditPage()
+        const { fileHandle, contents } = objProjectState
+        if (fileHandle && contents) {
+            ProjectManager.setEditingProjectState(objProjectState)
+            ProjectManager.goToEditPage()
+        }
     }
 
-    static downloadProject = (objProjectContents: IProjectContents) => {
-        const { strName, objRootFile } = objProjectContents
-        staticFileManager.downloadFile(objRootFile, strName)
+    static downloadProject = (objProjectState: IProjectState) => {
+        const { fileHandle, contents } = objProjectState
+        if (fileHandle && contents) {
+            const { strName, objRootFile } = contents
+            staticFileManager.downloadFile(objRootFile, strName)
+        }
     }
 
-    static deleteProject = (objFileSystemFileHandle: FileSystemFileHandle) => {
-        const objProjectHomeDirectoryHandle = ProjectManager.getProjectHomeDirectoryHandle()
-        if (objProjectHomeDirectoryHandle) {
-            objProjectHomeDirectoryHandle.removeEntry(objFileSystemFileHandle.name)
-            ProjectManager.reloadProjectHomeDirectoryHandle()
+    static deleteProject = (objProjectState: IProjectState) => {
+        const { fileHandle, contents } = objProjectState
+        if (fileHandle) {
+            const objProjectHomeDirectoryHandle = ProjectManager.getProjectHomeDirectoryHandle()
+            if (objProjectHomeDirectoryHandle) {
+                objProjectHomeDirectoryHandle.removeEntry(fileHandle.name)
+                ProjectManager.reloadProjectHomeDirectoryHandle()
+            }
         }
     }
 
@@ -461,11 +477,11 @@ export default class ProjectManager {
         const result: IProjectNameCheck = {
             state: true,
             message: '',
-            newProjectName: strProjectName
+            projectName: strProjectName
         }
         for await (const strSubFileName of objProjectHomeDirectoryHandle.keys()) {
             if (strSubFileName.toLocaleUpperCase() === strNewProjectFileName.toLocaleUpperCase()) {
-                result.message = `專案名稱 '${result.newProjectName}' 已存在，請選用其他名稱`
+                result.message = `專案名稱 '${result.projectName}' 已存在，請選用其他名稱`
                 result.state = false
                 break
             }
@@ -473,9 +489,10 @@ export default class ProjectManager {
         return result
     }
 
-    static renameProject = (objFileSystemFileHandle: FileSystemFileHandle) => {
+    static renameProject = (objProjectState: IProjectState) => {
+        const { fileHandle: oldFileHandle, contents } = objProjectState
         const objProjectHomeDirectoryHandle = ProjectManager.getProjectHomeDirectoryHandle()
-        if (objProjectHomeDirectoryHandle) {
+        if (objProjectHomeDirectoryHandle && oldFileHandle && contents) {
             Swal.fire({
                 title: 'New Project Name',
                 input: 'text',
@@ -486,13 +503,64 @@ export default class ProjectManager {
                 confirmButtonText: 'OK',
                 showLoaderOnConfirm: true,
                 inputPlaceholder: 'Enter your project name',
-                inputValue: 'tttgg',
-                preConfirm: (strProjectName) => ProjectManager.checkProjectNameCanCreateFunc(strProjectName),
+                inputValue: contents.strName,
+                preConfirm: (strProjectName) => ProjectManager.alertCheckProjectNameCanCreate(strProjectName),
             }).then((response) => {
                 const { isConfirmed, value: objProjectNameCheck } = response
+                if (isConfirmed && objProjectNameCheck) {
+                    const { projectName } = objProjectNameCheck
+                    const strNewProjectFileName = projectName + '.json'
+                    contents.strName = projectName
+
+                    ProjectManager.deleteProject(objProjectState)
+                    const createProject = async () => {
+                        const newFileHandle = await objProjectHomeDirectoryHandle.getFileHandle(strNewProjectFileName, { create: true })
+                        const blob = ProjectManager.getBlob(contents)
+                        await ProjectManager.writeFile(newFileHandle, blob)
+                        ProjectManager.reloadProjectHomeDirectoryHandle()
+                    }
+                    createProject()
+                }
             })
-            // objProjectHomeDirectoryHandle.removeEntry(objFileSystemFileHandle.name)
-            ProjectManager.reloadProjectHomeDirectoryHandle()
+        }
+    }
+
+    static copyProject = async (objProjectState: IProjectState) => {
+        const { fileHandle, contents } = objProjectState
+        if (fileHandle && contents) {
+            let copyProjectName: string = ''
+            let copyFileHandle: FileSystemFileHandle | undefined
+            const objProjectHomeDirectoryHandle = ProjectManager.getProjectHomeDirectoryHandle()
+            if (objProjectHomeDirectoryHandle && contents) { // has project home directory
+                let count = 1
+                let copyProjectName = `${contents.strName} copy`
+                let boolTryNextName = !(await ProjectManager.hasSubProjectName(objProjectHomeDirectoryHandle, copyProjectName)).state
+                while (boolTryNextName) { // check filename can use
+                    count++
+                    copyProjectName = `${contents.strName} copy ${count}`
+                    boolTryNextName = !(await ProjectManager.hasSubProjectName(objProjectHomeDirectoryHandle, copyProjectName)).state
+                }
+                const strCopyProjectFileName = copyProjectName + '.json'
+                copyFileHandle = await objProjectHomeDirectoryHandle.getFileHandle(strCopyProjectFileName, { create: true })
+
+            } else if (contents) { // not has project home directory
+                const options = {
+                    suggestedName: `${contents.strName} copy.json`,
+                    types: [{
+                        description: 'JSON',
+                        accept: { 'application/json': ['.json'] },
+                    }],
+                };
+                copyFileHandle = await ProjectManager.getSaveFileHandle(options)
+            }
+
+            // write copy contents
+            if (copyFileHandle) {
+                const copyContents = ProjectFactory.getCopyProject(contents, copyProjectName)
+                const blob = ProjectManager.getBlob(copyContents)
+                await ProjectManager.writeFile(copyFileHandle, blob)
+                ProjectManager.reloadProjectHomeDirectoryHandle()
+            }
         }
     }
 }
