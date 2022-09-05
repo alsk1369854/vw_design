@@ -87,8 +87,7 @@ export const Content: FC<IProps> = function Content({
                     <ContextMenu
                         parentThis={parentThis}
                         file={currentlySelectedItem}
-                        x={mouseDownXY.x}
-                        y={mouseDownXY.y}
+                        mouseDownXY={mouseDownXY}
                     /> :
                     <></>
                 }

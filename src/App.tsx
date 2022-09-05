@@ -5,6 +5,8 @@ import Home from './pages/Home';
 import ProjectMange from './pages/ProjectManage';
 import Edit from './pages/Edit';
 
+import ClipboardController, { IClipboardReadOptionType } from './tools/ClipboardController';
+ClipboardController.read({ type:IClipboardReadOptionType.RAW})
 function App() {
 
   return (
