@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
+import React from 'react'
 
-import type { IProjectContents, IProjectState } from '../../lib/ProjectInterfaceCollection'
+import type { IProjectState } from '../../lib/ProjectInterfaceCollection'
 import ProjectManager from '../../lib/ProjectManager'
 
 import style from './index.module.scss'

@@ -21,7 +21,7 @@ import {
     getTemporaryMessage
 } from '../../index'
 
-interface IState { }
+// interface IState { }
 
 interface IProps {
     renderParentComponent: Function,
@@ -73,7 +73,6 @@ export const FileItem: FC<IProps> = memo(function FileItem({
     const [{ canDrop, isOver }, drop] = useDrop(() => ({
         accept: dragAndDropControl.itemType.fileItem,
         canDrop: () => dragAndDropControl.isSrcFileCanDrop(objFile),
-        // drop: () => ({ name: 'Dustbin' }),
         drop: () => {
             dragAndDropControl.setOnOverFile(objFile)
             dragAndDropControl.action()
@@ -87,7 +86,6 @@ export const FileItem: FC<IProps> = memo(function FileItem({
 
     useEffect(() => {
         if (isDragging && dragAndDropControl.getSrcFile() !== objFile) {
-            // console.log(`drag up ${objFile.getFileName()}`)
             dragAndDropControl.setSrcFile(objFile)
         }
     })
@@ -111,8 +109,6 @@ export const FileItem: FC<IProps> = memo(function FileItem({
 
     const clickItem = (event: any, objFile: File) => {
         event.stopPropagation()
-        // event.preventDefault()
-        // const { grandparentThis } = props
         const { currentlySelectedItem, previouslySelectedItem } = grandparentThis.state
 
         grandparentThis.renameCheckAndSetFileName()
@@ -130,13 +126,11 @@ export const FileItem: FC<IProps> = memo(function FileItem({
         })
     }
     const doubleClickItem = (event: any, objFile: File) => {
-        // const { grandparentThis } = props
         grandparentThis.renameCheckAndSetFileName()
         FileManager.addOpenFile(objFile)
     }
 
     const addToSelectedFiles = (event: any, objFile: File) => {
-        // const { grandparentThis } = props
         const { currentlySelectedItem, previouslySelectedItem } = grandparentThis.state
         const objFileRootFile = FileManager.getRootFile()
 
@@ -177,11 +171,9 @@ export const FileItem: FC<IProps> = memo(function FileItem({
     }
 
     const renameEvent = (event: any, objFile: File) => {
-        // const { grandparentThis } = props
         const { target: element, key } = event
-        // const strNewFileName = element.value.trim()
         const result = objFile.checkFileNewName(element.value)
-        const {state:boolNameCanUsed, message, newFileName} = result
+        const { state: boolNameCanUsed, message, newFileName } = result
 
         setTemporaryFileName(newFileName)
         setTemporaryMessage(message as string)
@@ -201,7 +193,6 @@ export const FileItem: FC<IProps> = memo(function FileItem({
     }
 
     const getFileClassName = (objFile: File) => {
-        // const { grandparentThis } = props
         const {
             renameState,
             currentlySelectedItem,
@@ -239,13 +230,10 @@ export const FileItem: FC<IProps> = memo(function FileItem({
                 if (currentlySelectedItem === objFile) { // 是當前選取項
                     return style.fileItemCurrentlyContextMenu
                 } else { // 不是當前選取項
-                    // const { srcFile, destFile } = activeDragAndDropState
                     const srcFile = dragAndDropControl.getSrcFile()
-                    const destFile = dragAndDropControl.getDestFile()
                     const isActive = canDrop && isOver
                     // 使否為拖曳準備下降區域
                     if (isActive) { // 是拖曳準備下降區域
-                        // if (canDrop && destFile && (objFile.isSubFileOf(destFile) || objFile === destFile)) { // 是拖曳準備下降區域
                         return style.fileItemDropArea
                     } else { // 不是拖曳準備下降區域
                         // 是否為拖曳項目
@@ -260,18 +248,7 @@ export const FileItem: FC<IProps> = memo(function FileItem({
         }
     }
 
-
-    // const opacity = isDragging ? 0.4 : 1
-
     const isActive = canDrop && isOver
-    // let backgroundColor = ''
-    // if (isActive) {
-    //     backgroundColor = 'darkgreen'
-    // } else if (canDrop) {
-    //     backgroundColor = 'darkkhaki'
-    // }
-
-    // if (isOver) {
     if (isActive) {
         dragAndDropControl.setOnOverFile(objFile)
     }
@@ -290,16 +267,12 @@ export const FileItem: FC<IProps> = memo(function FileItem({
 
             <div
                 ref={drag}
-                // data-testid={`fileItem`}
                 onClick={(event) => clickItem(event, objFile)}
                 onDoubleClick={(event) => doubleClickItem(event, objFile)}
                 onContextMenu={(event) => grandparentThis.showItemContextMenu(event, objFile)}
                 className={getFileClassName(objFile)}
             >
-                <div
-                    ref={drop}
-                    // style={{ backgroundColor }}
-                >
+                <div ref={drop}>
                     {getExpandLine(objFile.getId(), deep)}
 
                     <span className={style.angleIcon}>

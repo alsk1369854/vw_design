@@ -1,22 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { useHref, useNavigate } from 'react-router-dom'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faFolderTree, // my Project 
-  faStar, // mark 
-  faFolderOpen, // open Projects Directory
+  // faStar, // mark 
+  // faFolderOpen, // open Projects Directory
   faArrowsRotate, // renew
   faFileMedical, // create project
   faLaptopFile, // open Project
   faHouseLaptop, // open projects house
-  faArrowUpRightFromSquare, // open
-  faFileArrowDown, // download
-  faScissors, // cut
-  faCopy, // copy
-  faPaste, // paste
-  faSignature, // rename
-  faTrashCan, // delete
 } from '@fortawesome/free-solid-svg-icons'
 
 import style from './index.module.scss'
@@ -43,7 +35,7 @@ export default function SideMenu({
     return ()=>{
       FunctionCaller.remove(FUNCTION_CALLER_KEY_SET_HAS_PROJECT_HOME_DIRECTORY)
     }
-  })
+  },[])
 
   // const [count, setCount] = useState(0)
   // const render = () => setCount(count + 1)

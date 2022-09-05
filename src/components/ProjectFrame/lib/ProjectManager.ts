@@ -460,7 +460,7 @@ export default class ProjectManager {
     }
 
     static deleteProject = (objProjectState: IProjectState) => {
-        const { fileHandle, contents } = objProjectState
+        const { fileHandle } = objProjectState
         if (fileHandle) {
             const objProjectHomeDirectoryHandle = ProjectManager.getProjectHomeDirectoryHandle()
             if (objProjectHomeDirectoryHandle) {

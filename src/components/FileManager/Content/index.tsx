@@ -42,7 +42,6 @@ export const Content: FC<IProps> = function Content({
     const [{ canDrop, isOver }, drop] = useDrop(() => ({
         accept: dragAndDropControl.itemType.fileItem,
         canDrop: () => dragAndDropControl.isSrcFileCanDrop(rootFile),
-        // drop: () => ({ name: 'Dustbin' }),
         drop: () => {
             dragAndDropControl.setOnOverFile(rootFile)
             dragAndDropControl.action()
@@ -74,19 +73,11 @@ export const Content: FC<IProps> = function Content({
     }
 
     const isActive = canDrop && isOver
-    // let backgroundColor = ''
-    // if (isActive) {
-    //     backgroundColor = 'darkgreen'
-    // } else if (canDrop) {
-    //     backgroundColor = 'darkkhaki'
-    // }
-
     if (isActive) {
         dragAndDropControl.setOnOverFile(rootFile)
     }
 
     const prepareFileList = getFileList()
-    // const destFile = dragAndDropControl.getDestFile()
 
     // console.log('render Content')
     return (
@@ -101,11 +92,7 @@ export const Content: FC<IProps> = function Content({
                     /> :
                     <></>
                 }
-                <div
-                    // ref={drop}
-                    // style={{ backgroundColor }}
-                    className={style.fileManagerContent}
-                >
+                <div className={style.fileManagerContent}>
                     <div style={{ overflow: 'hidden', clear: 'both' }}>
                         {prepareFileList.map((item: any) =>
                             <FileItem
@@ -127,11 +114,6 @@ export const Content: FC<IProps> = function Content({
                             className={(isActive) ? style.fillUnusedSpaceDropArea : style.fillUnusedSpace}
                             style={{ height: `21px` }}
                         />
-                        {/* <div
-            ref={drop}
-            className={(isActive && destFile === rootFile) ? style.fillUnusedSpaceDropArea : style.fillUnusedSpace}
-            style={{ height: `calc(100% - ${prepareFileList.length * 21 + 1}px)` }}
-        > */}
                     </div>
                 </div>
             </>

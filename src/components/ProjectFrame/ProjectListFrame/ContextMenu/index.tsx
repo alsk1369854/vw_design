@@ -1,12 +1,12 @@
-import React, { Component } from 'react'
+import React from 'react'
 
 import style from './index.module.scss'
 import OpenIcon from '../../../../assets/icon/Open.png'
 import DownloadIcon from '../../../../assets/icon/Download.png'
 import CopyIcon from '../../../../assets/icon/Copy.png'
 import RenameIcon from '../../../../assets/icon/Rename.png'
-import MarkIcon from '../../../../assets/icon/Star.png'
-import DetailIcon from '../../../../assets/icon/Detail.png'
+// import MarkIcon from '../../../../assets/icon/Star.png'
+// import DetailIcon from '../../../../assets/icon/Detail.png'
 import AshcanIcon from '../../../../assets/icon/Ashcan.png'
 import { IProjectState } from '../../lib/ProjectInterfaceCollection'
 import ProjectManager from '../../lib/ProjectManager'
@@ -16,7 +16,7 @@ interface IMouseDownXY {
   y: string | number,
 }
 
-interface IState { }
+// interface IState { }
 
 interface IProps {
   showContextProjectState: IProjectState,
@@ -27,7 +27,6 @@ export default function ContextMenu({
   showContextProjectState,
   mouseDownXY
 }: IProps) {
-  const { fileHandle, contents } = showContextProjectState
   const boolHasProjectHomeDirectory = ProjectManager.getProjectHomeDirectoryHandle()
 
   return (
