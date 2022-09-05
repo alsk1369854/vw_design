@@ -8,7 +8,7 @@ import { FUNCTION_CALLER_KEY_SET_GO_TO_PROJECT_MANAGER_PAGE } from '../../../pag
 import { FUNCTION_CALLER_KEY_SET_GO_TO_EDIT_PAGE } from '../../../pages/ProjectManage'
 import { FUNCTION_CALLER_KEY_UPDATE_SHOW_PROJECT_LIST } from '../ProjectListFrame/index'
 import { FUNCTION_CALLER_KEY_SET_HAS_PROJECT_HOME_DIRECTORY } from '../SideMenu'
-import FileManager from '../../FileManager/lib/FileManager'
+import FileManager, { FileManager as staticFileManager } from '../../FileManager/lib/FileManager'
 import FileMangerFile, { FileConstructor } from '../../FileManager/lib/File';
 import ProjectFactory, { INewProjectValues } from './ProjectFactory';
 
@@ -116,6 +116,25 @@ export default class ProjectManager {
         FunctionCaller.call(FUNCTION_CALLER_KEY_UPDATE_SHOW_PROJECT_LIST, ProjectManager.showProjectStateList)
     }
 
+    static checkProjectNameCanCreateFunc = async (strProjectName: string) => {
+        const projectHomeDirectoryHandle: FileSystemDirectoryHandle | null = ProjectManager.getProjectHomeDirectoryHandle()
+        const objProjectNameCheck = ProjectManager.checkNewProjectName(strProjectName)
+        const { state, message, newProjectName } = objProjectNameCheck
+        if (projectHomeDirectoryHandle && state) { // 有 select Project Home\
+            const objSubProjectNameCheck = await ProjectManager.hasSubProjectName(projectHomeDirectoryHandle, newProjectName)
+            const { state: stateSubProjectName, message: messageSubProjectName } = objSubProjectNameCheck
+            if (stateSubProjectName) {
+                return objSubProjectNameCheck
+            } else {
+                Swal.showValidationMessage(messageSubProjectName)
+            }
+        } else if (state) { // 無 select Project Home
+            return objProjectNameCheck
+        } else {
+            Swal.showValidationMessage(message)
+        }
+    }
+
     static createNewProject = () => {
         ProjectManager.goToProjectManagerPage()
         Swal.fire({
@@ -127,29 +146,8 @@ export default class ProjectManager {
             showCancelButton: true,
             confirmButtonText: 'Create',
             showLoaderOnConfirm: true,
-            preConfirm: (strProjectName) => {
-                const checkProjectCanCreateFunc = async () => {
-                    const projectHomeDirectoryHandle: FileSystemDirectoryHandle | null = ProjectManager.getProjectHomeDirectoryHandle()
-                    const objProjectNameCheck = ProjectManager.checkNewProjectName(strProjectName)
-                    const { state, newProjectName } = objProjectNameCheck
-                    if (projectHomeDirectoryHandle && state) { // 有 select Project Home
-                        let boolCanCreate = true
-                        const strNewProjectFileName = newProjectName + '.json'
-                        for await (const strSubFileName of projectHomeDirectoryHandle.keys()) {
-                            if (strSubFileName.toLocaleUpperCase() === strNewProjectFileName.toLocaleUpperCase()) {
-                                objProjectNameCheck.message = `專案名稱 '${newProjectName}' 已存在，請選用其他名稱`
-                                boolCanCreate = false
-                                break
-                            }
-                        }
-                        if (boolCanCreate) return objProjectNameCheck
-                    } else if (state) { // 無 select Project Home
-                        return objProjectNameCheck
-                    }
-                    Swal.showValidationMessage(objProjectNameCheck.message)
-                }
-                return checkProjectCanCreateFunc()
-            },
+            inputPlaceholder: 'Enter your project name',
+            preConfirm: (strProjectName) => ProjectManager.checkProjectNameCanCreateFunc(strProjectName),
         }).then((response) => {
             const { isConfirmed, value: objProjectNameCheck } = response
             if (isConfirmed) {
@@ -441,6 +439,61 @@ export default class ProjectManager {
     static doEditProject = (objProjectState: IProjectState) => {
         ProjectManager.setEditingProjectState(objProjectState)
         ProjectManager.goToEditPage()
+    }
+
+    static downloadProject = (objProjectContents: IProjectContents) => {
+        const { strName, objRootFile } = objProjectContents
+        staticFileManager.downloadFile(objRootFile, strName)
+    }
+
+    static deleteProject = (objFileSystemFileHandle: FileSystemFileHandle) => {
+        const objProjectHomeDirectoryHandle = ProjectManager.getProjectHomeDirectoryHandle()
+        if (objProjectHomeDirectoryHandle) {
+            objProjectHomeDirectoryHandle.removeEntry(objFileSystemFileHandle.name)
+            ProjectManager.reloadProjectHomeDirectoryHandle()
+        }
+    }
+
+    static hasSubProjectName = async (objProjectHomeDirectoryHandle: FileSystemDirectoryHandle, strProjectName: string): Promise<IProjectNameCheck> => {
+        strProjectName = strProjectName.trim()
+        const strNewProjectFileName = strProjectName + '.json'
+
+        const result: IProjectNameCheck = {
+            state: true,
+            message: '',
+            newProjectName: strProjectName
+        }
+        for await (const strSubFileName of objProjectHomeDirectoryHandle.keys()) {
+            if (strSubFileName.toLocaleUpperCase() === strNewProjectFileName.toLocaleUpperCase()) {
+                result.message = `專案名稱 '${result.newProjectName}' 已存在，請選用其他名稱`
+                result.state = false
+                break
+            }
+        }
+        return result
+    }
+
+    static renameProject = (objFileSystemFileHandle: FileSystemFileHandle) => {
+        const objProjectHomeDirectoryHandle = ProjectManager.getProjectHomeDirectoryHandle()
+        if (objProjectHomeDirectoryHandle) {
+            Swal.fire({
+                title: 'New Project Name',
+                input: 'text',
+                inputAttributes: {
+                    autocapitalize: 'off'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'OK',
+                showLoaderOnConfirm: true,
+                inputPlaceholder: 'Enter your project name',
+                inputValue: 'tttgg',
+                preConfirm: (strProjectName) => ProjectManager.checkProjectNameCanCreateFunc(strProjectName),
+            }).then((response) => {
+                const { isConfirmed, value: objProjectNameCheck } = response
+            })
+            // objProjectHomeDirectoryHandle.removeEntry(objFileSystemFileHandle.name)
+            ProjectManager.reloadProjectHomeDirectoryHandle()
+        }
     }
 }
 

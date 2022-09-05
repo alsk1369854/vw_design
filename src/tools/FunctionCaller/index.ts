@@ -1,4 +1,3 @@
-import { FunctionCallerError } from '../Error/index'
 
 // Error message
 const ERROR_KEY_EXISTS = 'FunctionCaller: Key is exists \n';
@@ -21,7 +20,10 @@ class FunctionCaller {
      * @param func 要註冊的函數 (typeof Function)
      */
     set(strKey: string, func: Function): void {
-        if (this.objFuncCollection[strKey] !== undefined) throw new FunctionCallerError(ERROR_KEY_EXISTS + `\nKEY:'${strKey}'`);
+        if (process.env.NODE_ENV === "development" && this.objFuncCollection[strKey] !== undefined) {
+            console.log('FunctionCaller')
+            console.error(ERROR_KEY_EXISTS + `Function: set \nKEY:'${strKey}'`);
+        }
         this.objFuncCollection = { [strKey]: func, ...this.objFuncCollection };
     }
 
@@ -34,7 +36,7 @@ class FunctionCaller {
     call(strKey: string, ...arrData: any[]): any {
         if (process.env.NODE_ENV === "development" && this.objFuncCollection[strKey] === undefined) {
             console.log('FunctionCaller')
-            console.error(ERROR_KEY_NO_EXISTS + `\nKEY:'${strKey}'`);
+            console.error(ERROR_KEY_NO_EXISTS + `Function: call \nKEY:'${strKey}'`);
         }
         if (this.objFuncCollection[strKey] === undefined) return;
         const { [strKey]: func } = this.objFuncCollection;
@@ -50,7 +52,7 @@ class FunctionCaller {
     remove(strKey: string): Function | void {
         if (process.env.NODE_ENV === "development" && this.objFuncCollection[strKey] === undefined) {
             console.log('FunctionCaller')
-            console.error(ERROR_KEY_NO_EXISTS + `\nKEY:'${strKey}'`);
+            console.error(ERROR_KEY_NO_EXISTS + `Function: remove \nKEY:'${strKey}'`);
         }
         if (this.objFuncCollection[strKey] === undefined) return;
         const func = this.objFuncCollection[strKey];

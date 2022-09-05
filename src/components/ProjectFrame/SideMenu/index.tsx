@@ -57,12 +57,11 @@ export default function SideMenu({
           {/* <img src={MyProjectsIcon} alt="My Projects Icon" /> */}
           <span>My Projects</span>
         </li>
-        <li className={(utilMenuState === "Mark") ? style.selectedUtilItem : style.utilItem}
+        {/* <li className={(utilMenuState === "Mark") ? style.selectedUtilItem : style.utilItem}
           onClick={event => selectUtilMenuItem(event, "Mark")}>
           <FontAwesomeIcon icon={faStar} className={style.icon} />
-          {/* <img src={MarkIcon} alt="Mark Icon" /> */}
           <span>Mark</span>
-        </li>
+        </li> */}
         <div className={style.line}></div>
 
         <li

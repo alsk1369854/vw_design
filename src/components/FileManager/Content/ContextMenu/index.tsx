@@ -13,7 +13,7 @@ import {
 
 import style from './index.module.scss'
 import File from '../../lib/File'
-import FileManager from '../../lib/FileManager'
+import FileManager, {FileManager as staticFileManager} from '../../lib/FileManager'
 import { icon, setTemporaryFileName, setTemporaryMessage } from '../../index'
 
 
@@ -61,7 +61,7 @@ export default class ContextMenu extends Component<IProps, IState> {
     if (FileManager.selectedFileIsExists(file)) {
       FileManager.downloadSeletedFiles()
     } else {
-      FileManager.downloadFile(file)
+      staticFileManager.downloadFile(file)
     }
   }
 

@@ -12,12 +12,7 @@ export class UsageError extends Error {
     }
 }
 
-export class FunctionCallerError extends Error{
-    constructor(message: string){
-        super(message);
-        this.name = "FunctionCallerError";
-    }
-}
+
 
 export class FileManagerDownloadDataTypeMismatchError extends Error{
     constructor(message: string){

@@ -27,6 +27,7 @@ import {
   FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_ITEMS,
 } from '../../MainFrame/EditArea/OpenedFileBar'
 import File, { FileConstructor } from './File'
+import ProjectManager from '../../ProjectFrame/lib/ProjectManager';
 
 const fileIconElement = {
   directoryIsExpand: <FontAwesomeIcon icon={faFolderOpen} className={FileItemStyle.fileIcon} style={{ color: "rgb(220,182,122)" }} />,
@@ -153,36 +154,36 @@ export class FileManager {
     this.objFileRootFile = new File(objFileRootFile)
   }
 
-  downloadFile = (objFile: File) => {
-    switch (objFile.getDataType()) {
+  static downloadFile = (objFile: File | FileConstructor, strZipName?: string) => {
+    switch (objFile.strDataType) {
       case 'directory': // directory
-        this.downloadFiles([objFile])
+        FileManager.downloadFiles([objFile], strZipName)
         break
       case 'image': // image file
-        FileManager.downloadImageFile(objFile.getFileName(), objFile.getData())
+        FileManager.downloadImageFile(objFile.strFileName, objFile.strData)
         break
       case 'text': // text file
-        FileManager.downloadTextFile(objFile.getFileName(), objFile.getData())
+        FileManager.downloadTextFile(objFile.strFileName, objFile.strData)
         break
       default: // data type mismatch
-        throw new FileManagerDownloadDataTypeMismatchError(`File ${objFile.getFileName()} Data Type Mismatch`)
+        throw new FileManagerDownloadDataTypeMismatchError(`File ${objFile.strFileName} Data Type Mismatch`)
     }
   }
-  downloadFiles = (arrFileFiles: Array<File>) => {
-    const addFileToJsZipFolder = (objJSZipFolder: any, objFile: File) => {
-      switch (objFile.getDataType()) {
+  static downloadFiles = (arrFileFiles: Array<File | FileConstructor>, strZipName?: string) => {
+    const addFileToJsZipFolder = (objJSZipFolder: any, objFile: File | FileConstructor) => {
+      switch (objFile.strDataType) {
         case 'directory': // directory
-          const subFolder = objJSZipFolder.folder(objFile.getFileName())
-          objFile.getSubFiles().forEach(file => addFileToJsZipFolder(subFolder, file))
+          const subFolder = objJSZipFolder.folder(objFile.strFileName)
+          objFile.arrFileSubFiles.forEach(file => addFileToJsZipFolder(subFolder, file))
           break
         case 'image': // image file
-          objJSZipFolder.file(objFile.getFileName(), objFile.getData(), { base64: true });
+          objJSZipFolder.file(objFile.strFileName, objFile.strData, { base64: true });
           break
         case 'text': // text file
-          objJSZipFolder.file(objFile.getFileName(), objFile.getData())
+          objJSZipFolder.file(objFile.strFileName, objFile.strData)
           break
         default: // data type mismatch
-          throw new FileManagerDownloadDataTypeMismatchError(`File ${objFile.getFileName()} Data Type Mismatch`)
+          throw new FileManagerDownloadDataTypeMismatchError(`File ${objFile.strFileName} Data Type Mismatch`)
       }
     }
     var zip: any = new JSZip();
@@ -190,15 +191,24 @@ export class FileManager {
 
     zip.generateAsync({ type: "blob" })
       .then((content: any) => {
-        saveAs(content, `${this.objFileRootFile.getFileName()}.zip`);
+        if (strZipName) {
+          saveAs(content, `${strZipName}.zip`);
+        } else {
+          const { fileHandle, contents } = ProjectManager.getEditingProjectState()
+          if (fileHandle && contents) {
+            saveAs(content, `${contents.strName}.zip`);
+          } else {
+            saveAs(content, `VW DESIGN.zip`);
+          }
+        }
       });
   }
   downloadSeletedFiles = () => {
     const arrFile: Array<File> = this.getSetSelectedFiles();
     if (arrFile.length > 1) {
-      this.downloadFiles(arrFile)
+      FileManager.downloadFiles(arrFile)
     } else {
-      this.downloadFile(arrFile[0])
+      FileManager.downloadFile(arrFile[0])
     }
   }
 

@@ -9,6 +9,7 @@ import MarkIcon from '../../../../assets/icon/Star.png'
 import DetailIcon from '../../../../assets/icon/Detail.png'
 import AshcanIcon from '../../../../assets/icon/Ashcan.png'
 import { IProjectState } from '../../lib/ProjectInterfaceCollection'
+import ProjectManager from '../../lib/ProjectManager'
 
 interface IMouseDownXY {
   x: string | number,
@@ -26,46 +27,49 @@ export default function ContextMenu({
   showContextProjectState,
   mouseDownXY
 }: IProps) {
-
-  const open = () => {
-    console.log(showContextProjectState, " => open")
-  }
-
+  const { fileHandle, contents } = showContextProjectState
+  const boolHasProjectHomeDirectory = ProjectManager.getProjectHomeDirectoryHandle()
 
   return (
     <ul className={style.projectContextMenu}
       style={{ top: mouseDownXY.y, left: mouseDownXY.x }}
     >
-      <li onClick={open} >
+      <li onClick={() => ProjectManager.doEditProject(showContextProjectState)} >
         <img src={OpenIcon} alt="Open icon" />
-        <span>Open</span>
-      </li>
-      <li>
-        <img src={DownloadIcon} alt="Download icon" />
-        <span>Download</span>
+        <span>Edit</span>
       </li>
       <li>
         <img src={CopyIcon} alt="Copy icon"></img>
         <span>Copy</span>
       </li>
-      <li>
+      {/* <li>
         <img src={MarkIcon} alt=" Mark icon" />
         <span>Mark</span>
-      </li>
-      <li>
-        <img src={RenameIcon} alt="Rename icon" />
-        <span>Rename</span>
-      </li>
-      <li>
+      </li> */}
+      {/* <li>
         <img src={DetailIcon} alt="Detail icon" />
         <span>Detail</span>
-      </li>
+      </li> */}
       <div className={style.line}></div>
-      {/* <hr className="divider" /> */}
-      <li>
-        <img src={AshcanIcon} alt="Delete icon" />
-        <span>Delete</span>
+      <li onClick={() => ProjectManager.downloadProject(contents!)}>
+        <img src={DownloadIcon} alt="Download icon" />
+        <span>Download</span>
       </li>
+      {(boolHasProjectHomeDirectory) ?
+        <>
+          <div className={style.line}></div>
+          <li onClick={()=> ProjectManager.renameProject(fileHandle!)}>
+            <img src={RenameIcon} alt="Rename icon" />
+            <span>Rename</span>
+          </li>
+
+          <li onClick={() => ProjectManager.deleteProject(fileHandle!)}>
+            <img src={AshcanIcon} alt="Delete icon" />
+            <span>Delete</span>
+          </li>
+        </>
+        : <></>
+      }
     </ul>
 
   )
