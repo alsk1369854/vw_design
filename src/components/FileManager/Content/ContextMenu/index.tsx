@@ -12,9 +12,10 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 import style from './index.module.scss'
-import File from '../../lib/File'
+import File, { FileConstructor } from '../../lib/File'
 import FileManager, { FileManager as staticFileManager } from '../../lib/FileManager'
 import { icon, setTemporaryFileName, setTemporaryMessage } from '../../index'
+import ClipboardController, { IClipboardVWData } from '../../../../tools/ClipboardController'
 
 interface IMouseDownXY {
   x: string | number,
@@ -22,16 +23,21 @@ interface IMouseDownXY {
 }
 
 interface IProps {
-  parentThis: any,
+  grandparentThis: any,
   file: File,
-  mouseDownXY: IMouseDownXY
+  mouseDownXY: IMouseDownXY,
+  renderParentComponent: Function,
+  boolClipboardDataIsFileData: boolean,
 }
 
 export default function ContextMenu({
-  parentThis,
+  grandparentThis,
   file,
-  mouseDownXY
+  mouseDownXY,
+  renderParentComponent,
+  boolClipboardDataIsFileData,
 }: IProps) {
+
   const open = () => {
     if (FileManager.selectedFileIsExists(file)) {
       FileManager.addOpenFileSeletedFiles()
@@ -42,17 +48,15 @@ export default function ContextMenu({
 
   const rename = (event: any, objFile: File) => {
     event.stopPropagation()
-    const { renameState } = parentThis.state
+    const { renameState } = grandparentThis.state
     // this.props.setRenameItem(objFile)
     setTemporaryFileName(objFile.getFileName())
     setTemporaryMessage('')
-    parentThis.setState({
+    grandparentThis.setState({
       renameState: {
         ...renameState,
         file: objFile,
         oldName: objFile.getFileName(),
-        // temporaryFileName: objFile.getFileName(),
-        // message: '',
       },
       showContextMenu: false,
     })
@@ -74,6 +78,30 @@ export default function ContextMenu({
     }
   }
 
+  const cut = () => {
+    const clipboardData = FileManager.buildCutData(file)
+    ClipboardController.write(clipboardData)
+   }
+
+  const copy = () => {
+    const clipboardData: IClipboardVWData = FileManager.buildCopyData(file)
+    ClipboardController.write(clipboardData)
+  }
+
+  const paste = () => {
+    const readClipboardData = async () => {
+      try {
+        const clipboardData = await ClipboardController.read() as (IClipboardVWData | undefined)
+        if (clipboardData && file.isDirectory()) {
+          await file.pasteFiles(clipboardData.data as FileConstructor[])
+          renderParentComponent()
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    readClipboardData()
+  }
 
   // check browser visible context
   // directory height: 220; file height: 175
@@ -86,19 +114,20 @@ export default function ContextMenu({
     mouseDownXY.y = height - 175
   }
 
+
   return (
     <ul className={style.projectContextMenu}
       style={{ top: mouseDownXY.y, left: mouseDownXY.x }}
     >
       {(file.isDirectory()) ?
         <>
-          <li onClick={event => parentThis.addFile(event, false)}>
+          <li onClick={event => grandparentThis.addFile(event, false)}>
             <span className={style.iconBar}>
               {icon.addFile}
             </span>
             <span className={style.itemName}> Add File</span>
           </li>
-          <li onClick={event => parentThis.addFile(event, true)}>
+          <li onClick={event => grandparentThis.addFile(event, true)}>
             <span className={style.iconBar}>
               {icon.addDirectory}
             </span>
@@ -116,13 +145,13 @@ export default function ContextMenu({
       }
 
       <div className={style.line}></div>
-      <li>
+      <li onClick={cut}>
         <span className={style.iconBar}>
           <FontAwesomeIcon className={style.icon} icon={faScissors} />
         </span>
         <span className={style.itemName}>Cut</span>
       </li>
-      <li>
+      <li onClick={copy}>
         <span className={style.iconBar}>
           <FontAwesomeIcon className={style.icon} icon={faCopy} />
         </span>
@@ -130,14 +159,16 @@ export default function ContextMenu({
       </li>
 
       {(file.isDirectory()) ?
-        <>
-          <li>
-            <span className={style.iconBar}>
-              <FontAwesomeIcon className={style.icon} icon={faPaste} />
-            </span>
-            <span className={style.itemName}>Paste</span>
-          </li>
-        </> :
+        <li
+          className={(boolClipboardDataIsFileData) ? style.enabled : style.disabled}
+          onClick={(boolClipboardDataIsFileData) ? paste : (event) => event.stopPropagation()}
+        >
+          <span className={style.iconBar}>
+            <FontAwesomeIcon className={style.icon} icon={faPaste} />
+          </span>
+          <span className={style.itemName}>Paste</span>
+        </li>
+        :
         <></>
       }
 

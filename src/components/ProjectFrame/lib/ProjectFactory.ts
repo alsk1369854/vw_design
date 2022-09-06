@@ -2,6 +2,7 @@ import { nanoid } from "nanoid"
 import { FileConstructor } from "../../FileManager/lib/File"
 import { IProjectContents } from "./ProjectInterfaceCollection"
 import ProjectManager from "./ProjectManager"
+import { FileManager as staticFileManager } from "../../FileManager/lib/FileManager"
 
 export interface INewProjectValues {
     strProjectName: string,
@@ -14,6 +15,7 @@ export default class ProjectFactory {
     static getCopyProject = (objSrcProjectContents: IProjectContents, copyProjectName: string): IProjectContents => {
         const copyProjectID = nanoid()
         const copyRootFile: FileConstructor = JSON.parse(JSON.stringify(objSrcProjectContents.objRootFile))
+        staticFileManager.getIdAgain(copyRootFile)
         copyRootFile.strId = copyProjectID
         
         const copyContents: IProjectContents = {

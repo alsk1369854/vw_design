@@ -1,3 +1,4 @@
+
 .fileItem,
 .fileItemStatic,
 .fileItemRenameState,
@@ -60,8 +61,7 @@
         height: 15px;
     }
 
-    & .fileName {
-    }
+    & .fileName {}
 
     & .renameBar {
         position: absolute;
@@ -147,4 +147,3 @@
     box-sizing: border-box;
     margin: -1px -1px 0px -1px;
 }
-

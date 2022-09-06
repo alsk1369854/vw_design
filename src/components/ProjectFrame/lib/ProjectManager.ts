@@ -50,6 +50,7 @@ export default class ProjectManager {
         const { contents } = ProjectManager.editingProjectState
         if (contents) FileManager.setRootFile(contents.objRootFile)
     }
+    static initializationEditingProjectState = () => ProjectManager.editingProjectState = { ...ProjectManager.initialEditingProjectState }
 
     static getProjectHomeDirectoryHandle = () => ProjectManager.projectHomeDirectoryHandle
     static setProjectHomeDirectoryHandle = (newProjectHomeDirectoryHandle: FileSystemDirectoryHandle | null) => {
@@ -470,8 +471,12 @@ export default class ProjectManager {
     }
 
     static deleteProject = (objProjectState: IProjectState) => {
-        const { fileHandle } = objProjectState
-        if (fileHandle) {
+        const { fileHandle, contents } = objProjectState
+        if (fileHandle && contents) {
+            const { contents: editingProjectContents } = ProjectManager.getEditingProjectState()
+            if (editingProjectContents && editingProjectContents.strId === contents.strId) {
+                ProjectManager.initializationEditingProjectState()
+            }
             const objProjectHomeDirectoryHandle = ProjectManager.getProjectHomeDirectoryHandle()
             if (objProjectHomeDirectoryHandle) {
                 objProjectHomeDirectoryHandle.removeEntry(fileHandle.name)

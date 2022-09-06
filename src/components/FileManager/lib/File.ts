@@ -1,4 +1,4 @@
-import FileManager from "./FileManager";
+import FileManager, { FileManager as staticFileManager } from "./FileManager";
 import { FileGetFileByPathError } from "../../../tools/Error";
 // import Swal from 'sweetalert2'
 
@@ -61,6 +61,7 @@ export default class File implements FileConstructor {
         this.arrFileSubFiles.forEach(subFile => subFile.delete())
         FileManager.deleteSelectedFile(this)
         FileManager.deleteOpenFile(this)
+        FileManager.deleteCuttingFile(this)
         FileManager.getFileMap().delete(this.getId())
 
         const fileParent = this.getParent()
@@ -97,11 +98,10 @@ export default class File implements FileConstructor {
         }
     }
 
-    private sortSubFiles = (arrFile?: Array<File>) => {
-        if (!arrFile) arrFile = this.arrFileSubFiles
+    private sortSubFiles = () => {
 
         // Folder 在前 File 在後，按名稱遞增排序
-        arrFile.sort((f1, f2) => {
+        this.arrFileSubFiles.sort((f1, f2) => {
             if (f1.isDirectory() === f2.isDirectory()) {
                 return f1.strFileName.localeCompare(f2.strFileName) // 按名稱遞增排序
             } else { // Folder 在前 File 在後
@@ -109,7 +109,7 @@ export default class File implements FileConstructor {
             }
         })
         // Folder 在前 File 在後，按首字母遞增排序，相同首字符，按長度排序
-        // arrFile.sort((f1, f2) => {
+        // this.arrFileSubFiles.sort((f1, f2) => {
         //     if (f1.isDirectory() === f2.isDirectory()) {
         //         const s1 = f1.strFileName.charAt(0)
         //         const s2 = f2.strFileName.charAt(0)
@@ -120,7 +120,6 @@ export default class File implements FileConstructor {
         //         return (f2.isDirectory()) ? 1 : -1
         //     }
         // })
-        return arrFile
     }
 
     static getFileNameExtensionStrArray = (strFileName: string) => {
@@ -265,6 +264,45 @@ export default class File implements FileConstructor {
             }
         }
         return false
+    }
+
+    pasteFiles = (arrFileConstructor: FileConstructor[]) => {
+        if (this.isDirectory()) {
+            // check cutting files
+            if (FileManager.cuttingFileIsExists(this)) return FileManager.cleanCuttingFiles()
+            const arrFileSetCuttingDirectoryFiles = FileManager.getSetCuttingDirectoryFiles()
+            for (const directoryFile of arrFileSetCuttingDirectoryFiles) {
+                if (this.isSubFileOf(directoryFile)) return FileManager.cleanCuttingFiles()
+            }
+            FileManager.getCuttingFiles().forEach(file => file.delete())
+
+            // start paste
+            const arrFiles = arrFileConstructor.map(fileConstructor => {
+                const baseFileFullName = fileConstructor.strFileName
+                const firstPointIndex = baseFileFullName.indexOf('.')
+                const pasteFileFirstName = baseFileFullName.substring(0, firstPointIndex)
+                const pasteExtension = baseFileFullName.substring(firstPointIndex)
+
+                let count = 1;
+                let pasteFileFullName = baseFileFullName
+                let boolTryNextName = this.subFileNameIsExist(pasteFileFullName)
+                while (boolTryNextName) {
+                    if (count === 1) {
+                        pasteFileFullName = `${pasteFileFirstName} copy${pasteExtension}`
+                    } else {
+                        pasteFileFullName = `${pasteFileFirstName} copy ${count}${pasteExtension}`
+                    }
+                    boolTryNextName = this.subFileNameIsExist(pasteFileFullName)
+                    count++
+                }
+                fileConstructor.strFileName = pasteFileFullName
+                staticFileManager.getIdAgain(fileConstructor)
+                return new File(fileConstructor)
+            })
+            arrFiles.forEach(file => this.addSubFile(file))
+            this.sortSubFiles()
+            this.setIsExpand(true)
+        }
     }
 
     moveToThisFile = (arrFile: File[]) => {

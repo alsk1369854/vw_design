@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect, memo } from 'react'
+import React, { FC, useState, useEffect, memo, useRef } from 'react'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -7,7 +7,7 @@ import {
     faSquareFull,
 } from '@fortawesome/free-solid-svg-icons'
 import { DragPreviewImage, useDrag, useDrop } from 'react-dnd'
-
+import ClipboardJS from 'clipboard'
 
 import style from './index.module.scss'
 import File from '../../lib/File'
@@ -20,7 +20,6 @@ import {
     setTemporaryMessage,
     getTemporaryMessage
 } from '../../index'
-
 // interface IState { }
 
 interface IProps {
@@ -52,6 +51,7 @@ export const FileItem: FC<IProps> = memo(function FileItem({
 }: IProps) {
 
     const [count, setCount] = useState(0)
+
 
     const [{ isDragging }, drag, preview] = useDrag(() => ({
         type: dragAndDropControl.itemType.fileItem,
@@ -89,7 +89,6 @@ export const FileItem: FC<IProps> = memo(function FileItem({
             dragAndDropControl.setSrcFile(objFile)
         }
     })
-
 
     const getExpandLine = (strFileId: string, numFileDeep: number) => {
         let expandLine: JSX.Element[] = []
@@ -264,16 +263,20 @@ export const FileItem: FC<IProps> = memo(function FileItem({
                 connect={preview}
                 src={dragPreview && dragPreview.src}
             />
+            
+            <div ref={drop}>
 
-            <div
-                ref={drag}
-                onClick={(event) => clickItem(event, objFile)}
-                onDoubleClick={(event) => doubleClickItem(event, objFile)}
-                onContextMenu={(event) => grandparentThis.showItemContextMenu(event, objFile)}
-                className={getFileClassName(objFile)}
-            >
-                <div ref={drop}>
+                <div
+                    // style={(FileManager.cuttingFileIsExists(objFile)) ? { opacity: '0.5' } : {}}
+                    className={getFileClassName(objFile)}
+                    ref={drag}
+                    onClick={(event) => clickItem(event, objFile)}
+                    onDoubleClick={(event) => doubleClickItem(event, objFile)}
+                    onContextMenu={(event) => grandparentThis.showItemContextMenu(event, objFile)}
+                >
+
                     {getExpandLine(objFile.getId(), deep)}
+
 
                     <span className={style.angleIcon}>
                         {(objFile.isDirectory()) ?
@@ -318,7 +321,9 @@ export const FileItem: FC<IProps> = memo(function FileItem({
                         </> :
                         <>
                             {FileManager.getFileIcon(objFile)}
-                            <span className={style.fileName}>{objFile.getFileName()}</span>
+                            <span className={style.fileName}>
+                                {objFile.getFileName()}
+                            </span>
                         </>
                     }
                 </div>

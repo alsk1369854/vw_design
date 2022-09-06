@@ -31,7 +31,11 @@ export default class ClipboardController {
                 return clipboardText
             }
         } catch (error) {
-            console.error(error);
+            // debug
+            // if(process.env.NODE_ENV === "development"){
+            //     console.log('ClipboardController')
+            //     console.error(error);
+            // }
         }
     }
 

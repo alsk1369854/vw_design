@@ -28,6 +28,9 @@ import {
 } from '../../MainFrame/EditArea/OpenedFileBar'
 import File, { FileConstructor } from './File'
 import ProjectManager from '../../ProjectFrame/lib/ProjectManager';
+import { IClipboardVWData } from '../../../tools/ClipboardController';
+
+export const fileManagerClipboardId = 'fileManager_clipboard'
 
 const fileIconElement = {
   directoryIsExpand: <FontAwesomeIcon icon={faFolderOpen} className={FileItemStyle.fileIcon} style={{ color: "rgb(220,182,122)" }} />,
@@ -50,8 +53,28 @@ export class FileManager {
   static objMapFileTypeMap: Map<string, number> = new Map();
   objMapSelectedFiles: Map<string, File> = new Map();
   arrFileOpenFiles: Array<File> = [];
+  arrFileCuttingFiles: Array<File> = []
 
-  getNextId = () => nanoid();
+  getCuttingFiles = () => this.arrFileCuttingFiles
+  setCuttingFiles = (arrFile: File[]) => this.arrFileCuttingFiles = arrFile
+  cleanCuttingFiles = (): void => {
+    this.arrFileCuttingFiles = []
+  }
+  cuttingFileIsExists = (objFile: File): boolean => {
+    const fileIndex = this.arrFileCuttingFiles.indexOf(objFile)
+    return (fileIndex === -1) ? false : true
+  }
+  deleteCuttingFile = (objFile: File) => this.arrFileCuttingFiles = this.arrFileCuttingFiles.filter((file: File) => file !== objFile)
+  getSetCuttingDirectoryFiles = () => {
+    const objFileDirectoryFiles = this.getCuttingFiles().filter(file => file.isDirectory())
+    const arrFileSetCuttingDirectoryFiles = this.getCuttingFiles().filter(file => {
+      for (const objFileDirFile of objFileDirectoryFiles) {
+        if (file.isSubFileOf(objFileDirFile)) return false
+      }
+      return true
+    })
+    return arrFileSetCuttingDirectoryFiles
+  }
 
   closeAllExpandDirectory = () => {
     const closeExpandDirectory = (objFile: File) => {
@@ -223,13 +246,44 @@ export class FileManager {
   }
   static downloadImageFile = (strFileName: string, strBas64: string) => {
     var element = document.createElement('a');
-    // element.setAttribute('href', 'data:image/png;base64,' + strBas64);
     element.setAttribute('href', 'data:image/png;base64,' + strBas64);
     element.setAttribute('download', strFileName);
     element.style.display = 'none';
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
+  }
+
+  buildCopyData = (objFile: File): IClipboardVWData => {
+    const boolOnSelected = this.selectedFileIsExists(objFile)
+    let clipboardData: IClipboardVWData = {
+      id: fileManagerClipboardId,
+      data: [objFile.toFileConstructor()]
+    }
+    if (boolOnSelected) {
+      clipboardData.data = this.getSetSelectedFiles().map(file => file.toFileConstructor())
+    }
+    return clipboardData
+  }
+
+  buildCutData = (objFile: File): IClipboardVWData => {
+    this.cleanCuttingFiles()
+    const boolOnSelected = this.selectedFileIsExists(objFile)
+    if (boolOnSelected) {
+      this.setCuttingFiles(this.getSelectedFiles())
+    } else {
+      this.setCuttingFiles([objFile])
+    }
+
+    return this.buildCopyData(objFile)
+  }
+
+  static getIdAgain = (objFileConstructor: FileConstructor): FileConstructor => {
+    objFileConstructor.strId = nanoid()
+    objFileConstructor.arrFileSubFiles.forEach(fileConstructor => {
+      FileManager.getIdAgain(fileConstructor)
+    })
+    return objFileConstructor
   }
 }
 export default new FileManager()

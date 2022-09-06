@@ -10,10 +10,11 @@ import ContextMenu from './ContextMenu'
 import File from '../lib/File'
 import { FileItem } from './FileItem'
 import style from './index.module.scss'
-import FileManager from '../lib/FileManager'
+import FileManager, { fileManagerClipboardId } from '../lib/FileManager'
 import DragAndDropControl from '../lib/DragAndDropControl'
 import FunctionCaller from '../../../tools/FunctionCaller'
 import ProjectManager from '../../ProjectFrame/lib/ProjectManager'
+import ClipboardController, { IClipboardVWData } from '../../../tools/ClipboardController'
 
 export const FUNCTION_CALLER_KYE_RENDER_FILE_MANAGER_CONTENT = 'FileManager/Content: renderFileManagerContent'
 
@@ -26,18 +27,20 @@ export const Content: FC<IProps> = function Content({
     parentThis,
     isEditing,
 }: IProps) {
-
-    const [count, setCount] = useState(0)
-    const renderComponent = () => setCount(count + 1)
-
-    const dragAndDropControl = useMemo(() => new DragAndDropControl(), [])
-    const rootFile = FileManager.getRootFile()
     const {
         showContextMenu,
         currentlySelectedItem,
         mouseDownXY,
         renameState,
     } = parentThis.state
+    const rootFile = FileManager.getRootFile()
+
+    const [count, setCount] = useState(0)
+    const renderComponent = () => setCount(count + 1)
+
+    const [boolClipboardDataIsFileData, setClipboardDataIsFileData] = useState(false)
+
+    const dragAndDropControl = useMemo(() => new DragAndDropControl(), [])
 
     const [{ canDrop, isOver }, drop] = useDrop(() => ({
         accept: dragAndDropControl.itemType.fileItem,
@@ -52,7 +55,22 @@ export const Content: FC<IProps> = function Content({
         }),
     }), [dragAndDropControl])
 
+
+    const checkClipboardDataIsFileData = async () => {
+        const clipboardData = await ClipboardController.read() as (IClipboardVWData | undefined)
+        if (boolClipboardDataIsFileData) {
+            if (!clipboardData || (clipboardData.id !== fileManagerClipboardId)) {
+                setClipboardDataIsFileData(false)
+            }
+        } else {
+            if (clipboardData && clipboardData.id === fileManagerClipboardId) {
+                setClipboardDataIsFileData(true)
+            }
+        }
+    }
+
     useEffect(() => {
+        checkClipboardDataIsFileData()
         FunctionCaller.set(FUNCTION_CALLER_KYE_RENDER_FILE_MANAGER_CONTENT, renderComponent)
         return function () {
             FunctionCaller.remove(FUNCTION_CALLER_KYE_RENDER_FILE_MANAGER_CONTENT)
@@ -85,9 +103,11 @@ export const Content: FC<IProps> = function Content({
             <>
                 {showContextMenu ?
                     <ContextMenu
-                        parentThis={parentThis}
+                        grandparentThis={parentThis}
                         file={currentlySelectedItem}
                         mouseDownXY={mouseDownXY}
+                        renderParentComponent={renderComponent}
+                        boolClipboardDataIsFileData={boolClipboardDataIsFileData}
                     /> :
                     <></>
                 }
