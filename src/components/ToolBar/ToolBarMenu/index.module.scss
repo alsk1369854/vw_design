@@ -27,14 +27,6 @@
             float: right;
         }
     }
-    & .disabled {
-        opacity: 0.2;
-
-
-        &:hover {
-            background-color: unset;
-        }
-    }
 
     & hr {
         width: calc(100% - 20px);
