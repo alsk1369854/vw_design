@@ -39,7 +39,6 @@ export const ToolBar = memo((props: {arrToolBarButtons: Array<ToolBarButton>}) =
         arrToolBarButtons.push(
             <section
                 key={"ToolBarButton" + index}
-                className="ToolBarButton"
                 onClick={() => clickToolBarButton()}
                 onMouseEnter={() => hoverToolBarButton(index)}
                 data-testid={toolBarButton.setTestId()}
@@ -72,6 +71,7 @@ export class Node extends abstractTestable {
     private strName: string;
     private strHotKey: string;
     private funcClick: Function;
+    private booDisabled: Boolean = false;
 
     constructor(strName: string, strHotKey: string | null, funcClick: Function){
         super();
@@ -90,10 +90,20 @@ export class Node extends abstractTestable {
     public getHotKey(): string {
         return this.strHotKey;
     }
+
+    public isDisabled(): Boolean {
+        return this.booDisabled;
+    }
+    public disabled(): void {
+        this.booDisabled = true;
+    }
+    public enabled(): void {
+        this.booDisabled = false;
+    }
 }
 export class Divider extends Node {
     constructor(){
-        super("_Divider_", null, ()=>{throw new UsageError("ToolBarButton- the divider doesn't use its click function")})
+        super("", null, ()=>{throw new UsageError("ToolBarButton- the divider doesn't use its click function")})
     }
 }
 
@@ -117,7 +127,15 @@ export class Menu extends abstractTestable {
         this.arrGroups = arrGroups;
     }
 
-    
+
+    public getNode(strName: String): Node {
+        // get first specific node
+        for (let node of this.getNodes(false)){
+            if (node.getName() === strName) return node;
+        }
+        throw new UsageError("ToolBarButton- node called " + strName + " doesn't exist");
+    }
+
     public getNodes(): Array<Node>
     public getNodes(isDivided: boolean): Array<Node>
     public getNodes(isDivided: boolean = true): Array<Node> {
@@ -157,44 +175,43 @@ export class ToolBarButton extends abstractTestable {
 }
 
 
-const container = memo(() => {
-    const arrToolBarButtons: Array<ToolBarButton> = [
-        new ToolBarButton("File",
-            new Menu([
-                new Group([
-                    new Node("Open Project",    "HotKey01", () => {console.log("Open Project...")}),
-                    new Node("Open File",       "HotKey02", () => {console.log("Open File...")}),
-                ]),
-                new Group([
-                    new Node("Save",            "HotKey03", () => {console.log("Save...")}),
-                ])
+export const defaultToolBarButtons: Array<ToolBarButton> = [
+    new ToolBarButton("File",
+        new Menu([
+            new Group([
+                new Node("Open Project",    "HotKey01", () => {console.log("Open Project...")}),
+                new Node("Open File",       "HotKey02", () => {console.log("Open File...")}),
+            ]),
+            new Group([
+                new Node("Save",            "HotKey03", () => {console.log("Save...")}),
             ])
-        ),
-        new ToolBarButton("Edit",
-            new Menu([
-                new Group([
-                    new Node("Undo",            "HotKey04", () => {console.log("Undo...")}),
-                    new Node("Redo",            "HotKey05", () => {console.log("Redo...")}),
-                ]),
-                new Group([
-                    new Node("Cut",             "HotKey06", () => {console.log("Cut...")}),
-                    new Node("Copy",            "HotKey07", () => {console.log("Copy...")}),
-                    new Node("Paste",           "HotKey08", () => {console.log("Paste...")}),
-                ])
+        ])
+    ),
+    new ToolBarButton("Edit",
+        new Menu([
+            new Group([
+                new Node("Undo",            "HotKey04", () => {console.log("Undo...")}),
+                new Node("Redo",            "HotKey05", () => {console.log("Redo...")}),
+            ]),
+            new Group([
+                new Node("Cut",             "HotKey06", () => {console.log("Cut...")}),
+                new Node("Copy",            "HotKey07", () => {console.log("Copy...")}),
+                new Node("Paste",           "HotKey08", () => {console.log("Paste...")}),
             ])
-        ),
-        new ToolBarButton("Help",
-            new Menu([
-                new Group([
-                    new Node("Version",         null,       () => {console.log("Version...")}),
-                    new Node("About",           null,       () => {console.log("About...")}),
-                ])
+        ])
+    ),
+    new ToolBarButton("Help",
+        new Menu([
+            new Group([
+                new Node("Version",         null,       () => {console.log("Version...")}),
+                new Node("About",           null,       () => {console.log("About...")}),
             ])
-        ),
-    ]
+        ])
+    ),
+]
 
-    
-    return <ToolBar arrToolBarButtons={arrToolBarButtons} />
+const container = memo(() => {
+    return <ToolBar arrToolBarButtons={defaultToolBarButtons} />
 });
 
 export default container;
