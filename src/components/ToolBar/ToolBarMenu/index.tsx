@@ -11,7 +11,6 @@ const ToolBarMenu = memo((props: {toolBarMenu: Menu, isShow: boolean, closeToolB
 
 
     const clickToolBarNode = (event: React.MouseEvent<HTMLLIElement, MouseEvent>, toolBarNode: Node) => {
-        if (toolBarNode.isDisabled()) return;
         event.stopPropagation();
 
         toolBarNode.callClickFunction();
@@ -23,7 +22,6 @@ const ToolBarMenu = memo((props: {toolBarMenu: Menu, isShow: boolean, closeToolB
         let tagNode: JSX.Element = (
             <li
                 key={"ToolBarNode" + index}
-                className={(toolBarNode.isDisabled()? style.disabled : undefined)}
                 onClick={(event) => clickToolBarNode(event, toolBarNode)}
                 data-testid={toolBarNode.setTestId()}
             >
