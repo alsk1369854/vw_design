@@ -84,6 +84,7 @@ export default function ContextMenu({
    }
 
   const copy = () => {
+    FileManager.cleanCuttingFiles()
     const clipboardData: IClipboardVWData = FileManager.buildCopyData(file)
     ClipboardController.write(clipboardData)
   }

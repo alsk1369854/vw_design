@@ -1,0 +1,20 @@
+.fileItemBar{
+    // display: flex;
+	// height: 3rem;
+	// overflow-x: auto;
+	// padding: 0;
+	// user-select: none;
+	// width: 100%;
+	// -webkit-overflow-scrolling: touch;
+
+
+    display: flex;
+    // width: 100%;
+    // position: relative;
+    // width: calc(100% - 69px);
+    height: 100%;
+    // position:absolute;
+    float: left;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
