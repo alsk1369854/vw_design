@@ -7,7 +7,6 @@ import {
     faSquareFull,
 } from '@fortawesome/free-solid-svg-icons'
 import { DragPreviewImage, useDrag, useDrop } from 'react-dnd'
-import ClipboardJS from 'clipboard'
 
 import style from './index.module.scss'
 import File from '../../lib/File'

@@ -40,12 +40,17 @@ export default class ClipboardController {
     }
 
     static write = async (objVWData: IClipboardVWData) => {
-        const objVWDataPack: IClipboardVWDataPack = {
-            type: IClipboardReadOptionType.VW_DATA,
-            contents: objVWData
-        }
         try {
+            const objVWDataPack: IClipboardVWDataPack = {
+                type: IClipboardReadOptionType.VW_DATA,
+                contents: objVWData
+            }
             await navigator.clipboard.writeText(JSON.stringify(objVWDataPack));
+
+            // debug
+            // if (process.env.NODE_ENV === "development") {
+            //     console.log('ClipboardController Write')
+            // }
         } catch (error) {
             console.error(error);
         }
@@ -54,10 +59,13 @@ export default class ClipboardController {
     static writeText = async (text: string) => {
         try {
             await navigator.clipboard.writeText(text);
+
+            // debug
+            // if (process.env.NODE_ENV === "development") {
+            //     console.log('ClipboardController Write')
+            // }
         } catch (error) {
             console.error(error);
         }
     }
 }
-
-// ClipboardController.read({ type: IClipboardReadOptionType.RAW }).then()
