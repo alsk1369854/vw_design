@@ -6,9 +6,11 @@ import VisualEditor from './VisualEditor';
 import CodeEditor from './CodeEditor';
 
 
-const EditArea = memo((props: {intWidth: number}) => {
+const EditArea = memo((props: { intWidth: number }) => {
     const [strUseState, setUseState] = useState("VisualEditor");
+    const [objFileEditFile, setEditFile] = useState();
 
+    console.log('EditFile: ', objFileEditFile)
 
     const cssClickedButton: CSSProperties = {
         backgroundColor: "#585858",
@@ -22,25 +24,25 @@ const EditArea = memo((props: {intWidth: number}) => {
             className={style.div}
         >
             <nav>
-                <OpenedFileBar />
+                <OpenedFileBar setEditFile={setEditFile} />
                 <button
                 >
                     <img src={require("../../../assets/icon/Preview.png")} />
                 </button>
                 <button
-                    style={(strUseState === "CodeEditor")? cssClickedButton : undefined}
+                    style={(strUseState === "CodeEditor") ? cssClickedButton : undefined}
                     onClick={() => setUseState("CodeEditor")}
                 >
                     <img src={require("../../../assets/icon/Code.png")} />
                 </button>
                 <button
-                    style={(strUseState === "VisualEditor")? cssClickedButton : undefined}
+                    style={(strUseState === "VisualEditor") ? cssClickedButton : undefined}
                     onClick={() => setUseState("VisualEditor")}
                 >
                     <img src={require("../../../assets/icon/Move.png")} />
                 </button>
             </nav>
-            {(strUseState === "CodeEditor")? <CodeEditor /> : <VisualEditor />}
+            {(strUseState === "CodeEditor") ? <CodeEditor /> : <VisualEditor />}
         </div>
     )
 })

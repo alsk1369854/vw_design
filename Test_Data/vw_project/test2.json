@@ -1,0 +1,45 @@
+{
+  "strId": "b3UNORRmmloMMWl0NfPkC002",
+  "strName": "test2",
+  "strType": "vw_project",
+  "strIconSrc": "https://picsum.photos/50/50",
+  "strOwner": "Ming",
+  "strLastEditTime": "2022/09/06, 21:13:25",
+  "objRootFile": {
+    "strId": "b3UNORRmmloMMWl0NfPkC002",
+    "boolIsDirectory": true,
+    "strFileName": "test2",
+    "strData": "",
+    "strDataType": "directory",
+    "boolIsExpand": true,
+    "arrFileSubFiles": [
+      {
+        "strId": "rVGJqt1MGml4g3A2c891-",
+        "boolIsDirectory": true,
+        "strFileName": "sagdas",
+        "strData": "",
+        "strDataType": "directory",
+        "boolIsExpand": false,
+        "arrFileSubFiles": []
+      },
+      {
+        "strId": "niej_8TIUAJc96FRQSeMo",
+        "boolIsDirectory": false,
+        "strFileName": "agagd",
+        "strData": "",
+        "strDataType": "text",
+        "boolIsExpand": false,
+        "arrFileSubFiles": []
+      },
+      {
+        "strId": "_VZLirwL3YinoAxBl0_S4",
+        "boolIsDirectory": false,
+        "strFileName": "index.html",
+        "strData": "<!DOCTYPE html><html lang=\"en\"><head></head><body><h1>Hello World!</h1></body><script src=\"\"></script></html>",
+        "strDataType": "text",
+        "boolIsExpand": false,
+        "arrFileSubFiles": []
+      }
+    ]
+  }
+}

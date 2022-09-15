@@ -1,0 +1,164 @@
+{
+  "strId": "do2pUPEhtLm05ffrhb_PH",
+  "strName": "project_1 copy",
+  "strType": "vw_project",
+  "strIconSrc": "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAApgAAAKYB3X3/OAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAANCSURBVEiJtZZPbBtFFMZ/M7ubXdtdb1xSFyeilBapySVU8h8OoFaooFSqiihIVIpQBKci6KEg9Q6H9kovIHoCIVQJJCKE1ENFjnAgcaSGC6rEnxBwA04Tx43t2FnvDAfjkNibxgHxnWb2e/u992bee7tCa00YFsffekFY+nUzFtjW0LrvjRXrCDIAaPLlW0nHL0SsZtVoaF98mLrx3pdhOqLtYPHChahZcYYO7KvPFxvRl5XPp1sN3adWiD1ZAqD6XYK1b/dvE5IWryTt2udLFedwc1+9kLp+vbbpoDh+6TklxBeAi9TL0taeWpdmZzQDry0AcO+jQ12RyohqqoYoo8RDwJrU+qXkjWtfi8Xxt58BdQuwQs9qC/afLwCw8tnQbqYAPsgxE1S6F3EAIXux2oQFKm0ihMsOF71dHYx+f3NND68ghCu1YIoePPQN1pGRABkJ6Bus96CutRZMydTl+TvuiRW1m3n0eDl0vRPcEysqdXn+jsQPsrHMquGeXEaY4Yk4wxWcY5V/9scqOMOVUFthatyTy8QyqwZ+kDURKoMWxNKr2EeqVKcTNOajqKoBgOE28U4tdQl5p5bwCw7BWquaZSzAPlwjlithJtp3pTImSqQRrb2Z8PHGigD4RZuNX6JYj6wj7O4TFLbCO/Mn/m8R+h6rYSUb3ekokRY6f/YukArN979jcW+V/S8g0eT/N3VN3kTqWbQ428m9/8k0P/1aIhF36PccEl6EhOcAUCrXKZXXWS3XKd2vc/TRBG9O5ELC17MmWubD2nKhUKZa26Ba2+D3P+4/MNCFwg59oWVeYhkzgN/JDR8deKBoD7Y+ljEjGZ0sosXVTvbc6RHirr2reNy1OXd6pJsQ+gqjk8VWFYmHrwBzW/n+uMPFiRwHB2I7ih8ciHFxIkd/3Omk5tCDV1t+2nNu5sxxpDFNx+huNhVT3/zMDz8usXC3ddaHBj1GHj/As08fwTS7Kt1HBTmyN29vdwAw+/wbwLVOJ3uAD1wi/dUH7Qei66PfyuRj4Ik9is+hglfbkbfR3cnZm7chlUWLdwmprtCohX4HUtlOcQjLYCu+fzGJH2QRKvP3UNz8bWk1qMxjGTOMThZ3kvgLI5AzFfo379UAAAAASUVORK5CYII=",
+  "strOwner": "Ming",
+  "strLastEditTime": "2022/09/06, 21:29:48",
+  "objRootFile": {
+    "strId": "do2pUPEhtLm05ffrhb_PH",
+    "boolIsDirectory": true,
+    "strFileName": "project_1 copy",
+    "strData": "",
+    "strDataType": "directory",
+    "boolIsExpand": true,
+    "arrFileSubFiles": [
+      {
+        "strId": "zx5ONi2-aeo1eJXUX3u4z",
+        "boolIsDirectory": true,
+        "strFileName": "dir2",
+        "strData": "",
+        "strDataType": "directory",
+        "boolIsExpand": true,
+        "arrFileSubFiles": [
+          {
+            "strId": "01Ituk9nGztMcuRnq49BS",
+            "boolIsDirectory": true,
+            "strFileName": "dir2-3",
+            "strData": "",
+            "strDataType": "directory",
+            "boolIsExpand": true,
+            "arrFileSubFiles": [
+              {
+                "strId": "S0OqnUyPevluwPnQjJ43s",
+                "boolIsDirectory": false,
+                "strFileName": "html copy 4 copy 5.html",
+                "strData": "<!DOCTYPE html><html lang=\"en\"><head><link rel=\"stylesheet\" href=\"./style.css\"></head><body><h1>Hello World!</h1><img src=\"../img.png\" alt=\"\"></body><script src=\"./javascript.js\"></script></html>",
+                "strDataType": "text",
+                "boolIsExpand": false,
+                "arrFileSubFiles": []
+              },
+              {
+                "strId": "EDtpC1mlnvbYu8n2RA35V",
+                "boolIsDirectory": false,
+                "strFileName": "html.html",
+                "strData": "<!DOCTYPE html><html lang=\"en\"><head><link rel=\"stylesheet\" href=\"./style.css\"></head><body><h1>Hello World!</h1><img src=\"../img.png\" alt=\"\"></body><script src=\"./javascript.js\"></script></html>",
+                "strDataType": "text",
+                "boolIsExpand": false,
+                "arrFileSubFiles": []
+              },
+              {
+                "strId": "yAmvk5v0RcpPL9NzGKylm",
+                "boolIsDirectory": false,
+                "strFileName": "javascript copy 3 copy copy 2 copy.js",
+                "strData": "console.log('Hello World!')",
+                "strDataType": "text",
+                "boolIsExpand": false,
+                "arrFileSubFiles": []
+              },
+              {
+                "strId": "aDwIwLqs3Pgopx-At94ww",
+                "boolIsDirectory": false,
+                "strFileName": "javascript copy 3 copy copy 2.js",
+                "strData": "console.log('Hello World!')",
+                "strDataType": "text",
+                "boolIsExpand": false,
+                "arrFileSubFiles": []
+              }
+            ]
+          },
+          {
+            "strId": "2CgLThRcSk2wFzPzCsEsL",
+            "boolIsDirectory": false,
+            "strFileName": "html copy 4 copy 5 copy.html",
+            "strData": "<!DOCTYPE html><html lang=\"en\"><head><link rel=\"stylesheet\" href=\"./style.css\"></head><body><h1>Hello World!</h1><img src=\"../img.png\" alt=\"\"></body><script src=\"./javascript.js\"></script></html>",
+            "strDataType": "text",
+            "boolIsExpand": false,
+            "arrFileSubFiles": []
+          },
+          {
+            "strId": "XC50BWv6kygT7TtDDI09T",
+            "boolIsDirectory": false,
+            "strFileName": "html copy 4 copy 5.html",
+            "strData": "<!DOCTYPE html><html lang=\"en\"><head><link rel=\"stylesheet\" href=\"./style.css\"></head><body><h1>Hello World!</h1><img src=\"../img.png\" alt=\"\"></body><script src=\"./javascript.js\"></script></html>",
+            "strDataType": "text",
+            "boolIsExpand": false,
+            "arrFileSubFiles": []
+          },
+          {
+            "strId": "MLCoUJyp36zTq6UQnn5Hn",
+            "boolIsDirectory": false,
+            "strFileName": "html.html",
+            "strData": "<!DOCTYPE html><html lang=\"en\"><head><link rel=\"stylesheet\" href=\"./style.css\"></head><body><h1>Hello World!</h1><img src=\"../img.png\" alt=\"\"></body><script src=\"./javascript.js\"></script></html>",
+            "strDataType": "text",
+            "boolIsExpand": false,
+            "arrFileSubFiles": []
+          },
+          {
+            "strId": "JH18whHsG4pC55cl1FQZo",
+            "boolIsDirectory": false,
+            "strFileName": "javascript copy 3 copy copy 2 copy.js",
+            "strData": "console.log('Hello World!')",
+            "strDataType": "text",
+            "boolIsExpand": false,
+            "arrFileSubFiles": []
+          },
+          {
+            "strId": "Sm2ykZopxjy3Kt7L5Hyqa",
+            "boolIsDirectory": false,
+            "strFileName": "javascript copy 3 copy copy 2.js",
+            "strData": "console.log('Hello World!')",
+            "strDataType": "text",
+            "boolIsExpand": false,
+            "arrFileSubFiles": []
+          },
+          {
+            "strId": "pZRLBHY-MhSe80xLQrZEU",
+            "boolIsDirectory": false,
+            "strFileName": "javascript.js",
+            "strData": "console.log('Hello World!')",
+            "strDataType": "text",
+            "boolIsExpand": false,
+            "arrFileSubFiles": []
+          }
+        ]
+      },
+      {
+        "strId": "Y-abCUGxzN2Ls7qux9S5C",
+        "boolIsDirectory": false,
+        "strFileName": "asdgsadgksajdkgljalksdjg.tx",
+        "strData": "file2-3-1",
+        "strDataType": "text",
+        "boolIsExpand": false,
+        "arrFileSubFiles": []
+      },
+      {
+        "strId": "HYnmLLTPt-wMvB0Aoab6w",
+        "boolIsDirectory": false,
+        "strFileName": "file1.txt",
+        "strData": "file1",
+        "strDataType": "text",
+        "boolIsExpand": false,
+        "arrFileSubFiles": []
+      },
+      {
+        "strId": "2p2hY9p7Z5sPb96mwq5EX",
+        "boolIsDirectory": false,
+        "strFileName": "html copy 4 copy 5 copy 2.html",
+        "strData": "<!DOCTYPE html><html lang=\"en\"><head><link rel=\"stylesheet\" href=\"./style.css\"></head><body><h1>Hello World!</h1><img src=\"../img.png\" alt=\"\"></body><script src=\"./javascript.js\"></script></html>",
+        "strDataType": "text",
+        "boolIsExpand": false,
+        "arrFileSubFiles": []
+      },
+      {
+        "strId": "h0wrQkr49ou6-6PcS2eXX",
+        "boolIsDirectory": false,
+        "strFileName": "javascript copy 3 copy copy 2.js",
+        "strData": "console.log('Hello World!')",
+        "strDataType": "text",
+        "boolIsExpand": false,
+        "arrFileSubFiles": []
+      }
+    ]
+  }
+}

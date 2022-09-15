@@ -1,0 +1,96 @@
+.ProjectListBar {
+    width: 100%;
+    background-color: rgb(239, 239, 239);
+
+    & .listHeaderBar {
+        // position:absolute;
+        color: rgb(183, 183, 183);
+        display: flex;
+        margin: 0px 20px;
+        justify-content: space-between;
+        align-items: flex-end;
+        // height: 8%;
+        height: 50px;
+        width: auto;
+        margin-bottom: 3px;
+        font-weight: bold;
+        font-size: 20px;
+
+        & .headerNameTitle {
+            // padding-left: 15px;
+            width: 50%;
+
+            @media (max-width:960px) {
+                width: 60%;
+            }
+    
+            @media (max-width:745px) {
+                width: 100%;
+                
+            }
+        }
+
+        & .headerOwnerTitle {
+            width: 20%;
+
+            @media (max-width:960px) {
+                width: 35%;
+            }
+    
+            @media (max-width:745px) {
+                display: none;
+            }
+        }
+
+        & .headerLastTimeTitle {
+            width: 25%;
+
+            @media (max-width:960px) {
+                display: none;
+            }
+        }
+
+    }
+
+    & .listContentBar{
+        overflow:auto;
+        height: calc(100% - 60px);
+
+        & .createNewProjectArea {
+            height: 100%;
+            width: 100%;
+    
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        
+            margin: 0px;
+            padding: 0px;
+            position: relative;
+    
+            // background-color: black;
+            cursor: crosshair;
+    
+            & .icon{
+                height: 80px;
+                width: 80px;
+                color: rgb(84,84,84,0.5);
+            }
+        }
+    
+        & .listMenuBar {
+            margin: 0px 5px;
+            height: auto;
+        }
+    }
+
+
+}
+
+.line {
+    width: auto;
+    height: 2px;
+    margin: 0px 20px;
+    background-color: rgb(210, 210, 211);
+    border-radius: 10px
+}

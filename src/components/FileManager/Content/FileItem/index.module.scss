@@ -1,0 +1,149 @@
+
+.fileItem,
+.fileItemStatic,
+.fileItemRenameState,
+.fileItemOnSelected,
+.fileItemOnSelectedRenameState,
+.fileItemCurrentlySelected,
+.fileItemCurrentlyContextMenu,
+.fileItemRenameItem,
+.fileItemRenameItemOnSelected,
+.fileItemOnDragUnSelected,
+.fileItemDropArea {
+    height: 21px;
+
+    // 名稱過長顯示省略符
+    // overflow: hidden; 
+    overflow-y: hidden; // 超出文本隱藏
+    text-overflow: ellipsis; // 溢出用省略符顯示
+    white-space: nowrap; // 溢出不換行
+
+    // 防止文字被選中
+    -moz-user-select: none; // 火狐
+    -webkit-user-select: none; // 谷歌
+    -ms-user-sele: none; // IE
+    user-select: none;
+    box-sizing: border-box;
+
+    cursor: pointer;
+    background-color: transparent;
+
+    & .angleIcon {
+        // margin-right: 3px;
+        // padding: 0px 3px;
+        margin: 0px 3px;
+
+        & svg {
+            width: 15px;
+            height: 15px;
+        }
+    }
+
+    & .expandLine {
+        // opacity: 0.5;
+        // padding-left: 9px;
+        margin-left: 9px;
+        display: inline-block;
+        width: 1px;
+        // height: 100%;
+        height: 21px;
+        background-color: rgb(150, 150, 150, 0.5);
+    }
+
+    & .isFileAngleIconBackground {
+        color: rgb(0, 0, 0, 0);
+    }
+
+
+    & .fileIcon {
+        margin-right: 5px;
+        width: 15px;
+        height: 15px;
+    }
+
+    & .fileName {}
+
+    & .renameBar {
+        position: absolute;
+        z-index: 1;
+        float: right;
+
+        & .renameInput,
+        .renameInputWarning {
+            margin: -2px 0px;
+            width: 100%;
+
+            background-color: transparent;
+
+            border: solid 1px rgb(0, 127, 212);
+            box-sizing: border-box;
+
+            font-size: 16px;
+            color: rgb(240, 240, 240);
+
+            outline: 0 none;
+        }
+
+        & .renameInputWarning {
+            border: solid 1px rgb(190, 17, 0);
+            border-bottom: 0px;
+        }
+    }
+
+    & .renameMessage {
+        position: absolute;
+        z-index: 2;
+        width: 100%;
+        color: white;
+        background-color: rgb(90, 29, 29);
+
+        border: solid 1px rgb(190, 17, 0);
+        // color: rgb(204, 204, 204);
+        box-sizing: border-box;
+        // 文字超出自動換行
+        word-wrap: break-word;
+        white-space: pre-wrap;
+    }
+}
+
+
+.fileItem:hover,
+.fileItemOnDragUnSelected {
+    background-color: rgb(42, 45, 46);
+}
+
+.fileItemRenameState,
+.fileItemOnSelectedRenameState {
+    & .angleIcon {
+        opacity: 0.5;
+    }
+
+    & .fileIcon {
+        opacity: 0.5;
+    }
+
+    & .fileName {
+        opacity: 0.5;
+    }
+}
+
+.fileItemRenameItemOnSelected,
+.fileItemOnSelectedRenameState,
+.fileItemDropArea {
+    background-color: rgb(55, 55, 61);
+}
+
+.fileItemOnSelected,
+.fileItemCurrentlySelected {
+    background-color: rgb(9, 71, 113);
+}
+
+.fileItemCurrentlySelected,
+.fileItemCurrentlyContextMenu {
+    height: auto;
+    transform: rotate(0deg);
+    border: solid 1px rgb(0, 127, 212);
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: -1px -1px 0px -1px;
+}

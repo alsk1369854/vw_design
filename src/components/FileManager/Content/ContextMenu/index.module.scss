@@ -1,0 +1,70 @@
+.projectContextMenu {
+  z-index: 2;
+  font-size: 14px;
+  background-color: rgb(48, 48, 49);
+  color: rgb(204, 204, 204);
+  border-radius: 2px;
+  padding: 10px 0px;
+  // width: 130px;
+  width: 180px;
+  height: auto;
+  margin: 0;
+  /* use absolute positioning  */
+  position: fixed;
+  list-style: none;
+  box-shadow: 0 0 10px 0 rgb(31, 31, 32);
+  opacity: 1;
+  transition: opacity 0.5s linear;
+
+  // 防止文字被選中
+  -moz-user-select: none; // 火狐
+  -webkit-user-select: none; // 谷歌
+  -ms-user-sele: none; // IE
+  user-select: none;
+  box-sizing: border-box;
+
+  & li,
+  & .enabled & .disabled {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    // margin: 10px 20px;
+    padding: 3px 20px;
+    // height: 30px;
+
+    & .iconBar {
+      margin-right: 10px;
+    }
+
+    & .icon {
+      height: 15px;
+      width: 15px;
+
+    }
+
+    & img {
+      height: 20px;
+      width: 20px;
+      margin-right: 10px;
+    }
+
+    & .itemName {}
+  }
+
+  & .disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  & li:hover {
+    background-color: rgb(9, 71, 113);
+  }
+}
+
+.line {
+  width: auto;
+  height: 1px;
+  margin: 2px 10px;
+  background-color: rgb(96, 96, 96);
+  border-radius: 10px
+}

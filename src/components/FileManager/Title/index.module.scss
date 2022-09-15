@@ -1,0 +1,73 @@
+.titleBody {
+    z-index: 2;
+    position: absolute;
+    height: 35px;
+    width: 100%;
+    // width: 500px;
+    padding: 5px;
+    box-sizing: border-box;
+
+    color: rgb(187, 187, 187);
+    // background-color: rgb(80, 80, 80);
+    background-color: rgb(20, 20, 20);
+    // background-color: rgb(50, 50, 50);
+
+    border-style: solid;
+    border-width: 0px 0px 5px 0px;
+    border-color: rgb(30, 30, 30);
+
+    & .titleBar {
+        // height: 100%;
+        // width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        & .projectName {
+            // 防止文字被選中
+            -moz-user-select: none; // 火狐
+            -webkit-user-select: none; // 谷歌
+            -ms-user-sele: none; // IE
+            user-select: none;
+            box-sizing: border-box;
+
+            // 名稱過長顯示省略符
+            overflow: hidden; // 超出文本隱藏
+            text-overflow: ellipsis; // 溢出用省略符顯示
+            white-space: nowrap; // 溢出不換行
+
+            color: rgb(204, 204, 204);
+            font-style: italic;
+            font-weight: bold;
+        }
+
+        & .iconBar {
+            float: right;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            & .iconItem,
+            & .iconItemDisabled {
+
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 20px;
+                height: 20px;
+                margin-left: 3px;
+                padding-right: 1px;
+                border-radius: 8px;
+            }
+
+            & .iconItem:hover {
+                background-color: rgb(100, 100, 100);
+            }
+
+            & .iconItemDisabled {
+                cursor: not-allowed;
+                opacity: 0.5;
+            }
+        }
+    }
+}

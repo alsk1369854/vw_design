@@ -1,0 +1,89 @@
+.listItem {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0px 15px;
+    padding: 10px 0px;
+    list-style: none;
+    height: 40px;
+    color: rgb(78, 78, 78);
+    font-size: 18px;
+    font-style: italic;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+
+    border-radius: 5px;
+
+    & .itemName,
+    & .itemOwner,
+    & .itemLastTime {
+        // 名稱過長顯示省略符
+        overflow-y: hidden; // 超出文本隱藏
+        text-overflow: ellipsis; // 溢出用省略符顯示        
+        white-space: nowrap; // 溢出不換行
+    }
+
+
+    & .itemName {
+        width: 50%;
+        display: flex;
+        align-items: center;
+        font-weight: bold;
+        font-size: 20px;
+        // font-style:normal;
+
+        @media (max-width:960px) {
+            width: 60%;
+        }
+
+        @media (max-width:745px) {
+            width: 100%;
+            
+        }
+
+
+        & img {
+            border-radius: 10px;
+            // height: 50px;
+            // width: 50px;
+            height: 28px;
+            width: 28px;
+            margin: 0px 10px;
+        }
+    }
+
+    & .itemOwner {
+        width: 20%;
+        font-size: 15px;
+
+        @media (max-width:960px) {
+            width: 35%;
+        }
+
+        @media (max-width:745px) {
+            display: none;
+        }
+    }
+
+    & .itemLastTime {
+        width: 25%;
+        font-size: 15px;
+
+        @media (max-width:960px) {
+            display: none;
+        }
+    }
+}
+
+.listItem:hover {
+    background-color: rgb(255, 255, 255);
+}
+
+
+.line {
+    width: auto;
+    height: 2px;
+    margin: 0px 20px;
+    background-color: rgb(210, 210, 211);
+    border-radius: 10px
+}

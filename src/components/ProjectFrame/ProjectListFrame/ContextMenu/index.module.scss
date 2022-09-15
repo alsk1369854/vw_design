@@ -1,0 +1,43 @@
+.projectContextMenu{
+    font-size: 14px;
+    background-color: #fff;
+    border-radius: 2px;
+    padding: 10px 0px;
+    width: 200px;
+    height: auto;
+    margin: 0;
+  /* use absolute positioning  */
+    position: absolute;
+    list-style: none;
+    box-shadow: 0 0 20px 0 #ccc;
+    opacity: 1;
+    transition: opacity 0.5s linear;
+    & li{
+      cursor:pointer;
+      display: flex;
+      align-items: center;
+      // margin: 10px 20px;
+      padding: 7px 20px;
+      // height: 30px;
+
+      & img{
+        height: 20px;
+        width: 20px;
+        margin-right: 10px;
+      }
+      & span{
+
+      }
+    }
+    & li:hover{
+      background-color: rgb(225, 226, 226);
+    }
+}
+
+.line {
+  width: auto;
+  height: 2px;
+  margin: 0px 10px;
+  background-color: rgb(210, 210, 211);
+  border-radius: 10px
+}

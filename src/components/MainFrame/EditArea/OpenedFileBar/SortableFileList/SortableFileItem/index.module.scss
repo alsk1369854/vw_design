@@ -1,0 +1,45 @@
+.fileItem {
+
+    // align-items: center;
+    // border-radius: 1.875rem;
+    // border: 1px solid #2e2e2e;
+    // color: #2e2e2e;
+    // cursor: col-resize;
+    // display: flex;
+    // font-family: sans-serif;
+    // font-size: 0.6875rem;
+    // height: 2rem;
+    // justify-content: center;
+    // margin-right: 1rem;
+    // padding: 0 1em;
+    // white-space: nowrap;
+
+    display: flex;
+    align-items: center;
+    height: 100%;
+
+    padding: 0px 5px;
+    border: 1px solid rgb(37, 37, 38);
+    border-left: 0px;
+
+    color: rgb(187, 192, 192);
+    background-color: rgb(45, 45, 45);
+
+    & .fileIconBar {
+        margin: 0px 5px;
+        width: 15px;
+    }
+
+    & .fileName {
+        white-space: nowrap;
+    }
+
+    & .deleteIconContainer {
+        & .deleteIcon {
+            margin: 0px 5px;
+            height: 15px;
+            width: 15px;
+        }
+
+    }
+}
