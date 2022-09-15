@@ -8,7 +8,7 @@ import { lintGutter, linter, openLintPanel } from "@codemirror/lint";
 
 import Linter from "eslint4b-prebuilt/dist/eslint4b";//Linter可自行改名
 
-export default function CodeEditor(props:{language: any, value: any, onChange: any}) {
+export default function Editor(props:{strLang: string, strCode: string, onChange: any}) {
 
   const arr1Extensions = new Map(
       [ ['html', [lintGutter(),html(), htmlLanguage]],//['html', [lintGutter(),html(), htmlLanguage]],  
@@ -17,13 +17,13 @@ export default function CodeEditor(props:{language: any, value: any, onChange: a
     );
   
   return (
-    <div>
+    <div className="background-seetings">
       <CodeMirror
         theme="dark"
-        value= {props.value}
-        extensions= {arr1Extensions.get(props.language)}
-        onChange= {(value, viewUpdate) => props.onChange(value)}
-        height="605px"
+        value= {props.strCode}
+        extensions= {arr1Extensions.get(props.strLang)}
+        onChange= {(value) => props.onChange(value)}
+        height="815px"
       />
     </div>
   );
