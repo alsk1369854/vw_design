@@ -5,7 +5,7 @@ import style from './index.module.scss';
 import logo from '../../assets/logo.png';
 
 import { Test } from '../../tools/Test';
-import ToolBar from '../../components/ToolBar';
+import ToolBar, { defaultToolBarButtons } from '../../components/ToolBar';
 import MainFrame from '../../components/MainFrame';
 
 
