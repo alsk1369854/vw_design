@@ -251,9 +251,6 @@ describe("ToolBar Button Mouse Event Test", () => {
     function checkEachMenuNotInDocumentExceptThisOne(toolBarButtonException: ToolBarButton): void {
         arrToolBarButtons.forEach(toolBarButton => {
             if (toolBarButton === toolBarButtonException){
-                console.log(toolBarButtonException)//
-                console.log(toolBarButton.getMenu().getTestId())
-                screen.debug()//
                 expect(screen.queryByTestId( toolBarButton.getMenu().getTestId() )).toBeInTheDocument();
             }
             else 
