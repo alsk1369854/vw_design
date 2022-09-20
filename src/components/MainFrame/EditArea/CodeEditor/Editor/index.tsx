@@ -22,7 +22,7 @@ export default function Editor(props:{strLang: string, strCode: string, onChange
         theme="dark"
         value= {props.strCode}
         extensions= {arr1Extensions.get(props.strLang)}
-        onChange= {(value) => props.onChange(value)}
+        onChange= {(value: string) => props.onChange(value)}
         height="815px"
       />
     </div>

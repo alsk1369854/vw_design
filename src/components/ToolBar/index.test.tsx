@@ -1,4 +1,5 @@
 import React from 'react';
+import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -58,162 +59,162 @@ jest.mock("./ToolBarMenu", () => (props: {toolBarMenu: Menu, isShow: boolean}) =
 
 
 describe("ToolBar Button Mouse Event Test", () => {
-    test("initialization test(no event happen)", () => {
-        render (
-            <ToolBar arrToolBarButtons={arrToolBarButtons} />
-        )
+    // test("initialization test(no event happen)", () => {
+    //     render (
+    //         <ToolBar arrToolBarButtons={arrToolBarButtons} />
+    //     )
 
-        checkEachMenuNotInDocument();
-    });
+    //     checkEachMenuNotInDocument();
+    // });
 
-    describe("Hover Event", () => {
-        test("hover continuously test", () => {
-            render (
-                <ToolBar arrToolBarButtons={arrToolBarButtons} />
-            )
+    // describe("Hover Event", () => {
+    //     test("hover continuously test", () => {
+    //         render (
+    //             <ToolBar arrToolBarButtons={arrToolBarButtons} />
+    //         )
     
-            arrToolBarButtons.forEach(toolBarButton => {
-                let intTime = 10;
-                for (let intCurrentTime = 1; intCurrentTime <= intTime; intCurrentTime++){
-                    userEvent.hover(screen.getByTestId( toolBarButton.getTestId() ));
-                    expect(screen.queryByTestId( toolBarButton.getMenu().getTestId() )).not.toBeInTheDocument();
-                }
-            })
-        });
-        test("hover interactively test (in order)", () => {
-            render (
-                <ToolBar arrToolBarButtons={arrToolBarButtons} />
-            )
+    //         arrToolBarButtons.forEach(toolBarButton => {
+    //             let intTime = 10;
+    //             for (let intCurrentTime = 1; intCurrentTime <= intTime; intCurrentTime++){
+    //                 userEvent.hover(screen.getByTestId( toolBarButton.getTestId() ));
+    //                 expect(screen.queryByTestId( toolBarButton.getMenu().getTestId() )).not.toBeInTheDocument();
+    //             }
+    //         })
+    //     });
+    //     test("hover interactively test (in order)", () => {
+    //         render (
+    //             <ToolBar arrToolBarButtons={arrToolBarButtons} />
+    //         )
     
-            arrToolBarButtons.forEach(toolBarButton => {
-                userEvent.hover(screen.getByTestId( toolBarButton.getTestId() ));
-                checkEachMenuNotInDocument();
-            })
-        });
-        test("hover interactively test (in reverse order)", () => {
-            render (
-                <ToolBar arrToolBarButtons={arrToolBarButtons} />
-            )
+    //         arrToolBarButtons.forEach(toolBarButton => {
+    //             userEvent.hover(screen.getByTestId( toolBarButton.getTestId() ));
+    //             checkEachMenuNotInDocument();
+    //         })
+    //     });
+    //     test("hover interactively test (in reverse order)", () => {
+    //         render (
+    //             <ToolBar arrToolBarButtons={arrToolBarButtons} />
+    //         )
     
-            arrToolBarButtons.slice().reverse().forEach(toolBarButton => {
-                userEvent.hover(screen.getByTestId( toolBarButton.getTestId() ));
-                checkEachMenuNotInDocument();
-            })
-        });
-        test("hover interactively test (out of order)", () => {
-            render (
-                <ToolBar arrToolBarButtons={arrToolBarButtons} />
-            )
+    //         arrToolBarButtons.slice().reverse().forEach(toolBarButton => {
+    //             userEvent.hover(screen.getByTestId( toolBarButton.getTestId() ));
+    //             checkEachMenuNotInDocument();
+    //         })
+    //     });
+    //     test("hover interactively test (out of order)", () => {
+    //         render (
+    //             <ToolBar arrToolBarButtons={arrToolBarButtons} />
+    //         )
     
-            userEvent.hover(screen.getByTestId( arrToolBarButtons[0].getTestId() ));
-            checkEachMenuNotInDocument();
+    //         userEvent.hover(screen.getByTestId( arrToolBarButtons[0].getTestId() ));
+    //         checkEachMenuNotInDocument();
             
-            userEvent.hover(screen.getByTestId( arrToolBarButtons[2].getTestId() ));
-            checkEachMenuNotInDocument();
+    //         userEvent.hover(screen.getByTestId( arrToolBarButtons[2].getTestId() ));
+    //         checkEachMenuNotInDocument();
 
-            userEvent.hover(screen.getByTestId( arrToolBarButtons[1].getTestId() ));
-            checkEachMenuNotInDocument();
+    //         userEvent.hover(screen.getByTestId( arrToolBarButtons[1].getTestId() ));
+    //         checkEachMenuNotInDocument();
 
-            userEvent.hover(screen.getByTestId( arrToolBarButtons[3].getTestId() ));
-            checkEachMenuNotInDocument();
-        });
-    });
+    //         userEvent.hover(screen.getByTestId( arrToolBarButtons[3].getTestId() ));
+    //         checkEachMenuNotInDocument();
+    //     });
+    // });
 
-    describe("Click Event", () => {
-        test("click continuously test", () => {
-            render (
-                <ToolBar arrToolBarButtons={arrToolBarButtons} />
-            )
+    // describe("Click Event", () => {
+    //     test("click continuously test", () => {
+    //         render (
+    //             <ToolBar arrToolBarButtons={arrToolBarButtons} />
+    //         )
     
-            arrToolBarButtons.forEach(toolBarButton => {
-                let intTime = 10;
-                for (let intCurrentTime = 1; intCurrentTime <= intTime; intCurrentTime++){
-                    userEvent.click(screen.getByTestId( toolBarButton.getTestId() ));
-                    expect(screen.queryByTestId( toolBarButton.getMenu().getTestId() )).toBeInTheDocument();
-                }
-            })
-        });
-        test("click interactively test (in order)", () => {
-            render (
-                <ToolBar arrToolBarButtons={arrToolBarButtons} />
-            )
+    //         arrToolBarButtons.forEach(toolBarButton => {
+    //             let intTime = 10;
+    //             for (let intCurrentTime = 1; intCurrentTime <= intTime; intCurrentTime++){
+    //                 userEvent.click(screen.getByTestId( toolBarButton.getTestId() ));
+    //                 expect(screen.queryByTestId( toolBarButton.getMenu().getTestId() )).toBeInTheDocument();
+    //             }
+    //         })
+    //     });
+    //     test("click interactively test (in order)", () => {
+    //         render (
+    //             <ToolBar arrToolBarButtons={arrToolBarButtons} />
+    //         )
     
-            arrToolBarButtons.forEach(toolBarButton => {
-                userEvent.click(screen.getByTestId( toolBarButton.getTestId() ));
-                checkEachMenuNotInDocumentExceptThisOne(toolBarButton);
-            })
-        });
-        test("click interactively test (in reverse order)", () => {
-            render (
-                <ToolBar arrToolBarButtons={arrToolBarButtons} />
-            )
+    //         arrToolBarButtons.forEach(toolBarButton => {
+    //             userEvent.click(screen.getByTestId( toolBarButton.getTestId() ));
+    //             checkEachMenuNotInDocumentExceptThisOne(toolBarButton);
+    //         })
+    //     });
+    //     test("click interactively test (in reverse order)", () => {
+    //         render (
+    //             <ToolBar arrToolBarButtons={arrToolBarButtons} />
+    //         )
     
-            arrToolBarButtons.slice().reverse().forEach(toolBarButton => {
-                userEvent.click(screen.getByTestId( toolBarButton.getTestId() ));
-                checkEachMenuNotInDocumentExceptThisOne(toolBarButton);
-            })
-        });
-        test("click interactively test (out of order)", () => {
-            render (
-                <ToolBar arrToolBarButtons={arrToolBarButtons} />
-            )
+    //         arrToolBarButtons.slice().reverse().forEach(toolBarButton => {
+    //             userEvent.click(screen.getByTestId( toolBarButton.getTestId() ));
+    //             checkEachMenuNotInDocumentExceptThisOne(toolBarButton);
+    //         })
+    //     });
+    //     test("click interactively test (out of order)", () => {
+    //         render (
+    //             <ToolBar arrToolBarButtons={arrToolBarButtons} />
+    //         )
     
-            userEvent.click(screen.getByTestId( arrToolBarButtons[0].getTestId() ));
-            checkEachMenuNotInDocumentExceptThisOne(arrToolBarButtons[0]);
+    //         userEvent.click(screen.getByTestId( arrToolBarButtons[0].getTestId() ));
+    //         checkEachMenuNotInDocumentExceptThisOne(arrToolBarButtons[0]);
 
-            userEvent.click(screen.getByTestId( arrToolBarButtons[2].getTestId() ));
-            checkEachMenuNotInDocumentExceptThisOne(arrToolBarButtons[2]);
+    //         userEvent.click(screen.getByTestId( arrToolBarButtons[2].getTestId() ));
+    //         checkEachMenuNotInDocumentExceptThisOne(arrToolBarButtons[2]);
 
-            userEvent.click(screen.getByTestId( arrToolBarButtons[1].getTestId() ));
-            checkEachMenuNotInDocumentExceptThisOne(arrToolBarButtons[1]);
+    //         userEvent.click(screen.getByTestId( arrToolBarButtons[1].getTestId() ));
+    //         checkEachMenuNotInDocumentExceptThisOne(arrToolBarButtons[1]);
 
-            userEvent.click(screen.getByTestId( arrToolBarButtons[3].getTestId() ));
-            checkEachMenuNotInDocumentExceptThisOne(arrToolBarButtons[3]);
-        });
-    });
+    //         userEvent.click(screen.getByTestId( arrToolBarButtons[3].getTestId() ));
+    //         checkEachMenuNotInDocumentExceptThisOne(arrToolBarButtons[3]);
+    //     });
+    // });
 
     describe("Click And Hover Event", () => {
-        test("click button (open menu) and hover interactively test (in order)", () => {
-            render (
-                <ToolBar arrToolBarButtons={arrToolBarButtons} />
-            )
+        // test("click button (open menu) and hover interactively test (in order)", () => {
+        //     render (
+        //         <ToolBar arrToolBarButtons={arrToolBarButtons} />
+        //     )
     
-            userEvent.click(screen.getByTestId( arrToolBarButtons[0].getTestId() ));
-            arrToolBarButtons.forEach(toolBarButton => {
-                userEvent.hover(screen.getByTestId( toolBarButton.getTestId() ));
-                checkEachMenuNotInDocumentExceptThisOne(toolBarButton);
-            })
-        });
-        test("click button (open menu) and hover interactively test (in reverse order)", () => {
-            render (
-                <ToolBar arrToolBarButtons={arrToolBarButtons} />
-            )
+        //     userEvent.click(screen.getByTestId( arrToolBarButtons[0].getTestId() ));
+        //     arrToolBarButtons.forEach(toolBarButton => {
+        //         userEvent.hover(screen.getByTestId( toolBarButton.getTestId() ));
+        //         checkEachMenuNotInDocumentExceptThisOne(toolBarButton);
+        //     })
+        // });
+        // test("click button (open menu) and hover interactively test (in reverse order)", () => {
+        //     render (
+        //         <ToolBar arrToolBarButtons={arrToolBarButtons} />
+        //     )
     
-            userEvent.click(screen.getByTestId( arrToolBarButtons[0].getTestId() ));
-            arrToolBarButtons.slice().reverse().forEach(toolBarButton => {
-                userEvent.hover(screen.getByTestId( toolBarButton.getTestId() ));
-                checkEachMenuNotInDocumentExceptThisOne(toolBarButton);
-            })
-        });
-        test("click button (open menu) and hover interactively test (out of order)", () => {
-            render (
-                <ToolBar arrToolBarButtons={arrToolBarButtons} />
-            )
+        //     userEvent.click(screen.getByTestId( arrToolBarButtons[0].getTestId() ));
+        //     arrToolBarButtons.slice().reverse().forEach(toolBarButton => {
+        //         userEvent.hover(screen.getByTestId( toolBarButton.getTestId() ));
+        //         checkEachMenuNotInDocumentExceptThisOne(toolBarButton);
+        //     })
+        // });
+        // test("click button (open menu) and hover interactively test (out of order)", () => {
+        //     render (
+        //         <ToolBar arrToolBarButtons={arrToolBarButtons} />
+        //     )
     
-            userEvent.click(screen.getByTestId( arrToolBarButtons[0].getTestId() ));
+        //     userEvent.click(screen.getByTestId( arrToolBarButtons[0].getTestId() ));
 
-            userEvent.hover(screen.getByTestId( arrToolBarButtons[0].getTestId() ));
-            checkEachMenuNotInDocumentExceptThisOne(arrToolBarButtons[0]);
+        //     userEvent.hover(screen.getByTestId( arrToolBarButtons[0].getTestId() ));
+        //     checkEachMenuNotInDocumentExceptThisOne(arrToolBarButtons[0]);
             
-            userEvent.hover(screen.getByTestId( arrToolBarButtons[2].getTestId() ));
-            checkEachMenuNotInDocumentExceptThisOne(arrToolBarButtons[2]);
+        //     userEvent.hover(screen.getByTestId( arrToolBarButtons[2].getTestId() ));
+        //     checkEachMenuNotInDocumentExceptThisOne(arrToolBarButtons[2]);
 
-            userEvent.hover(screen.getByTestId( arrToolBarButtons[1].getTestId() ));
-            checkEachMenuNotInDocumentExceptThisOne(arrToolBarButtons[1]);
+        //     userEvent.hover(screen.getByTestId( arrToolBarButtons[1].getTestId() ));
+        //     checkEachMenuNotInDocumentExceptThisOne(arrToolBarButtons[1]);
 
-            userEvent.hover(screen.getByTestId( arrToolBarButtons[3].getTestId() ));
-            checkEachMenuNotInDocumentExceptThisOne(arrToolBarButtons[3]);
-        });
+        //     userEvent.hover(screen.getByTestId( arrToolBarButtons[3].getTestId() ));
+        //     checkEachMenuNotInDocumentExceptThisOne(arrToolBarButtons[3]);
+        // });
         test("click button (open menu) and hover outside element", () => {
             render (
                 <div data-testid="outsideElement">
@@ -249,8 +250,12 @@ describe("ToolBar Button Mouse Event Test", () => {
     }
     function checkEachMenuNotInDocumentExceptThisOne(toolBarButtonException: ToolBarButton): void {
         arrToolBarButtons.forEach(toolBarButton => {
-            if (toolBarButton === toolBarButtonException) 
+            if (toolBarButton === toolBarButtonException){
+                console.log(toolBarButtonException)//
+                console.log(toolBarButton.getMenu().getTestId())
+                screen.debug()//
                 expect(screen.queryByTestId( toolBarButton.getMenu().getTestId() )).toBeInTheDocument();
+            }
             else 
                 expect(screen.queryByTestId( toolBarButton.getMenu().getTestId() )).not.toBeInTheDocument();
         })

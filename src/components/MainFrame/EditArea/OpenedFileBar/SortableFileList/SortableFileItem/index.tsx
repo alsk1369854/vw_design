@@ -5,21 +5,21 @@ import FileManager from "../../../../../FileManager/lib/FileManager";
 
 import style from './index.module.scss'
 
-export const SortableFileItem = SortableElement(({ file, setEditFile }: any) => {
+export const SortableFileItem = SortableElement((props: { file: any, setEditFile: Function }) => {
     return (
         <div className={style.fileItem}
-            onClick={() => setEditFile(FileManager.getFileById(file.getId()))}
+            onClick={() => props.setEditFile(FileManager.getFileById(props.file.getId()))}
         >
             <div className={style.fileIconBar}>
-                {FileManager.getFileIcon(file)}
+                {FileManager.getFileIcon(props.file)}
             </div>
 
             <div className={style.fileName}>
-                {file.strFileName}
+                {props.file.strFileName}
             </div>
 
             <div className={style.deleteIconContainer}
-                onClick={(event) => FileManager.deleteOpenFile(file)}
+                onClick={(event) => FileManager.deleteOpenFile(props.file)}
             >
                 <FontAwesomeIcon icon={faXmark}
                     className={style.deleteIcon}

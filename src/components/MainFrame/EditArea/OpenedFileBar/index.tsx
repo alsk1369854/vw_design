@@ -10,13 +10,10 @@ import FileManager from '../../../FileManager/lib/FileManager';
 import type File from '../../../FileManager/lib/File';
 import { SortableFileList } from './SortableFileList';
 
-interface IProps {
-    setEditFile: Function
-}
 
 export const FUNCTION_CALLER_KEY_UPDATE_OPENED_FILE_ITEMS = 'MainFrame/EditArea/OpenedFileBar: updateOpenFileItems'
 
-export default function OpenedFileBar({ setEditFile }: IProps) {
+export default function OpenedFileBar(props: { setEditFile: Function }) {
     const [count, setCount] = useState(0)
     const render = () => setCount(count + 1)
 
@@ -45,7 +42,8 @@ export default function OpenedFileBar({ setEditFile }: IProps) {
         <div className={style.div}>
             <SortableFileList
                 axis={'x'}
-                setEditFile={setEditFile}
+                // @ts-ignore
+                setEditFile={props.setEditFile}
                 distance={1}
                 lockAxis="x"
                 items={openFileItems}
