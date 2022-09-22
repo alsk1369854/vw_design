@@ -28,7 +28,7 @@ const cssHelmet = `
     }
     ::-webkit-scrollbar { /* 滾動條的寬度 */
         width: 5px;
-        height: 0px;
+        /* height: 0px; */
     }
     ::-webkit-scrollbar-thumb { /* 滾動條的設定 */
         background-color: #c7c7c7;
